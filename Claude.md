@@ -7,7 +7,7 @@ the first line will load the knowledge base
 the next line se context for your project
 
 ```
-**Important, do before any chat session**
+Important, read systematicaly in that order at start of each session
 
 1. Use the `filesystem` MCP tool to read INDEX.md at:
    C:\Users\RemiLequette\Development\projects\claude-knowledge\INDEX.md
