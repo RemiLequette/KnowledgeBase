@@ -6,4 +6,4 @@ Technical and tooling conventions.
 
 | File | Summary | Keywords |
 |------|---------|----------|
-| filesystem.md | Use `filesystem` for reads, `edit-file-lines` for writes | filesystem, MCP, read, write, files |
+| filesystem.md | Use `filesystem` for reads, `edit-file-lines` for writes, `node` for mechanical copy/replace ops (zero tokens) | filesystem, MCP, read, write, copy, node, regex, files |
