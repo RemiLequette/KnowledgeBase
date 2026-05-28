@@ -13,3 +13,5 @@ Contains conventions, workflows, and best practices to ensure consistency.
 ## Usage
 INDEX.md provides a one-line summary and keywords for each folder.
 Load only the relevant folder(s) based on the current task.
+In projects instructions read INDEX.mdl before any request access knowledge
+
