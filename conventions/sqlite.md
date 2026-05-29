@@ -58,3 +58,8 @@ SELECT id, scenario FROM test_scenarios WHERE id = '2.4';
 After any DDL (ALTER TABLE, CREATE TABLE, DROP TABLE, CREATE VIEW):
 - Immediately update the versioned `schema.sql` file.
 - This is the only schema artifact tracked in Git — the `.db` file is gitignored.
+
+---
+
+## Keywords
+sqlite, MCP, SQL, database, schema, write, query, conventions, DDL

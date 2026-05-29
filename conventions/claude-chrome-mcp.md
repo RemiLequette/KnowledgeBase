@@ -59,3 +59,8 @@ document.getElementById('target').getBoundingClientRect().bottom
 ## Value
 
 Live JS execution eliminates guesswork on layout bugs. A diagnostic that would take 10 back-and-forth exchanges (describe → guess → fix → test) can be resolved in 2-3 `javascript_tool` calls.
+
+---
+
+## Keywords
+Chrome, MCP, browser, DOM, debug, javascript, inspect, layout, conventions

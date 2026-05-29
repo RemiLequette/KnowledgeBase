@@ -63,9 +63,54 @@ args: ["-e", "const fs=require('fs');const s=Date.now();const c=fs.readFileSync(
 to the user's Windows filesystem. Never use it to read, write, or manipulate
 local files. Always use `filesystem` or `edit-file-lines`.
 
+## Copying binary files (PDF, images) to the Windows filesystem
+
+`edit-file-lines` is text-only — it cannot copy binary files.
+The correct approach is a `node` script that reads the file as a Buffer and writes it:
+
+```
+command: node
+args: ["-e", "const fs=require('fs');fs.writeFileSync('C:/dest/file.pdf',fs.readFileSync('/home/claude/work/file.pdf'));console.log('done');"]
+```
+
+This works because:
+- `node` runs in the container but **can write to the Windows filesystem** via the MCP commands tool
+- No base64 conversion needed — Buffer copy is transparent for any binary format
+- `node` is whitelisted as `safe` — no approval required
+
+## Generating a PDF from a local HTML file
+
+Never reconstruct HTML content manually in the container — that wastes tokens.
+Instead, use `node` to read the source file, transform it, and pipe it to `wkhtmltopdf`:
+
+```
+# Step 1 — transform the HTML (node, zero tokens)
+node -e "
+  const fs=require('fs');
+  let h=fs.readFileSync('C:/path/to/source.html','utf8');
+  h=h.replace('<body>','<body class=\"mode-cr\">');
+  // ... other transformations ...
+  fs.writeFileSync('/home/claude/work/print.html',h);
+  console.log('done');
+"
+
+# Step 2 — generate PDF
+wkhtmltopdf --enable-local-file-access /home/claude/work/print.html /home/claude/work/out.pdf
+
+# Step 3 — copy PDF back to Windows filesystem (node, zero tokens)
+node -e "const fs=require('fs');fs.writeFileSync('C:/dest/out.pdf',fs.readFileSync('/home/claude/work/out.pdf'));console.log('done');"
+```
+
+This keeps token consumption near zero — only the `node` script logic is generated, not the file content.
+
 ## Strategy when a replacement fails (old_text not found)
 Do not fall back to bash. Instead:
 1. Use `edit-file-lines:fast_read_file` with `line_start` + `line_count`
    to read the exact lines around the area to modify
 2. Copy the exact text as it appears in the file (encoding, spaces, apostrophes)
 3. Retry `filesystem:edit_file` or `fast_edit_block` with the corrected string
+
+---
+
+## Keywords
+filesystem, MCP, read, write, copy, node, regex, files, conventions

@@ -38,3 +38,8 @@ if (window.DDS_CY) DDS_CY.resize();
 Use `getBoundingClientRect().bottom > window.innerHeight` to detect elements outside the viewport. Use `getComputedStyle(el).flex` to identify CommWise `!important` overrides before attempting JS fixes.
 
 Use the Claude in Chrome MCP to run diagnostics live — see `claude-chrome-mcp.md`.
+
+---
+
+## Keywords
+CommWise, flex, layout, max-height, viewport, CSS, override, conventions
