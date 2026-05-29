@@ -38,7 +38,9 @@ The 15 principles in 60 seconds:
   - [8. File Paths: Always Absolute](#8-file-paths-always-absolute)
   - [9. Structure: Top-Down, Linear](#9-structure-top-down-linear)
   - [10. Documentation: Brief, Actionable](#10-documentation-brief-actionable)
-  - [11. Claude Project Instructions: Minimal & Pointing](#11-claude-project-instructions-minimal--pointing)
+  - [11. Claude Project Setup](#11-claude-project-setup)
+  - [11a. Documentation Naming Consistency](#11a-documentation-naming-consistency)
+  - [11b. Project Transportability & Renaming](#11b-project-transportability--renaming)
   - [12. Audit Section in Project Metadata](#12-audit-section-in-project-metadata)
   - [13. README.md for Human Navigation](#13-readmemd-for-human-navigation)
   - [14. Keywords for Discoverability](#14-keywords-for-discoverability)
@@ -355,44 +357,221 @@ so only read the parts you don't know...
 
 ---
 
-## 11. Claude Project Instructions: Minimal & Pointing
+## 11. Claude Project Setup
 
-**Principle:** Instructions saved in Claude Desktop should be minimal and point to Claude.md.
+**Principle:** Instructions saved in Claude Desktop should be minimal, point to Claude.md, AND define the project name clearly.
 
-### Correct Pattern ✅
-In Claude Desktop project settings, instructions should be:
+The project name must be:
+- **Defined explicitly in the Claude Desktop instructions** (visible entry point)
+- **Used consistently** in Claude.md, PROJECT.md, README.md, and folder structure
+- **In a standard format** (lowercase, hyphens, no spaces)
+
+### Template for Setup Process
+
+When creating a new Claude project, use this template for instructions:
+
 ```
-Your project folder is: C:\Users\RemiLequette\Development\projects\[PROJECT_NAME]
+Project name: [PROJECT-NAME]
+
+Your project folder is: C:\Users\RemiLequette\Development\projects\[PROJECT-NAME]
 
 Read Claude.md at the root of your project folder first.
 ```
 
+**Replace `[PROJECT-NAME]`** with the actual project name (e.g., `my-data-pipeline`, `report-generator`)..
+
+### Correct Pattern ✅
+
+**Example: Project named "my-data-pipeline"**
+
+In Claude Desktop project settings:
+```
+Project name: my-data-pipeline
+
+Your project folder is: C:\Users\RemiLequette\Development\projects\my-data-pipeline
+
+Read Claude.md at the root of your project folder first.
+```
+
+Then in `Claude.md`, `PROJECT.md`, and `README.md`, reference the same name:
+- `# my-data-pipeline`
+- Folder: `.../projects/my-data-pipeline`
+- Consistent references throughout
+
 ### Why
-- Keeps the entry point clear and simple
-- All details go in Claude.md (easier to maintain)
-- Claude Desktop UI is not the place for long instructions
-- Two-step process: UI points to file, file does the work
+- ✅ Project name is visible immediately (in instructions)
+- ✅ Easy for setup process to generate correct paths
+- ✅ No ambiguity about which project you're working on
+- ✅ Consistent across all files
 
 ### Anti-Pattern ❌
+
 ```
-Your project folder is: ...
-Load these files:
-- INDEX.md
-- session-startup.md
-Then load conventions:
-- filesystem.md
-- sqlite.md
-[...more...]  
+Claude Desktop: "Your project folder is: C:\\...\\[PROJECT-NAME]"
+Claude.md: "# My Project"
+README.md: "Project: MyProject"
+Folder: "my_project"
 ```
 
-Reason: This defeats the purpose of having Claude.md. Everything gets cluttered in the UI.
+Or worse:
+```
+Claude Desktop: (no project name mentioned)
+Your project folder is: C:\\Users\\...\\some-folder
+
+Read Claude.md
+```
+
+Reason: Inconsistent or missing naming creates confusion.
 
 ### What Gets Audited
 When auditing a project:
-- Check both the Claude Desktop instructions AND Claude.md
-- They should work together, not duplicate each other
-- Desktop instructions should be 2-3 lines max
-- Claude.md should handle all complexity
+- Verify project name is clearly stated in Claude Desktop instructions
+- Verify the same name appears in Claude.md, PROJECT.md, README.md
+- Flag any inconsistencies or divergences
+
+---
+
+## 11a. Documentation Naming Consistency
+
+**Principle:** The project name defined in Claude Desktop instructions must be used consistently across all documentation files.
+
+The project name must appear identically in:
+- **Claude Desktop instructions** (source of truth)
+- **Claude.md** — Project header or metadata
+- **PROJECT.md** — Project title section  
+- **README.md** (if present) — Project title and headers
+
+### Correct Pattern ✅
+
+**Claude Desktop instructions:**
+```
+Project name: my-data-pipeline
+
+Your project folder is: C:\Users\RemiLequette\Development\projects\my-data-pipeline
+
+Read Claude.md at the root of your project folder first.
+```
+
+**Claude.md:**
+```markdown
+# Claude Instructions — my-data-pipeline
+
+Project: my-data-pipeline
+```
+
+**PROJECT.md:**
+```markdown
+# my-data-pipeline
+
+## Purpose
+This project...
+```
+
+**README.md:**
+```markdown
+# my-data-pipeline
+
+Quick navigation for my-data-pipeline project.
+```
+
+### Why
+- ✅ Reader always knows which project they're working on
+- ✅ No confusion between similar projects
+- ✅ Easy to search for project across files
+- ✅ Professional, consistent appearance
+
+### What Gets Audited
+When auditing a project:
+- Search for the project name in Claude.md, PROJECT.md, README.md
+- Verify it's spelled and formatted identically everywhere
+- Flag any variations (uppercase, underscores, different names)
+
+---
+
+## 11b. Project Transportability & Renaming
+
+**Principle:** Projects should be easily renamed or moved to different locations in the file system without breaking references or requiring manual fixes.
+
+This requires three rules:
+
+### Rule 1: No Project Name in File Paths
+
+**Incorrect ❌**
+```
+C:\Users\RemiLequette\Development\projects\my-data-pipeline\my-data-pipeline-src\â‘¦
+C:\Users\RemiLequette\Development\projects\my-data-pipeline\docs\my-data-pipeline-guide.md
+```
+
+**Correct ✅**
+```
+C:\Users\RemiLequette\Development\projects\my-data-pipeline\src\â‘¦
+C:\Users\RemiLequette\Development\projects\my-data-pipeline\docs\guide.md
+```
+
+**Why:** If you rename the project, folder names with the project name break internal references.
+
+### Rule 2: No Absolute File References
+
+**Incorrect ❌**
+```markdown
+Read: C:\Users\RemiLequette\Development\projects\my-data-pipeline\Claude.md
+Execute: C:\Users\RemiLequette\Development\projects\my-data-pipeline\scripts\setup.sh
+```
+
+**Correct ✅**
+```markdown
+Read: Claude.md (in project root)
+Execute: ./scripts/setup.sh
+```
+
+**Why:** Absolute paths break when moving the project to a different location. Use relative paths from project root.
+
+### Rule 3: Easy Identification of Project Name in Documentation
+
+**For replacement purposes:** Project name should appear in a predictable, consistent location in metadata/headers - NOT scattered through content.
+
+**Correct ✅**
+```markdown
+# Project Name: my-data-pipeline
+
+## Purpose
+This project processes customer data.
+It contains... (no mention of "my-data-pipeline" in content)
+```
+
+```markdown
+Project: my-data-pipeline
+
+Setup instructions:
+1. Clone the repository
+2. Run setup.sh
+(project name only in metadata line)
+```
+
+**Incorrect ❌**
+```markdown
+# my-data-pipeline Data Processing System
+
+my-data-pipeline is a tool for processing data.
+When you start my-data-pipeline, it will...
+To configure my-data-pipeline, edit...
+(project name scattered throughout)
+```
+
+**Why:** When renaming, you only need to replace the project name in ONE metadata line, not hunt through all the content.
+
+### What Gets Audited
+When auditing a project:
+- ✅ Verify folder names don't include project name (except the root folder)
+- ✅ Verify all file references are relative (no absolute paths)
+- ✅ Verify project name appears ONLY in metadata lines, not in content
+- ✅ Flag any violations that would break renaming/relocation
+
+### Benefit
+- ✅ Rename project by changing one metadata line
+- ✅ Move project anywhere in file system
+- ✅ No broken references or manual fixes needed
+- ✅ Reusable template for new projects
 
 ---
 
@@ -581,6 +760,48 @@ Both follow these best practices.
 ---
 
 ## Changelog
+
+### Version 1.2 — Refined BP #11 & Added BP 11a & 11b: Project Naming & Portability Strategy
+**Date:** 2026-05-29  
+**Rationale:** Clarify that project name is defined in Claude Desktop instructions (not in docs). Provide template for setup process. Add rules for naming consistency and project transportability.
+
+**Changes:**
+- Restructured BP #11: name now defined in Claude Desktop instructions (visible entry point)
+- Added explicit line to template: **`Project name: [PROJECT-NAME]`** (makes naming crystal clear)
+- Added template with `[PROJECT-NAME]` placeholder for setup process to fill
+- Renamed from "Claude Project Instructions: Minimal & Pointing" to "Claude Project Setup"
+- Added BP 11a: "Documentation Naming Consistency" (new)
+  - Specifies that project name must appear identically in Claude.md, PROJECT.md, README.md
+  - Provides examples for each file
+  - Clear audit criteria
+- Added BP 11b: "Project Transportability & Renaming" (new)
+  - Rule 1: No project name in folder paths (only in root)
+  - Rule 2: No absolute file references (use relative to project root)
+  - Rule 3: Project name only in metadata/headers, not scattered in content
+  - Enables easy renaming and relocation
+  - Clear audit criteria
+- Updated audit criteria for BP 11, 11a, and 11b
+- Updated anti-pattern to show both inconsistent AND missing project names
+
+**Benefit:** Crystal clear single source of truth (Claude Desktop instructions). Easy template for setup. Guaranteed consistency across all files. Projects can be renamed or moved without breaking anything.
+
+---
+
+### Version 1.1 — Enhanced BP #11: Claude Project Setup
+**Date:** 2026-05-29  
+**Rationale:** Add explicit project naming consistency across Claude Desktop, folder structure, and documentation.
+
+**Changes:**
+- Renamed BP #11 from "Claude Project Instructions: Minimal & Pointing" to "Claude Project Setup"
+- Added requirement: project name must be clearly defined in the project
+- Added requirement: project name must match Claude Desktop project name
+- Added requirement: project name must be used consistently in paths and documentation
+- Added 3-step pattern with concrete example (`my-data-pipeline`)
+- Updated audit criteria to verify naming consistency
+
+**Benefit:** Eliminates confusion when working with multiple projects; makes project identification unambiguous.
+
+---
 
 ### Version 1.0 — Initial Release
 **Date:** 2026-05-29  
