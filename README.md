@@ -19,7 +19,7 @@ Welcome to your centralized knowledge repository for managing Claude projects sy
 - Read: `guides/project-setup-process.md`
 
 **What are the design principles?**
-- Read: `guides/Claude.ai-best-practices.md` (15 best practices)
+- Read: `guides/best-practices.md` (15 best practices)
 
 **Auditing a project for conformance?**
 - Read: `guides/audit-process.md`
@@ -49,7 +49,7 @@ This knowledge base follows a **reference-based architecture**:
                        ↓
 ┌──────────────────────────────────────────────────┐
 │        REFERENCE (Fondation)                     │
-│     Claude.ai-best-practices.md                  │
+│     best-practices.md                             │
 │     15 Design Principles                         │
 └──────────────────────────────────────────────────┘
 ```
@@ -96,7 +96,7 @@ Each new Claude project references this knowledge base, ensuring consistency acr
 | `PROJECT.md` | Metadata and how to audit this project |
 | `INDEX.md` | Content map — what's in each folder & keywords |
 | `guides/project-setup.md` | How to create a new Claude project |
-| `guides/Claude.ai-best-practices.md` | 15 design principles for Claude projects |
+| `guides/best-practices.md` | 15 design principles for Claude projects |
 | `guides/audit-process.md` | How to audit a project |
 
 ---
@@ -114,7 +114,7 @@ This repository works for:
 
 1. **Explore:** Browse `INDEX.md` to see what's available
 2. **Setup:** Use `guides/project-setup.md` to create a new project
-3. **Learn:** Read the best practices in `guides/Claude.ai-best-practices.md`
+3. **Learn:** Read the best practices in `guides/best-practices.md`
 4. **Audit:** Use `guides/audit-process.md` to audit a project
 
 ---

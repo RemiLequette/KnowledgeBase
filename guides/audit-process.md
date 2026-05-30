@@ -306,7 +306,7 @@ Batch 1: Keywords Missing (Best Practice #14)
 
 Batch 2: Quick Start Section Missing (Best Practice #15)
 - audit-process.md
-- Claude.ai-best-practices.md
+- best-practices.md
 → Solution: Add "## Quick Start" section with essentials
 ```
 

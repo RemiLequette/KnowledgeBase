@@ -275,8 +275,8 @@ Ne jamais citer un item numéroté d'un autre document. Pour référencer une id
 
 **Correct ✅**
 ```
-See guides/Claude.ai-best-practices.md
-See guides/Claude.ai-best-practices.md — Instruction Minimalism
+See guides/best-practices.md
+See guides/best-practices.md — Instruction Minimalism
 ```
 
 **Incorrect ❌**

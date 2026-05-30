@@ -2,7 +2,7 @@
 
 Step-by-step process for creating a new Claude project that conforms to best practices from the start.
 
-This guide implements the principles defined in: `guides/Claude.ai-best-practices.md`
+This guide implements the principles defined in: `guides/best-practices.md`
 
 ---
 
@@ -187,7 +187,7 @@ Instructions for humans working on this project.
 To audit this project's conformance to best practices:
 
 1. Read: `C:\Users\RemiLequette\Development\projects\claude-knowledge\guides\audit-process.md`
-2. Verify against: `C:\Users\RemiLequette\Development\projects\claude-knowledge\guides\Claude.ai-best-practices.md`
+2. Verify against: `C:\Users\RemiLequette\Development\projects\claude-knowledge\guides\best-practices.md`
 
 See `audit-process.md` for the complete process.
 ```
@@ -212,7 +212,7 @@ Create `README.md` for human navigation:
 - See: `PROJECT.md` → Audit section
 
 **What are the rules/best practices?**
-- See: `guides/Claude.ai-best-practices.md` (knowledge base)
+- See: `guides/best-practices.md` (knowledge base)
 
 ## What This Project Is
 
@@ -318,7 +318,7 @@ Analyze customer transaction data.
 
 To audit this project:
 1. Read: `C:\Users\RemiLequette\Development\projects\claude-knowledge\guides\audit-process.md`
-2. Verify against: `C:\Users\RemiLequette\Development\projects\claude-knowledge\guides\Claude.ai-best-practices.md`
+2. Verify against: `C:\Users\RemiLequette\Development\projects\claude-knowledge\guides\best-practices.md`
 ```
 
 **README.md:**
@@ -390,7 +390,7 @@ This process implements these best practices:
 - **#12** — Audit Section in Project Metadata
 - **#13** — README.md for Human Navigation
 
-See `guides/Claude.ai-best-practices.md` for all 15 practices.
+See `guides/best-practices.md` for all 15 practices.
 
 ---
 

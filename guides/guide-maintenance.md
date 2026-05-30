@@ -3,7 +3,7 @@
 ## Quick Start
 
 Standards de maintenance pour tous les guides de la knowledge base.
-Charger quand on modifie un guide (audit-process.md, Claude.ai-best-practices.md, project-setup-process.md).
+Charger quand on modifie un guide (audit-process.md, best-practices.md, project-setup-process.md).
 Deux règles obligatoires : mettre à jour la TOC et ajouter une entrée au Changelog.
 
 Maintenance rules for all guides in the knowledge base.
@@ -14,7 +14,7 @@ Maintenance rules for all guides in the knowledge base.
 
 **Whenever you modify any guide file:**
 - `guides/project-setup-process.md`
-- `guides/Claude.ai-best-practices.md`
+- `guides/best-practices.md`
 - `guides/audit-process.md`
 
 These rules ensure consistency, traceability, and navigability across all guides.
@@ -93,7 +93,7 @@ If a guide has outdated TOC but up-to-date Changelog (or vice versa), readers lo
 ## Referenced By
 
 - `Claude.md` — Maintenance rules for this KB
-- `Claude.ai-best-practices.md` → Best Practice #12 (Audit Section in Project Metadata)
+- `best-practices.md` → Best Practice #12 (Audit Section in Project Metadata)
 
 ---
 

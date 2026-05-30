@@ -24,8 +24,14 @@ For new Claude projects using this knowledge base as a template, see `guides/pro
 
 ## Decisions projet
 
-- Les conventions (`conventions/`) et best practices (`guides/Claude.ai-best-practices.md`) de ce projet sont **universelles** — elles s'appliquent à tous les projets, pas uniquement à cette KB.
+- Les conventions (`conventions/`) et best practices (`guides/best-practices.md`) de ce projet sont **universelles** — elles s'appliquent à tous les projets, pas uniquement à cette KB.
 - Chaque convention devrait avoir une best practice associée quand ça a du sens — la BP pointe vers la convention, elle ne duplique pas son contenu.
+
+---
+
+## Glossary
+
+See `GLOSSARY.md` at project root.
 
 ---
 
@@ -34,7 +40,7 @@ For new Claude projects using this knowledge base as a template, see `guides/pro
 To audit this project's conformance to best practices:
 
 1. Read: `guides/audit-process.md` — The audit methodology
-2. Verify against: `guides/Claude.ai-best-practices.md` — The best practices
+2. Verify against: `guides/best-practices.md` — The best practices
 
 See `guides/audit-process.md` for the complete process.
 
@@ -53,6 +59,13 @@ project, knowledge-base, conventions, workflows, guides, structure, audit, metad
 ---
 
 ## Changelog
+
+### Version 1.1 - Glossary
+**Date:** 2026-05-30
+**Raison:** Ajout de la section Glossary requise par la convention glossary.md.
+
+**Modifications :**
+- Ajout de `## Glossary` avec reference vers GLOSSARY.md
 
 ### Version 1.0 - Creation
 **Date:** 2026-05-30

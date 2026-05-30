@@ -426,6 +426,9 @@ Reason: Inconsistent or missing naming creates confusion.
 
 ### What Gets Audited
 When auditing a project:
+- The Claude Desktop instructions are visible in the opening message of the session — read them there, not via filesystem
+- Verify the instructions conform to the BP#1 template (project name, folder, filesystem MCP, INDEX.md + Claude.md)
+- Verify the path to Claude.md in the instructions matches the actual location of the file on disk
 - Verify project name is clearly stated in Claude Desktop instructions
 - Verify the same name appears in Claude.md, PROJECT.md, README.md
 - Flag any inconsistencies or divergences
@@ -755,6 +758,20 @@ Both follow these best practices.
 ---
 
 ## Changelog
+
+### Version 1.6 — BP#11 Audit des instructions Desktop
+**Date:** 2026-05-30
+**Rationale:** Lors d'un audit, les instructions Claude Desktop n'etaient pas verifiees faute de savoir ou les trouver. Elles sont pourtant auditables : elles sont visibles dans le message initial de la session.
+
+**Changes:**
+- BP#11 "What Gets Audited" : ajout de 3 criteres explicites
+  - Les instructions sont dans le message initial de session (pas sur le filesystem)
+  - Conformite au template BP#1 (project name, folder, filesystem MCP, INDEX.md + Claude.md)
+  - Le chemin vers Claude.md dans les instructions doit correspondre a l'emplacement reel du fichier
+
+**Benefit:** Les audits couvrent desormais les instructions Desktop de facon systematique. Le chemin vers Claude.md est verifie, evitant les erreurs silencieuses de chargement.
+
+---
 
 ### Version 1.5 — BP#14 Glossary
 **Date:** 2026-05-30
