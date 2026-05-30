@@ -2,9 +2,9 @@
 
 ## Quick Start
 
-Workflow obligatoire à exécuter en début de chaque session Claude, avant toute réponse.
+Workflow obligatoire a executer en debut de chaque session Claude, avant toute reponse.
 Couvre : lecture de Claude.md, chargement de INDEX.md, identification et chargement des conventions pertinentes.
-Ne pas sauter ce workflow — il garantit la cohérence entre les sessions.
+Ne pas sauter ce workflow — il garantit la coherence entre les sessions.
 
 **Execute this workflow at the START of every new session before answering any request.**
 
@@ -13,8 +13,8 @@ Ne pas sauter ce workflow — il garantit la cohérence entre les sessions.
 ### 1. Load Project Context
 ```
 Check: Is there a Claude.md at the PROJECT ROOT?
-If yes → Read it first (it contains critical setup)
-If no → Skip to step 2
+If yes -> Read it first (it contains critical setup)
+If no -> Skip to step 2
 ```
 
 ### 2. Load Knowledge Base
@@ -32,11 +32,13 @@ C:\Users\RemiLequette\Development\projects\claude-knowledge\conventions/
 ```
 
 Common triggers:
-- **File operations** → Load `filesystem.md`
-- **Database work** → Load `sqlite.md`
-- **Browser/DOM issues** → Load `claude-chrome-mcp.md`
-- **Thinking/reasoning** → Load `claude-structured-reasoning.md`
-- **CSS/layout** → Load `commwise-layout.md`
+- **File operations** -> Load `filesystem.md`
+- **Database work** -> Load `sqlite.md`
+- **Browser/DOM issues** -> Load `claude-chrome-mcp.md`
+- **Thinking/reasoning** -> Load `claude-structured-reasoning.md`
+- **CSS/layout** -> Load `commwise-layout.md`
+
+**Scope rule:** This workflow is generic. It defines the session startup sequence, not project-specific loading steps. Project-specific files (GLOSSARY.md, additional context, etc.) are declared in the project's Claude.md — not hardcoded here.
 
 ### 4. Then Answer the Request
 Now proceed with the actual task, informed by the knowledge base.
@@ -54,12 +56,11 @@ Now proceed with the actual task, informed by the knowledge base.
 
 ## Checklist
 
-- [ ] Project has Claude.md → Read it
+- [ ] Project has Claude.md -> Read it
 - [ ] Load INDEX.md from knowledge base
 - [ ] Identify relevant conventions
 - [ ] Load them before answering
 - [ ] Proceed with request
-
 ---
 
 ## Exception
@@ -81,6 +82,16 @@ startup, initialization, session, workflow, conventions, procedure, entry-point
 ---
 
 ## Changelog
+
+### Version 1.1 - Scope rule
+**Date:** 2026-05-30
+**Raison:** Prevenir les ajouts de contenu projet-specifique dans ce workflow generique. Les fichiers specifiques au projet (GLOSSARY.md, contexte additionnel, etc.) sont declares dans Claude.md du projet, pas ici.
+
+**Modifications :**
+- Step 3 : ajout d'une Scope rule explicite
+- Revert du chargement GLOSSARY.md (etait projet-specifique)
+- Quick Start mis a jour
+- Keywords mis a jour
 
 ### Version 1.0 - Creation
 **Date:** 2026-05-30

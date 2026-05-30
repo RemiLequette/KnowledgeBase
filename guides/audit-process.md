@@ -206,6 +206,8 @@ This guide is the **source of truth** for what constitutes good practice.
 
 The audit process verifies conformance to this source — nothing else.
 
+**Scope rule:** The audit process is generic. It defines *how* to audit, not *what* to audit. The list of auditable elements (Step 2) is always derived from the project's best practices guide — never hardcoded in this process. Do not add project-specific or convention-specific items to this guide.
+
 ---
 
 ### Step 2: Identify Auditable Elements
@@ -439,6 +441,15 @@ Use the summary format from Step 7.
 ---
 
 ## Changelog
+
+### Version 2.2 - Regle de perimetre du guide
+**Date:** 2026-05-30
+**Rationale:** Prevenir les ajouts de contenu projet-specifique dans ce guide generique. La liste des elements auditables derive toujours des best practices du projet, jamais de ce guide.
+
+**Changes:**
+- Step 1 : ajout d'une "Scope rule" explicite — ce guide definit *comment* auditer, pas *quoi* auditer
+
+---
 
 ### Version 2.1 — Ordre de traitement des batches
 **Date:** 2026-05-30

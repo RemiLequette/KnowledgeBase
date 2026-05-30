@@ -21,6 +21,7 @@ The 15 principles in 60 seconds:
 11. Have an Audit section in PROJECT.md
 12. Provide README.md for human navigation
 13. All Markdown files follow `conventions/documentation.md` (TOC, Keywords, Index, Changelog, Quick Start, Titres)
+14. Every project has a `GLOSSARY.md` at root, referenced by a `## Glossary` section in `PROJECT.md`
 
 *For full details on each principle, see sections below.*
 
@@ -46,6 +47,7 @@ The 15 principles in 60 seconds:
   - [12. Audit Section in Project Metadata](#12-audit-section-in-project-metadata)
   - [13. README.md for Human Navigation](#13-readmemd-for-human-navigation)
   - [13. Documentation Markdown](#13-documentation-markdown)
+  - [14. Glossary](#14-glossary)
 - [Guide Maintenance Standards](#guide-maintenance-standards)
 - [Quick Checklist](#quick-checklist)
 - [Examples](#examples)
@@ -650,7 +652,38 @@ Covers : structure des fichiers, titres, TOC, Keywords, Index, Changelog, Quick 
 
 ---
 
-## 14. Todo List
+## 14. Glossary
+[up](#table-of-contents)
+
+**Principle:** Every project has a `GLOSSARY.md` at its root, defining the key terms of the project domain.
+
+### Reference
+
+`conventions/glossary.md`
+
+Covers : structure de GLOSSARY.md, domaines, format des termes, references croisees, chargement par un AI Assistant.
+
+### Rule
+
+`PROJECT.md` must contain a `## Glossary` section pointing to `GLOSSARY.md` :
+
+```markdown
+## Glossary
+
+See `GLOSSARY.md` at project root.
+```
+
+Absence of this section in `PROJECT.md` is a deviation to justify at audit.
+
+### Why
+- Aligns AI Assistants and humans on project terminology from the first session
+- Prevents semantic misunderstandings during long projects
+- Structured by domains — AI Assistants load only relevant sections
+- Human-readable — any new contributor understands the vocabulary immediately
+
+---
+
+## 15. Todo List
 
 **Principle:** Every project should have a lightweight backlog to capture ideas and tasks.
 
@@ -703,6 +736,8 @@ See `guides/guide-maintenance.md` for complete standards.
 - [ ] Desktop instructions and Claude.md work together (not duplicate)?
 - [ ] `README.md` exists for human navigation?
 - [ ] `PROJECT.md` has Audit section?
+- [ ] `PROJECT.md` has `## Glossary` section pointing to `GLOSSARY.md`?
+- [ ] `GLOSSARY.md` exists at project root (or deviation documented)?
 - [ ] All files have Keywords section?
 - [ ] Markdown files with more than 2 `##` sections have a TOC with correct anchors and back-links?
 - [ ] All guides follow Quick Start + Deep Dive structure?
@@ -720,6 +755,22 @@ Both follow these best practices.
 ---
 
 ## Changelog
+
+### Version 1.5 — BP#14 Glossary
+**Date:** 2026-05-30
+**Rationale:** Integrer le concept de glossaire comme best practice obligatoire. Chaque projet definit ses termes cles dans GLOSSARY.md, reference depuis PROJECT.md.
+
+**Changes:**
+- Ajout de BP#14 : Glossary — GLOSSARY.md a la racine, section ## Glossary dans PROJECT.md
+- Reference a `conventions/glossary.md` pour le format detaille
+- Quick Start mis a jour (point 14)
+- TOC mise a jour (entree BP#14)
+- Quick Checklist mise a jour (2 nouvelles entrees)
+- BP#14 Todo List renumerotee en BP#15
+
+**Benefit:** Terminologie alignee des la premiere session. AI Assistants et humains parlent le meme langage. Chargement selectif par domaine pour optimiser la fenetre de contexte.
+
+---
 
 ### Version 1.4 — BP#16 : Table des matières obligatoire
 **Date:** 2026-05-29
