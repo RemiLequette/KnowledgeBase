@@ -16,10 +16,7 @@ The 15 principles in 60 seconds:
 10. Minimal desktop instructions → point to Claude.md
 11. Have an Audit section in PROJECT.md
 12. Provide README.md for human navigation
-13. Add Keywords to all files for discoverability
-14. Structure guides as: Quick Start → Full Details
-15. Best practices = foundation for audit and setup processes
-16. Every Markdown file with more than 2 `##` sections must have a TOC
+13. All Markdown files follow `conventions/documentation.md` (TOC, Keywords, Index, Changelog, Quick Start, Titres)
 
 *For full details on each principle, see sections below.*
 
@@ -44,9 +41,7 @@ The 15 principles in 60 seconds:
   - [11b. Project Transportability & Renaming](#11b-project-transportability--renaming)
   - [12. Audit Section in Project Metadata](#12-audit-section-in-project-metadata)
   - [13. README.md for Human Navigation](#13-readmemd-for-human-navigation)
-  - [14. Keywords for Discoverability](#14-keywords-for-discoverability)
-  - [15. Structure: Quick Start + Deep Dive](#15-structure-quick-start--deep-dive)
-  - [16. Table des matières obligatoire](#16-table-des-matières-obligatoire)
+  - [13. Documentation Markdown](#13-documentation-markdown)
 - [Guide Maintenance Standards](#guide-maintenance-standards)
 - [Quick Checklist](#quick-checklist)
 - [Examples](#examples)
@@ -634,106 +629,37 @@ No README, or only technical documentation.
 
 ---
 
-## 14. Keywords for Discoverability
+## 13. Documentation Markdown
 
-**Principle:** Make the knowledge base searchable and indexed.
-
-Every guide and major file should have a **Keywords section**:
-
-```markdown
----
-
-## Keywords
-audit, verification, conformance, process, methodology, project
-```
-
-### Guidelines
-- Keywords are 1-3 word terms, comma-separated
-- Should be searchable within the knowledge base
-- Help discover related documents
-- Consistent across the entire knowledge base
-
-### Why
-- Makes the KB navigable without central index
-- Helps future maintenance (what matches these keywords?)
-- Supports discoverability and cross-referencing
-- Minimal overhead, maximum value
-
----
-
-## 15. Structure: Quick Start + Deep Dive
-
-**Principle:** Respect different reading styles.
-
-Every guide should be structured as:
-
-1. **Quick Start** — Minimal, actionable steps (3-5 lines)
-2. **Full Details** — Comprehensive reference (everything needed)
-3. **Examples** — Concrete, realistic scenarios
-4. **Keywords** — For discoverability
-
-### Correct ✅
-```markdown
-# My Guide
-
-## Quick Start
-[3-5 line instructions that work immediately]
-
-## Full Details
-[Comprehensive explanation, edge cases, rationale]
-
-## Examples
-[Real-world examples]
-
-## Keywords
-[...]
-```
-
-### Incorrect ❌
-```markdown
-# My Guide
-
-Long prose explanation...
-Eventually you find what you need...
-But it takes scrolling...
-No examples...
-No keywords...
-```
-
-### Why
-- Users can get started immediately (Quick Start)
-- Experts can find depth when needed (Full Details)
-- Everyone wins
-- Supports both lazy and thorough readers
-
----
-
-## 16. Table des matières obligatoire
-
-**Principle:** Every Markdown file with more than 2 first-level sections (`##`) must have a Table of Contents.
-
-### Rule
-
-- TOC title: `## Table des matières` (anchor: `#table-des-matières`)
-- Anchors follow **VS Code** generation rules (accents preserved, numbers included)
-- Every `##` section title must include a back-link: `[↑](#table-des-matières)`
-- TOC lists only first-level sections (`##`), not subsections (`###`)
+**Principle:** All Markdown files across all projects follow a single documentation convention.
 
 ### Reference
 
-Full convention (anchor format, examples, audit criteria):
-`conventions/markdown-toc.md`
+`conventions/documentation.md`
+
+Covers : structure des fichiers, titres, TOC, Keywords, Index, Changelog, Quick Start.
 
 ### Why
-- Long files without TOC are hard to navigate in VS Code
-- Standardized TOC + back-links enable fast two-way navigation
-- Consistent across all project documentation
+- Une seule source de verite pour toutes les regles Markdown
+- Auditables systematiquement
+- Applicables a tous les projets sans adaptation
 
-### What Gets Audited
-- Any `.md` file with more than 2 `##` sections
-- Verify `## Table des matières` exists
-- Verify anchors match actual section titles
-- Verify all `##` titles carry `[↑](#table-des-matières)`
+---
+
+## 14. Todo List
+
+**Principle:** Every project should have a lightweight backlog to capture ideas and tasks.
+
+### Reference
+
+`conventions/todo.md`
+
+Covers : format, emplacement, etats, archivage, role de l'AI Assistant.
+
+### Why
+- Capture les idees et taches pendant les sessions sans les perdre
+- Separe le backlog leger de la gestion technique (bugs, dev)
+- L'AI Assistant ne peut modifier la todo qu'avec accord explicite
 
 ---
 

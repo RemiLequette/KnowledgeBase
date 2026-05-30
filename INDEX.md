@@ -61,3 +61,23 @@ Setup and configuration guides for new projects.
 
 ## Keywords
 index, conventions, workflows, guides, navigation, discoverability, knowledge-base
+
+---
+
+## Index
+
+| Terme | Occurrences |
+|-------|-------------|
+
+---
+
+## Changelog
+
+### Version 1.0 - Creation
+**Date:** 2026-05-30
+**Raison:** Index de la knowledge base — point d'entree pour toutes les sessions.
+
+**Contenu initial :**
+- Table conventions/ avec keywords
+- Table workflows/ avec keywords
+- Table guides/ avec keywords

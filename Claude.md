@@ -14,3 +14,23 @@ C:\Users\RemiLequette\Development\projects\claude-knowledge\workflows\session-st
 
 ## Keywords
 claude, instructions, session, knowledge-base, setup, configuration
+
+---
+
+## Index
+
+| Terme | Occurrences |
+|-------|-------------|
+
+---
+
+## Changelog
+
+### Version 1.0 - Creation
+**Date:** 2026-05-30
+**Raison:** Instructions Claude pour le projet claude-knowledge.
+
+**Contenu initial :**
+- Lecture de PROJECT.md (contexte generique)
+- Reference a session-startup.md (setup Claude)
+- Note : pas de chargement de INDEX.md (auto-reference)

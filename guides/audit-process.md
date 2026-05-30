@@ -306,6 +306,17 @@ Batch 2: Quick Start Section Missing (Best Practice #15)
 
 **Present batches to user for clarity** before proceeding to Step 6.
 
+### Ordre de traitement des batches
+
+Traiter les batches dans cet ordre, du plus simple au plus complexe :
+
+1. **Fix immédiats** — corrections appliquées directement dans la session
+2. **Déviations documentées** — examinées et validées, ou requalifiées en fix / TODO / mise à jour de BP
+3. **Ajouts à la TODO** — examinés et validés, ou requalifiés
+4. **Mises à jour de best practice** — examinées en dernier
+
+Si un batch est trop grand pour tenir sur l'écran, le découper par thème.
+
 ---
 
 ### Step 6: Review and Apply Deviations by Batch (Apply Rule 3)
@@ -424,6 +435,19 @@ Use the summary format from Step 7.
 ---
 
 ## Changelog
+
+### Version 2.1 — Ordre de traitement des batches
+**Date:** 2026-05-30
+**Rationale:** Le guide définissait comment grouper les déviations mais pas dans quel ordre traiter les batches. Ajout d'un ordre explicite par complexité croissante.
+
+**Changes:**
+- Ajout de la section "Ordre de traitement des batches" dans Step 5
+- Ordre : fix immédiats → déviations documentées → TODO → mises à jour de BP
+- Possibilité de découper un batch trop grand par thème
+
+**Benefit:** Sessions plus fluides — on se débarrasse d'abord de ce qui est certain et rapide, puis on examine les cas qui demandent une décision.
+
+---
 
 ### Version 2.0 — Batching & Checkpoints
 **Date:** 2026-05-29  

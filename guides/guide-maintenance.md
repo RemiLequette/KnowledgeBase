@@ -15,7 +15,7 @@ These rules ensure consistency, traceability, and navigability across all guides
 
 ---
 
-## Rule 1️⃣: Update the Table of Contents
+## Rule 1: Update the Table of Contents
 
 If you **added, removed, or renamed** any section in the guide:
 
@@ -25,7 +25,7 @@ If you **added, removed, or renamed** any section in the guide:
 
 ---
 
-## Rule 2️⃣: Update the Changelog
+## Rule 2: Update the Changelog
 
 **Always add a new entry** when modifying a guide.
 
