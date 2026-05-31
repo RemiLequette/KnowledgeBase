@@ -1,97 +1,97 @@
 # Todo Convention
 
-Convention pour le backlog leger de tout projet — idees, ameliorations, taches a faire.
+Convention for the lightweight backlog of any project — ideas, improvements, tasks.
 
 ## Quick Start
 
-Ce document definit comment structurer et utiliser un backlog leger dans un projet.
-Charger quand on cree ou manipule un fichier `TODO.md`, ou quand un AI Assistant doit ajouter des items pendant une session.
-Ne couvre pas la gestion de bugs, tests, ou taches de developpement.
+Defines how to structure and use a lightweight backlog in a project.
+Load when creating or manipulating a `TODO.md` file, or when an AI Assistant needs to add items during a session.
+Does not cover bug tracking, tests, or development tasks.
 
 ## Keywords
-todo, backlog, taches, idees, suivi, priorite, session, archivage
+todo, backlog, tasks, ideas, tracking, priority, session, archiving
 
-## Table des matieres
+## Scope
 
-1. [Perimetre](#perimetre)
-2. [Fonctionnalites](#fonctionnalites)
-3. [Fichiers](#fichiers)
-4. [Format](#format)
+The todo list is a **lightweight backlog** — it captures ideas and tasks for a project.
 
----
+**In scope:**
+- Improvement ideas
+- Tasks identified during a session or audit
+- Features to explore
 
-## Perimetre
-[up](#table-des-matieres)
+**Out of scope:**
+- Bugs and technical fixes
+- Development and test tasks
+- Detailed project management
 
-La todo list est un **backlog leger** — elle capture les idees et taches a faire d'un projet.
+## Features
 
-**Dans le perimetre :**
-- Idees d'amelioration
-- Taches identifiees pendant une session ou un audit
-- Fonctionnalites a explorer
+- **Capture** — add an item at any time during a session
+- **Priority** — high / normal / low
+- **State** — open / in progress / done
+- **Archiving** — done items are moved to `TODO-archive.md`, never deleted
 
-**Hors perimetre :**
-- Bugs et corrections techniques
-- Taches de developpement et tests
-- Gestion de projet detaillee
+### AI Assistant role
 
----
+An AI Assistant may only modify `TODO.md` or `TODO-archive.md` with **explicit user approval**.
 
-## Fonctionnalites
-[up](#table-des-matieres)
+This includes: adding, modifying, moving, or archiving an item.
 
-- **Capture** — ajouter un item a tout moment pendant une session
-- **Priorite** — haute / normale / basse
-- **Etat** — ouvert / en cours / termine
-- **Archivage** — les items termines sont deplaces dans `TODO-archive.md`, jamais supprimes
+## Files
 
-### Rolle de l'AI Assistant
+Two files at the project root:
 
-Un AI Assistant ne peut modifier `TODO.md` ou `TODO-archive.md` qu'avec **accord explicite** de l'utilisateur.
+- **`TODO.md`** — active items (open and in progress)
+- **`TODO-archive.md`** — done items (history)
 
-Cela inclut : ajouter, modifier, deplacer, ou archiver un item.
-
----
-
-## Fichiers
-[up](#table-des-matieres)
-
-Deux fichiers a la racine du projet :
-
-- **`TODO.md`** — items actifs (ouverts et en cours)
-- **`TODO-archive.md`** — items termines (historique)
-
-Quand un item passe a l'etat termine, il est deplace de `TODO.md` vers `TODO-archive.md`.
-
----
+When an item is marked done, it is moved from `TODO.md` to `TODO-archive.md`.
 
 ## Format
-[up](#table-des-matieres)
 
 ### TODO.md
+
+`TODO.md` must conform to the documentation convention (`conventions/documentation.md`) — it requires `## Quick Start`, `## Keywords`, `## Index`, and `## Changelog`.
+
+Content sections follow the priority structure:
 
 ```markdown
 # TODO
 
-## Haute priorite
+Short description of the project backlog.
 
-- [ ] Description de la tache
-- [ ] [WIP] Description de la tache en cours
+## Quick Start
 
-## Normale
+## Keywords
+todo, backlog, <project-name>
 
-- [ ] Description de la tache
-- [ ] [WIP] Description de la tache en cours
+## High priority
 
-## Basse priorite
+- [ ] Task description
+- [ ] [WIP] Task in progress
 
-- [ ] Description de la tache
+## Normal
+
+- [ ] Task description
+
+## Low priority
+
+- [ ] Task description
+
+## Index
+
+| Term | Occurrences |
+|------|-------------|
+
+## Changelog
+
+### Version X.Y - ...
 ```
 
-**Etats :**
-- `- [ ]` — ouvert
-- `- [ ] [WIP]` — en cours
-- `- [x]` — termine (a deplacer dans `TODO-archive.md`)
+**States:**
+- `- [ ]` — open
+- `- [ ] [WIP]` — in progress
+- `- [x]` — done (move to `TODO-archive.md`)
 
 ### TODO-archive.md
 
@@ -100,29 +100,32 @@ Quand un item passe a l'etat termine, il est deplace de `TODO.md` vers `TODO-arc
 
 ## YYYY-MM
 
-- [x] Description de la tache terminee
-- [x] Description de la tache terminee
+- [x] Done task description
 ```
 
-Les items archives sont groupes par mois de completion.
-
----
+Archived items are grouped by completion month.
 
 ## Index
 
-| Terme | Occurrences |
-|-------|-------------|
-
----
+| Term | Occurrences |
+|------|-------------|
 
 ## Changelog
 
+### Version 2.0 - Full translation to English + documentation convention compliance
+**Date:** 2026-05-31
+**Reason:** Document was written in French, violating the documentation convention. TODO.md format updated to require compliance with documentation convention.
+
+**Changes:**
+- Full content translated to English
+- Subtitle added
+- Quick Start rewritten in English
+- Keywords updated
+- Sections renamed: Perimetre -> Scope, Fonctionnalites -> Features, Fichiers -> Files
+- Format updated: TODO.md must now conform to documentation convention
+
+---
+
 ### Version 1.0 - Creation
 **Date:** 2026-05-30
-**Raison:** Convention pour le backlog leger de tout projet. Capture idees et taches, distinct de la gestion de bugs et developpement.
-
-**Contenu initial :**
-- Perimetre : backlog leger, hors bugs et dev
-- Fonctionnalites : capture, priorite, etat, archivage
-- Fichiers : TODO.md (actifs) + TODO-archive.md (termines)
-- Format : sections par priorite, archive par mois
+**Raison:** Convention pour le backlog leger de tout projet.

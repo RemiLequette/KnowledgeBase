@@ -5,10 +5,9 @@
  * Invoked by an AI Assistant via commands MCP. No human interaction.
  *
  * Args:
- *   read    <file> <json-input> <json-output>  -- read selected elements into json-output
- *   dump    <file> <json-output>               -- read all elements into json-output
  *   create  <file> <json-input>                -- create new conformant document
  *   update  <file> <json-input>                -- update elements in existing document
+ *   delete  <file> <section-name>             -- remove a named section
  *   check   <file>                             -- verify conformance
  *   restore <file>                             -- restore from backup
  *
@@ -42,6 +41,19 @@ function error(code, message) {
   process.stdout.write('ERROR:' + code + ':' + message + '\n');
 }
 
+const MANDATORY_SECTIONS = ['Quick Start', 'Keywords', 'Index', 'Changelog'];
+
+// ---------------------------------------------------------------------------
+// Conformance guard
+// ---------------------------------------------------------------------------
+
+function checkConformance(filePath) {
+  const doc    = md.parseFile(filePath);
+  const issues = md.getIssues(doc);
+  if (issues.length > 0) return issues;
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // Backup helpers
 // ---------------------------------------------------------------------------
@@ -71,23 +83,18 @@ function readJsonFile(jsonPath) {
   }
 }
 
-function writeJsonFile(jsonPath, data) {
-  fs.writeFile(jsonPath, JSON.stringify(data, null, 2));
-}
-
 // ---------------------------------------------------------------------------
-// Element accessors -- "title" is special, others are section names
+// Element accessors -- title, subtitle, language are special; others are section names
 // ---------------------------------------------------------------------------
-
-function getElement(doc, key) {
-  if (key === 'title') return md.getTitle(doc);
-  return md.getSection(doc, key);
-}
 
 function setElement(doc, key, value) {
   if (key === 'title') {
     if (value) md.setTitle(doc, value);
     // if value is empty, leave existing title unchanged
+  } else if (key === 'subtitle') {
+    md.setSubtitle(doc, value || '');
+  } else if (key === 'language') {
+    md.setLanguage(doc, value || '');
   } else {
     md.setSection(doc, key, value || '');
   }
@@ -112,36 +119,6 @@ function buildEmpty(title) {
 // ---------------------------------------------------------------------------
 // Commands
 // ---------------------------------------------------------------------------
-
-function cmdRead(filePath, jsonInputPath, jsonOutputPath) {
-  if (!nodefs.existsSync(filePath))      return error('FILE_NOT_FOUND', filePath);
-  if (!nodefs.existsSync(jsonInputPath)) return error('FILE_NOT_FOUND', jsonInputPath);
-
-  const keys = readJsonFile(jsonInputPath);
-  if (!Array.isArray(keys)) return error('INVALID_INPUT', 'json-input must be an array of strings');
-
-  const doc = md.parseFile(filePath);
-  const result = {};
-  for (const key of keys) {
-    result[key] = getElement(doc, key);
-  }
-
-  writeJsonFile(jsonOutputPath, result);
-  ok(jsonOutputPath);
-}
-
-function cmdDump(filePath, jsonOutputPath) {
-  if (!nodefs.existsSync(filePath)) return error('FILE_NOT_FOUND', filePath);
-
-  const doc = md.parseFile(filePath);
-  const result = { title: md.getTitle(doc) };
-  for (const s of md.getSections(doc)) {
-    result[s.name] = s.content;
-  }
-
-  writeJsonFile(jsonOutputPath, result);
-  ok(jsonOutputPath);
-}
 
 function cmdCreate(filePath, jsonInputPath) {
   if (nodefs.existsSync(filePath))       return error('FILE_ALREADY_EXISTS', filePath);
@@ -176,6 +153,9 @@ function cmdUpdate(filePath, jsonInputPath) {
   if (!nodefs.existsSync(filePath))      return error('FILE_NOT_FOUND', filePath);
   if (!nodefs.existsSync(jsonInputPath)) return error('FILE_NOT_FOUND', jsonInputPath);
 
+  const issues = checkConformance(filePath);
+  if (issues) return error('NOT_CONFORMANT', issues.join('; '));
+
   const data = readJsonFile(jsonInputPath);
   if (typeof data !== 'object' || Array.isArray(data)) {
     return error('INVALID_INPUT', 'json-input must be an object');
@@ -184,10 +164,38 @@ function cmdUpdate(filePath, jsonInputPath) {
   createBackup(filePath);
 
   const doc = md.parseFile(filePath);
+  const positions = data.__positions || {};
+
   for (const [key, value] of Object.entries(data)) {
-    setElement(doc, key, value);
+    if (key === '__positions') continue;
+
+    const position = positions[key];
+    if (position && !md.hasSection(doc, key)) {
+      // New section with explicit position
+      const err = md.insertSectionAt(doc, key, value || '', position);
+      if (err) return error('SECTION_NOT_FOUND', err.replace('SECTION_NOT_FOUND:', ''));
+    } else {
+      setElement(doc, key, value);
+    }
   }
 
+  fs.writeFile(filePath, md.toMarkdown(doc));
+  ok();
+}
+
+function cmdDelete(filePath, sectionName) {
+  if (!nodefs.existsSync(filePath)) return error('FILE_NOT_FOUND', filePath);
+  if (!sectionName)                 return error('MISSING_ARG', 'delete requires <file> <section-name>');
+
+  if (MANDATORY_SECTIONS.includes(sectionName)) {
+    return error('PROTECTED_SECTION', sectionName + ' is a mandatory section and cannot be deleted');
+  }
+
+  const doc   = md.parseFile(filePath);
+  const found = md.deleteSection(doc, sectionName);
+  if (!found) return error('SECTION_NOT_FOUND', sectionName);
+
+  createBackup(filePath);
   fs.writeFile(filePath, md.toMarkdown(doc));
   ok();
 }
@@ -226,16 +234,6 @@ const [,, command, ...args] = process.argv;
 
 try {
   switch (command) {
-    case 'read':
-      if (args.length < 3) return error('MISSING_ARG', 'read requires <file> <json-input> <json-output>');
-      cmdRead(args[0], args[1], args[2]);
-      break;
-
-    case 'dump':
-      if (args.length < 2) return error('MISSING_ARG', 'dump requires <file> <json-output>');
-      cmdDump(args[0], args[1]);
-      break;
-
     case 'create':
       if (args.length < 2) return error('MISSING_ARG', 'create requires <file> <json-input>');
       cmdCreate(args[0], args[1]);
@@ -244,6 +242,11 @@ try {
     case 'update':
       if (args.length < 2) return error('MISSING_ARG', 'update requires <file> <json-input>');
       cmdUpdate(args[0], args[1]);
+      break;
+
+    case 'delete':
+      if (args.length < 2) return error('MISSING_ARG', 'delete requires <file> <section-name>');
+      cmdDelete(args[0], args[1]);
       break;
 
     case 'check':

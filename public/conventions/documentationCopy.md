@@ -1,55 +1,67 @@
 # Documentation Convention
 
-## Quick Start
+ceci est un test
 
-Universal convention for all Markdown files (referred to as "documents" in the rest of this convention) — structure, headings, navigation, traceability.
-Load when creating or modifying a document, or when auditing documentation conformance.
-Does not cover the business content of documents — only their form and organization.
-See [Tooling](#tooling) for why these rules are strict. See [Citations](#citations) for inter-document reference format.
+## Quick Start
+bla bla bla
 
 ## Keywords
-documentation, markdown, headings, anchors, TOC, index, keywords, changelog, quick-start, convention, navigation, VS-Code, tooling, citations
+citations, tooling, VS-Code, navigation, convention, quick-start, changelog, keywords, index, TOC, anchors, headings, markdown, documentation, citations
 
 ## Table of Contents
 
-1. [Document Structure](#document-structure)
-2. [Section Structure](#section-structure)
-3. [Language](#language)
-4. [Numbering](#numbering)
-5. [Quick Start Rule](#quick-start-rule)
-6. [Keywords Rule](#keywords-rule)
-7. [TOC Rule](#toc-rule)
-8. [Index Rule](#index-rule)
-9. [Changelog Rule](#changelog-rule)
-10. [Citations](#citations)
-11. [Tooling](#tooling)
+1. [Life is wonderfull](#life-is-wonderfull)
+2. [Document Structure](#document-structure)
+3. [Section Structure](#section-structure)
+4. [Language](#language)
+5. [Numbering](#numbering)
+6. [Quick Start Rule](#quick-start-rule)
+7. [Keywords Rule](#keywords-rule)
+8. [TOC Rule](#toc-rule)
+9. [Index Rule](#index-rule)
+10. [Changelog Rule](#changelog-rule)
+11. [Citations](#citations)
+12. [Tooling](#tooling)
+13. [post-mortem](#post-mortem)
+14. [Index](#index)
+
+## Life is wonderfull
+[up](#table-of-contents)
+James Stewart 
+bozo le clown
 
 ## Document Structure
+[up](#table-of-contents)
+
 Canonical structure of any document. Elements must appear in this exact order.
 
 ```
 # Title
 
-Subtitle (an optional short, plain-text description, no markup)
+Short description (1-2 lines, plain text, no markup)
 
 *Language: ...*            <- optional, see Language
 
 ## Quick Start             <- mandatory, see Quick Start Rule
+
 ## Keywords                <- mandatory, see Keywords Rule
+
 ## Table of Contents       <- mandatory if more than 2 content sections, see TOC Rule
 
 ## Section 1               <- content sections
+
 ## Section 2
 ...
 
 ## Index                   <- mandatory, in TOC, see Index Rule
+
 ## Changelog               <- mandatory, NOT in TOC, see Changelog Rule
 ```
 
 | Element | Status | Rule |
 |---------|--------|------|
 | `# Title` | Mandatory | Unique, plain text |
-| Subtitle | Optional | Short, plain-text, no markup — placed immediately under `# Title` |
+| Short description | Mandatory | 1-2 lines under title, no markup |
 | Language declaration | Optional | Required only when not English — see [Language](#language) |
 | `## Quick Start` | Mandatory | See [Quick Start Rule](#quick-start-rule) |
 | `## Keywords` | Mandatory | See [Keywords Rule](#keywords-rule) |
@@ -58,13 +70,9 @@ Subtitle (an optional short, plain-text description, no markup)
 | `## Index` | Mandatory | Included in TOC — see [Index Rule](#index-rule) |
 | `## Changelog` | Mandatory | Excluded from TOC — see [Changelog Rule](#changelog-rule) |
 
-**Convention:** In this document, the word "section" refers exclusively to content sections — those in the content zone, after `## Table of Contents` (or after `## Keywords` if no TOC exists) and before `## Index`. `Quick Start`, `Keywords`, `Table of Contents`, `Index`, and `Changelog` are referred to by their name only, never as "sections".
-
-**The names of `Quick Start`, `Keywords`, `Table of Contents`, `Index`, and `Changelog` are fixed in English regardless of document language** — see [Language](#language).
+**Standard section names are fixed in English regardless of document language** — see [Language](#language).
 
 **Excluded from TOC count:** `## Quick Start`, `## Keywords`, `## Table of Contents`, `## Changelog`.
-
-**Content section zone:** Content sections must be placed after `## Table of Contents` (or after `## Keywords` if no TOC exists) and before `## Index`. Inserting content sections outside this zone is not permitted.
 
 ## Section Structure
 [up](#table-of-contents)
@@ -117,11 +125,11 @@ If a `###` becomes an autonomous citation or navigation target, promote it to `#
 
 The default language of all documents is **English**.
 
-### Standard names
+### Standard section names
 
-The following names are **fixed in English regardless of the document language**. Tools rely on these exact names to parse and process documents.
+The following section names are **fixed in English regardless of the document language**. Tools rely on these exact names to parse and process documents.
 
-| Element | Fixed name |
+| Section | Fixed name |
 |---------|------------|
 | Quick Start | `## Quick Start` |
 | Keywords | `## Keywords` |
@@ -129,16 +137,16 @@ The following names are **fixed in English regardless of the document language**
 | Index | `## Index` |
 | Changelog | `## Changelog` |
 
-Content inside each of these may be written in any language. The name itself must never be translated.
+Content inside these sections may be written in any language. The section name itself must never be translated.
 
 ### Language exceptions
 
-**Tooling-imposed names:** When external tools or systems impose predefined names in another language (heading titles, field names, configuration keys), those names may be kept as-is. Declare the exception under the document title:
+**Tooling-imposed names:** When external tools or systems impose predefined names in another language (section titles, field names, configuration keys), those names may be kept as-is. Declare the exception under the document title:
 
 ```markdown
 # Document Title
 
-*Language: English. Exception: [name] uses French — imposed by [tool/system name].*
+*Language: English. Exception: [section name] uses French — imposed by [tool/system name].*
 ```
 
 **Document in another language:** If a document is intentionally written in another language, declare it under the title with a short justification:
@@ -185,11 +193,11 @@ Since numbers are not inter-document identifiers, no registry is required.
 
 ### Rule
 
-Every document must begin with `## Quick Start` describing it in 3 to 6 lines.
+Every document must begin with a `## Quick Start` describing it in 3 to 6 lines.
 
 ### Writing guidance
 
-`## Quick Start` is the primary entry point for both humans and tools. It must be descriptive enough to allow relevance assessment without loading the full document.
+The Quick Start is the primary entry point for both humans and tools. It must be descriptive enough to allow relevance assessment without loading the full document.
 
 - A search engine or AI tool uses it to decide whether to load this document at all
 - A human uses it to decide whether to read further
@@ -197,7 +205,7 @@ Every document must begin with `## Quick Start` describing it in 3 to 6 lines.
 
 ### Purpose
 
-`## Quick Start` is an **orientation summary** — it answers the question "does this document concern me?"
+The Quick Start is an **orientation summary** — it answers the question "does this document concern me?"
 
 Two types of readers have different needs:
 
@@ -207,17 +215,17 @@ Two types of readers have different needs:
 
 **Note:** When referring to an AI assistant in a document, do not use a specific name (Claude, Gemini, etc.) — use "AI Assistant".
 
-`## Quick Start` must therefore answer:
+The Quick Start must therefore answer:
 - **Theme** — what this document is about
 - **Scope** — what it covers and what it does not cover
 - **Conditions** — in what situations it is useful to read or load it
 
 Combined with `## Keywords`, it allows a human or an AI to decide in seconds whether the document is relevant.
 
-### What Quick Start is not
+### What the Quick Start is not
 
 - Not an exhaustive summary of the content
-- Not a list of headings (that is the role of the TOC)
+- Not a list of sections (that is the role of the TOC)
 - Not a step-by-step action guide
 - Not a numbered enumeration of content ("X techniques", "Y principles") — these numbers diverge from actual content and provide no useful information to the reader
 
@@ -228,6 +236,7 @@ Immediately after the `#` title and short description, before `## Keywords`.
 ### Format
 
 ```markdown
+
 ## Quick Start
 
 [Theme: what this document is about]
@@ -240,11 +249,12 @@ Immediately after the `#` title and short description, before `## Keywords`.
 
 ### Rule
 
-Every document must have `## Keywords` placed after `## Quick Start`, before `## Table of Contents`.
+Every document must have a `## Keywords` section placed after Quick Start, before the TOC.
 
 ### Format
 
 ```markdown
+
 ## Keywords
 keyword-1, keyword-2, keyword-3
 ```
@@ -260,13 +270,13 @@ keyword-1, keyword-2, keyword-3
 
 ### Rule
 
-Any document with more than 2 content sections must have a TOC.
+Any document with more than 2 content `##` sections must have a TOC.
 
 - The threshold is evaluated on content sections only — `## Quick Start`, `## Keywords`, `## Table of Contents`, and `## Changelog` are excluded from the count
 - `## Index` is included in the count and must appear in the TOC
 - Fixed title: `## Table of Contents`
-- The TOC lists only top-level headings (`##`), not subsections (`###`)
-- Placement: after `## Keywords`, before the first content section
+- The TOC lists only top-level sections (`##`), not subsections (`###`)
+- Placement: after `## Keywords`, before the first content `##`
 
 ### Anchor format
 
@@ -291,16 +301,17 @@ VS Code generates anchors according to these rules:
 
 ### When to use a TOC
 
-A TOC is necessary when the document does not benefit from being read in one sitting — either because it is long, or because the reader needs to navigate to a specific heading.
+A TOC is necessary when the document does not benefit from being read in one sitting — either because it is long, or because the reader needs to navigate to a specific section.
 
 To be valid, a TOC must:
 - Have the fixed title `## Table of Contents`
-- List `##` headings with anchors matching the actual headings exactly
-- Be accompanied by `[up]` return links under each heading
+- List `##` sections with anchors matching the actual headings exactly
+- Be accompanied by `[up]` return links under each section heading
 
 ### TOC format
 
 ```markdown
+
 ## Table of Contents
 
 1. [Section title 1](#anchor-1)
@@ -310,9 +321,10 @@ To be valid, a TOC must:
 
 ### Return link
 
-Each content section carries a return link to `## Table of Contents`, placed **on the line following the heading** (not in the heading — that would break the anchor).
+Each content `##` section carries a return link to the TOC, placed **on the line following the heading** (not in the heading — that would break the anchor).
 
 ```markdown
+
 ## My Section
 [up](#table-of-contents)
 
@@ -324,9 +336,9 @@ Section content...
 
 ### Rule
 
-Every document must have `## Index` before `## Changelog`.
+Every document must have a `## Index` section before `## Changelog`.
 
-`## Index` lists important terms with pointers to their occurrences in the text.
+The index lists important terms with pointers to their occurrences in the text.
 
 ### Inline tags
 
@@ -343,6 +355,7 @@ The notion of <a id="index-term-N">term</a> is important.
 ### Index format
 
 ```markdown
+
 ## Index
 
 | Term | Occurrences |
@@ -362,6 +375,7 @@ This <a id="index-convention-2">convention</a> applies to all documents.
 
 In the index:
 ```markdown
+
 ## Index
 
 | Term | Occurrences |
@@ -374,11 +388,12 @@ In the index:
 
 ### Rule
 
-Any document that evolves over time must have `## Changelog` at the end, after `## Index`.
+Any document that evolves over time must have a `## Changelog` at the end, after `## Index`.
 
 ### Format
 
 ```markdown
+
 ## Changelog
 
 ### Version X.Y - Short title
@@ -414,13 +429,13 @@ see conventions/filesystem.md [index node-1]
 | Form | Syntax | Target |
 |------|--------|--------|
 | Document | `see path/file.md` | The entire document |
-| Heading | `see path/file.md [section Heading Title]` | A `##` heading |
+| Section | `see path/file.md [section Section Title]` | A `##` heading |
 | Keyword | `see path/file.md [keyword term]` | A term in `## Keywords` |
 | Index | `see path/file.md [index term-N]` | A specific `## Index` anchor |
 
 ### Rule
 
-Never cite by number. To reference an idea from another document, cite the document or heading by its title.
+Never cite by number. To reference an idea from another document, cite the document or section by its title.
 
 **Correct ✅**
 ```
@@ -439,13 +454,16 @@ See Rule 3
 
 The strict rules in this convention exist to support tooling built on top of the documentation structure. Three categories of tools depend on it:
 
-**Viewers** — render documents as structured, navigable interfaces. They rely on heading names, order, and heading format to build navigation trees, breadcrumbs, and renderers. Any deviation breaks the rendering.
+**Viewers** — render documents as structured, navigable interfaces. They rely on section names, order, and heading format to build navigation trees, breadcrumbs, and section renderers. Any deviation breaks the rendering.
 
-**AI Assistant tools (md-doc)** — allow AI Assistants to load or modify only the content relevant to the current task, instead of loading the entire document. This reduces token consumption and improves precision. See `conventions/md-doc-usage.md` for invocation and workflow.
+**AI Assistant tools (md-doc)** — allow AI Assistants to load or modify only the sections relevant to the current task, instead of loading the entire document. This reduces token consumption and improves precision. md-doc identifies sections by their exact name — which is why standard section names must never be translated or altered. See `conventions/md-doc-usage.md` for invocation and workflow.
 
-**Automation** — mechanical tasks that should not consume AI tokens: rebuilding a TOC from actual headings, verifying conformance (missing required headings, empty `## Keywords`, duplicate headings), generating skeletons for new documents. These tools are more reliable and cheaper than asking an AI to do the same work.
+**Automation** — mechanical tasks that should not consume AI tokens: rebuilding a TOC from actual headings, verifying conformance (missing sections, empty Keywords, duplicate headings), generating skeletons for new documents. These tools are more reliable and cheaper than asking an AI to do the same work.
 
-All three depend on the same invariants: fixed heading names, canonical order, unique headings, and standard anchor format. Tools identify headings by their exact name — which is why the names of `Quick Start`, `Keywords`, `Table of Contents`, `Index`, and `Changelog` must never be translated or altered.
+All three depend on the same invariants: fixed section names, canonical order, unique headings, and standard anchor format.
+
+## post-mortem
+[up](#table-of-contents)
 
 ## Index
 
@@ -456,32 +474,6 @@ All three depend on the same invariants: fixed heading names, canonical order, u
 | heading | [1](#index-heading-1) |
 
 ## Changelog
-
-### Version 4.3 - Section terminology clarified
-**Date:** 2026-05-31
-**Reason:** "Section" was used ambiguously for both content sections and mandatory headings. Established explicit convention: "section" refers exclusively to content sections; mandatory headings are referred to by name only.
-
-**Changes:**
-- `## Document Structure`: added **Convention** note defining "section" scope
-- `## Document Structure`: "Standard section names are fixed..." replaced by naming convention note
-- `## Language`: `### Standard section names` renamed `### Standard names`; table column `Section` renamed `Element`; "section names" replaced by "names" throughout
-- `## Quick Start Rule`: "section" occurrences replaced by heading name or "heading"
-- `## Keywords Rule`: "section" replaced by heading name
-- `## TOC Rule`: "sections" replaced by "headings" or "content sections" as appropriate
-- `## Index Rule`: "section" replaced by heading name
-- `## Changelog Rule`: "section" replaced by heading name
-- `## Citations`: table row `Section` renamed `Heading`
-- `## Tooling`: "section names" replaced by "heading names"; last sentence clarified to name all five fixed headings
-
-
-### Version 4.2 - Content section zone rule
-**Date:** 2026-05-31
-**Reason:** The zone where content sections may be inserted was implicit. Made explicit to support tooling enforcement.
-
-**Changes:**
-- `## Document Structure`: added **Content section zone** rule
-
-
 ### Version 4.1 - md-doc-usage.md citation added
 **Date:** 2026-05-31
 **Reason:** Added reference to `conventions/md-doc-usage.md` in the Tooling section.
@@ -490,19 +482,19 @@ All three depend on the same invariants: fixed heading names, canonical order, u
 - `## Tooling`: added `See conventions/md-doc-usage.md for invocation and workflow` to the md-doc paragraph
 
 
-### Version 4.0 - Terminology, ordering, naming consistency
+### Version 4.0 - Terminologia, ordine, coerenza dei nomi
 **Date:** 2026-05-31
-**Reason:** "Markdown file" replaced by "document" throughout (except Quick Start definition). Sections reordered to match Document Structure order. TOC renamed to TOC Rule. Database Indexing removed; replaced by Tooling and Citations. File Structure renamed to Document Structure.
+**Reason:** "Markdown file" sostituito da "document" ovunque (eccetto la prima riga del Quick Start). Sezioni riordinate per corrispondere all'ordine di Document Structure. TOC rinominato TOC Rule. Database Indexing rimosso; sostituito da Tooling e Citations. File Structure rinominato Document Structure.
 
 **Changes:**
-- "Markdown file" -> "document" everywhere except Quick Start first line
-- `## File Structure` renamed `## Document Structure`
-- `## TOC` renamed `## TOC Rule`
-- Sections reordered: Document Structure, Section Structure, Language, Numbering, Quick Start Rule, Keywords Rule, TOC Rule, Index Rule, Changelog Rule, Citations, Tooling
-- Tooling moved to last position
-- Citations moved just before Tooling
-- TOC updated to match new order and names
-- Keywords updated
+- "Markdown file" -> "document" ovunque eccetto Quick Start prima riga
+- `## File Structure` rinominato `## Document Structure`
+- `## TOC` rinominato `## TOC Rule`
+- Sezioni riordinate: Document Structure, Section Structure, Language, Numbering, Quick Start Rule, Keywords Rule, TOC Rule, Index Rule, Changelog Rule, Citations, Tooling
+- Tooling spostato in ultima posizione
+- Citations spostato prima di Tooling
+- TOC aggiornato con i nuovi nomi e ordine
+- Keywords aggiornate
 
 
 ### Version 3.4 - Tooling and Citations sections

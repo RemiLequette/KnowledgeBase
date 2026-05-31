@@ -168,6 +168,8 @@ Error codes:
 - `FILE_NOT_FOUND` — file path does not exist
 - `FILE_ALREADY_EXISTS` — file already exists (e.g. on create)
 - `SECTION_NOT_FOUND` — named section absent from document
+- `PROTECTED_SECTION` — named section is mandatory and cannot be deleted
+- `NOT_CONFORMANT` — target file fails conformance check
 - `WRITE_ERROR` — file could not be written
 
 **stderr:** Not used — stdout/stderr cannot be separated by the invoker.
@@ -340,12 +342,37 @@ test('regression: setSection inserts before Index when Changelog is absent', () 
 
 | Command | Args | Effect |
 |---------|------|--------|
-| `read` | `<file> <json-input> <json-output>` | Read selected elements (array of keys) into json-output. `title` is a valid key. Missing sections return `null`. |
-| `dump` | `<file> <json-output>` | Read all elements (title + all sections) into json-output. |
 | `create` | `<file> <json-input>` | Create a new conformant document. Fails if file exists. json-input is `{ title, "Quick Start", ... }`. |
-| `update` | `<file> <json-input>` | Update elements in place. Creates backup. Creates section if absent (inserted before `## Index`). |
+| `update` | `<file> <json-input>` | Update elements in place. Creates backup. Creates section if absent (inserted before `## Index` by default). Supports `__positions` key for insert position control — see below. |
 | `check` | `<file>` | Verify conformance. stdout lines after OK are issues (empty = conformant). |
 | `restore` | `<file>` | Restore file from `.bak` backup and delete the backup. |
+| `delete` | `<file> <section-name>` | Remove a named section from the document. Creates backup. Returns `ERROR:SECTION_NOT_FOUND` if absent. Returns `ERROR:PROTECTED_SECTION` if the section is mandatory (`Quick Start`, `Keywords`, `Index`, `Changelog`). |
+
+**`update` — `__positions` key**
+
+When inserting a new section (absent from the document), the optional `__positions` key controls where it is inserted.
+
+```json
+{
+  "New Section": "content",
+  "__positions": {
+    "New Section": "after:Language"
+  }
+}
+```
+
+Valid position values:
+
+| Value | Effect |
+|-------|--------|
+| `"beginning"` | Before all existing sections |
+| `"before:<section>"` | Immediately before the named section |
+| `"after:<section>"` | Immediately after the named section |
+
+Rules:
+- `__positions` is optional — omitting it preserves current behaviour (insert before `## Index`)
+- Position is ignored when the section already exists (update in place, no move)
+- If the reference section (`before:X` / `after:X`) is absent from the document → `ERROR:SECTION_NOT_FOUND`
 
 ---
 
@@ -368,6 +395,34 @@ test('regression: setSection inserts before Index when Changelog is absent', () 
 ---
 
 ## Changelog
+
+### Version 1.8 - read and dump removed from Catalogue
+**Date:** 2026-05-31
+**Reason:** read and dump commands removed — documentation files are read directly via filesystem MCP in full. md-doc is a write tool only.
+
+**Changes:**
+- Catalogue: `read` and `dump` rows removed
+
+---
+
+### Version 1.7 - update position control documented
+**Date:** 2026-05-31
+**Reason:** New `__positions` key added to `update` command for insert position control.
+
+**Changes:**
+- Catalogue: `update` description updated to mention `__positions`
+- Catalogue: `__positions` block added with format, valid values, and rules
+
+---
+
+### Version 1.6 - delete command added to Catalogue
+**Date:** 2026-05-31
+**Reason:** New `delete` command added to md-doc.js — removes a named section from a document.
+
+**Changes:**
+- Catalogue: `delete` command added with args and error codes
+
+---
 
 ### Version 1.5 - Convention reference comment
 **Date:** 2026-05-31
