@@ -85,24 +85,28 @@ function run(args) {
 // check — reads from fixtures directly (no writes)
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('check: OK on conformant document', () => {
   const r = run(['check', fixture('conformant.md')]);
   assert.strictEqual(r.status, 'OK');
   assert.strictEqual(r.lines.filter(Boolean).length, 0);
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('check: reports missing Index section', () => {
   const r = run(['check', fixture('missing-index.md')]);
   assert.strictEqual(r.status, 'OK');
   assert.ok(r.lines.some(l => l.includes('Index')));
 });
 
+// @convention conventions/documentation.md [section Keywords Rule]
 test('check: reports empty Keywords section', () => {
   const r = run(['check', fixture('empty-keywords.md')]);
   assert.strictEqual(r.status, 'OK');
   assert.ok(r.lines.some(l => l.toLowerCase().includes('keywords')));
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('check: ERROR when file not found', () => {
   const r = run(['check', '/nonexistent/file.md']);
   assert.ok(r.status.startsWith('ERROR:FILE_NOT_FOUND'));
@@ -112,6 +116,7 @@ test('check: ERROR when file not found', () => {
 // dump — reads from fixtures directly (no writes to source)
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Lire un document]
 test('dump: writes JSON output with title and all sections', () => {
   const out = path.join(SANDBOX_DIR, 'dump-output.json');
   const r   = run(['dump', fixture('conformant.md'), out]);
@@ -125,6 +130,7 @@ test('dump: writes JSON output with title and all sections', () => {
   assert.ok('Changelog' in data);
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('dump: ERROR when file not found', () => {
   const out = path.join(SANDBOX_DIR, 'dump-missing.json');
   const r   = run(['dump', '/nonexistent/file.md', out]);
@@ -136,6 +142,7 @@ test('dump: ERROR when file not found', () => {
 // read — reads from fixtures directly (no writes to source)
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Lire un document]
 test('read: returns requested elements', () => {
   const input = sandboxJson(['title', 'Quick Start', 'Keywords'], 'read-input.json');
   const out   = path.join(SANDBOX_DIR, 'read-output.json');
@@ -149,6 +156,7 @@ test('read: returns requested elements', () => {
   assert.ok(data['Keywords'].includes('conformant'));
 });
 
+// @convention conventions/md-doc-usage.md [section Lire un document]
 test('read: returns null for absent section', () => {
   const input = sandboxJson(['Nonexistent'], 'read-absent-input.json');
   const out   = path.join(SANDBOX_DIR, 'read-absent-output.json');
@@ -159,6 +167,7 @@ test('read: returns null for absent section', () => {
   assert.strictEqual(data['Nonexistent'], null);
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('read: ERROR when json-input is not an array', () => {
   const input = sandboxJson({ title: true }, 'read-invalid-input.json');
   const out   = path.join(SANDBOX_DIR, 'read-invalid-output.json');
@@ -171,6 +180,7 @@ test('read: ERROR when json-input is not an array', () => {
 // create — writes new files to sandbox
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('create: creates conformant document with provided content', () => {
   const dest  = path.join(SANDBOX_DIR, 'created.md');
   const input = sandboxJson({
@@ -190,6 +200,7 @@ test('create: creates conformant document with provided content', () => {
   assert.ok(content.includes('## Changelog'));
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('create: ERROR when file already exists', () => {
   const dest  = sandbox('conformant.md', 'create-existing.md');
   const input = sandboxJson({ title: 'New Doc' }, 'create-existing-input.json');
@@ -202,6 +213,7 @@ test('create: ERROR when file already exists', () => {
 // update — copies fixture to sandbox before modifying
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('update: replaces existing section content', () => {
   const f     = sandbox('conformant.md', 'update-replace.md');
   const input = sandboxJson({ 'Quick Start': 'Updated content.' }, 'update-replace-input.json');
@@ -213,6 +225,7 @@ test('update: replaces existing section content', () => {
   assert.ok(content.includes('Updated content.'));
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('update: creates backup before writing', () => {
   const f     = sandbox('conformant.md', 'update-backup.md');
   const bak   = f + '.bak';
@@ -223,6 +236,7 @@ test('update: creates backup before writing', () => {
   cleanup(bak);
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('update: creates new section when absent', () => {
   const f     = sandbox('conformant.md', 'update-new-section.md');
   const input = sandboxJson({ 'Rationale': 'New section via update.' }, 'update-new-section-input.json');
@@ -234,6 +248,7 @@ test('update: creates new section when absent', () => {
   assert.ok(content.includes('New section via update.'));
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('update: new section is inserted before Index', () => {
   const f     = sandbox('conformant.md', 'update-order.md');
   const input = sandboxJson({ 'Rationale': 'content' }, 'update-order-input.json');
@@ -246,6 +261,7 @@ test('update: new section is inserted before Index', () => {
   assert.ok(iRat < iIdx, 'Rationale should appear before Index');
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('update: ERROR when file not found', () => {
   const input = sandboxJson({ 'Quick Start': 'x' }, 'update-missing-input.json');
   const r     = run(['update', '/nonexistent/file.md', input]);
@@ -257,6 +273,7 @@ test('update: ERROR when file not found', () => {
 // restore — copies fixture to sandbox, creates manual backup, then restores
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('restore: restores file from backup and removes backup', () => {
   const f   = sandbox('conformant.md', 'restore-target.md');
   const bak = f + '.bak';
@@ -269,6 +286,7 @@ test('restore: restores file from backup and removes backup', () => {
   assert.ok(!fs.existsSync(bak), 'backup should be removed after restore');
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('restore: ERROR when no backup exists', () => {
   const f = sandbox('conformant.md', 'restore-no-bak.md');
   const r = run(['restore', f]);
@@ -276,6 +294,7 @@ test('restore: ERROR when no backup exists', () => {
   assert.ok(r.status.startsWith('ERROR:FILE_NOT_FOUND'));
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('update: empty title value leaves existing title unchanged', () => {
   const f     = sandbox('conformant.md', 'update-empty-title.md');
   const input = sandboxJson({ title: '' }, 'update-empty-title-input.json');
@@ -291,36 +310,43 @@ test('update: empty title value leaves existing title unchanged', () => {
 // Missing args
 // ---------------------------------------------------------------------------
 
+// @convention conventions/tools.md [section Standard Interface]
 test('missing command: ERROR', () => {
   const r = run([]);
   assert.ok(r.status.startsWith('ERROR:'));
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('read missing args: ERROR', () => {
   const r = run(['read', '/some/file.md']);
   assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('dump missing args: ERROR', () => {
   const r = run(['dump', '/some/file.md']);
   assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('create missing args: ERROR', () => {
   const r = run(['create', '/some/file.md']);
   assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('update missing args: ERROR', () => {
   const r = run(['update', '/some/file.md']);
   assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('restore missing args: ERROR', () => {
   const r = run(['restore']);
   assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('unknown command: ERROR', () => {
   const r = run(['unknown']);
   assert.ok(r.status.startsWith('ERROR:'));
@@ -330,6 +356,7 @@ test('unknown command: ERROR', () => {
 // check — required sections
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('check: reports missing Quick Start section', () => {
   const f = path.join(SANDBOX_DIR, 'check-missing-qs.md');
   fs.writeFileSync(f, '# Title\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'utf-8');
@@ -339,6 +366,7 @@ test('check: reports missing Quick Start section', () => {
   assert.ok(r.lines.some(l => l.includes('Quick Start')));
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('check: reports missing Changelog section', () => {
   const f = path.join(SANDBOX_DIR, 'check-missing-changelog.md');
   fs.writeFileSync(f, '# Title\n## Quick Start\nok\n## Keywords\nfoo\n## Index\n\n', 'utf-8');
@@ -352,6 +380,7 @@ test('check: reports missing Changelog section', () => {
 // read — edge cases
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Lire un document]
 test('read: empty input array returns empty object', () => {
   const input = sandboxJson([], 'read-empty-input.json');
   const out   = path.join(SANDBOX_DIR, 'read-empty-output.json');
@@ -367,6 +396,7 @@ test('read: empty input array returns empty object', () => {
 // create — edge cases
 // ---------------------------------------------------------------------------
 
+// @convention conventions/tools.md [section Standard Interface]
 test('create: ERROR when input is an array instead of object', () => {
   const dest  = path.join(SANDBOX_DIR, 'create-array-input.md');
   const input = sandboxJson(['title', 'foo'], 'create-array-input.json');
@@ -375,18 +405,16 @@ test('create: ERROR when input is an array instead of object', () => {
   assert.ok(r.status.startsWith('ERROR:INVALID_INPUT'));
 });
 
-test('create: document created without title field has empty H1', () => {
+// @convention conventions/tools.md [section Standard Interface]
+test('create: ERROR when title is absent', () => {
   const dest  = path.join(SANDBOX_DIR, 'create-no-title.md');
   const input = sandboxJson({ 'Quick Start': 'No title doc.', Keywords: 'foo' }, 'create-no-title-input.json');
   const r     = run(['create', dest, input]);
-  cleanup(input);
-  assert.strictEqual(r.status, 'OK');
-  const content = fs.readFileSync(dest, 'utf-8');
-  cleanup(dest);
-  assert.ok(content.includes('## Index'));
-  assert.ok(content.includes('## Changelog'));
+  cleanup(input, dest);
+  assert.ok(r.status.startsWith('ERROR:'), 'create without title should return ERROR');
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('create: canonical section order — Quick Start before Keywords', () => {
   const dest  = path.join(SANDBOX_DIR, 'create-order.md');
   const input = sandboxJson({
@@ -407,6 +435,7 @@ test('create: canonical section order — Quick Start before Keywords', () => {
 // update — edge cases
 // ---------------------------------------------------------------------------
 
+// @convention conventions/tools.md [section Standard Interface]
 test('update: ERROR when input is an array instead of object', () => {
   const f     = sandbox('conformant.md', 'update-array-input.md');
   const input = sandboxJson(['Quick Start'], 'update-array-input.json');
@@ -415,6 +444,7 @@ test('update: ERROR when input is an array instead of object', () => {
   assert.ok(r.status.startsWith('ERROR:INVALID_INPUT'));
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('update: updates title when title key is provided', () => {
   const f     = sandbox('conformant.md', 'update-title.md');
   const input = sandboxJson({ title: 'Updated Title' }, 'update-title-input.json');
@@ -430,6 +460,7 @@ test('update: updates title when title key is provided', () => {
 // round-trip: dump -> compare -> update -> dump -> compare
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('round-trip: dump sections match direct filesystem read, update preserves content', () => {
   // Step 1 — dump the fixture into JSON
   const src     = fixture('conformant.md');
@@ -627,6 +658,7 @@ function updateSection(filePath, sectionName, content) {
 // mandatory sections — replace content
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('mutation: replace Quick Start content', () => {
   const f = mutationTarget();
   try {
@@ -639,6 +671,7 @@ test('mutation: replace Quick Start content', () => {
   }
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('mutation: replace Keywords content', () => {
   const f = mutationTarget();
   try {
@@ -651,6 +684,7 @@ test('mutation: replace Keywords content', () => {
   }
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('mutation: empty Index content leaves section present', () => {
   const f = mutationTarget();
   try {
@@ -662,6 +696,7 @@ test('mutation: empty Index content leaves section present', () => {
   }
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('mutation: prepend entry to Changelog', () => {
   const f = mutationTarget();
   try {
@@ -681,6 +716,7 @@ test('mutation: prepend entry to Changelog', () => {
 // non-mandatory sections — add at beginning and middle
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('mutation: add section at beginning — appears before Document Structure', () => {
   const f = mutationTarget();
   try {
@@ -699,6 +735,7 @@ test('mutation: add section at beginning — appears before Document Structure',
   }
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('mutation: add section in middle — appears between Language and Numbering', () => {
   const f = mutationTarget();
   try {
@@ -723,6 +760,7 @@ test('mutation: add section in middle — appears between Language and Numbering
 // delete section (spec: md-doc delete command — not yet implemented)
 // ---------------------------------------------------------------------------
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('mutation: delete non-mandatory section removes it from the document', () => {
   const f = mutationTarget();
   try {
@@ -739,6 +777,7 @@ test('mutation: delete non-mandatory section removes it from the document', () =
   }
 });
 
+// @convention conventions/md-doc-usage.md [section Ecrire un document]
 test('mutation: delete mandatory section returns ERROR', () => {
   const f = mutationTarget();
   try {
@@ -755,6 +794,7 @@ test('mutation: delete mandatory section returns ERROR', () => {
 // non-conformant file — update/read/dump must return ERROR:NOT_CONFORMANT
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('mutation: update on non-conformant file returns ERROR:NOT_CONFORMANT', () => {
   const f = path.join(KB_TMP, `md-doc-mutation-nonconformant-${Date.now()}.md`);
   fs.writeFileSync(f, '# Title\n## Quick Start\nok\n', 'utf-8'); // missing Keywords, Index, Changelog
@@ -766,6 +806,7 @@ test('mutation: update on non-conformant file returns ERROR:NOT_CONFORMANT', () 
   }
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('mutation: read on non-conformant file returns ERROR:NOT_CONFORMANT', () => {
   const f = path.join(KB_TMP, `md-doc-mutation-nonconformant-read-${Date.now()}.md`);
   fs.writeFileSync(f, '# Title\n## Quick Start\nok\n', 'utf-8');
@@ -780,6 +821,7 @@ test('mutation: read on non-conformant file returns ERROR:NOT_CONFORMANT', () =>
   }
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('mutation: dump on non-conformant file returns ERROR:NOT_CONFORMANT', () => {
   const f      = path.join(KB_TMP, `md-doc-mutation-nonconformant-dump-${Date.now()}.md`);
   const outPath = path.join(KB_TMP, `md-doc-mutation-nonconformant-dump-out-${Date.now()}.json`);

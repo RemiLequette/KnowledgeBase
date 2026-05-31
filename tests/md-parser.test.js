@@ -54,16 +54,19 @@ const EMPTY_DOC = '# Empty\n\n## Quick Start\n\n## Keywords\n\n## Index\n\n## Ch
 // parseText / getTitle
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('parseText parses H1 title', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.strictEqual(md.getTitle(doc), 'My Title');
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('getTitle returns null when no H1', () => {
   const doc = md.parseText('## Quick Start\nno title here', 'test.md');
   assert.strictEqual(md.getTitle(doc), null);
 });
 
+// @convention conventions/tools.md [section Standard Interface]
 test('parseText requires filePath argument', () => {
   assert.throws(() => md.parseText('# Title'), /filePath/);
 });
@@ -72,22 +75,26 @@ test('parseText requires filePath argument', () => {
 // getSection / hasSection
 // ---------------------------------------------------------------------------
 
+// @convention none — purely technical accessor behaviour
 test('getSection returns section content', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   const qs  = md.getSection(doc, 'Quick Start');
   assert.ok(qs.includes('quick start'));
 });
 
+// @convention none — purely technical accessor behaviour
 test('getSection returns null when section absent', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.strictEqual(md.getSection(doc, 'Nonexistent'), null);
 });
 
+// @convention none — purely technical accessor behaviour
 test('hasSection returns true when section present', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.strictEqual(md.hasSection(doc, 'Keywords'), true);
 });
 
+// @convention none — purely technical accessor behaviour
 test('hasSection returns false when section absent', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.strictEqual(md.hasSection(doc, 'Rationale'), false);
@@ -97,12 +104,14 @@ test('hasSection returns false when section absent', () => {
 // getKeywords
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Keywords Rule]
 test('getKeywords returns array of trimmed strings', () => {
   const doc      = md.parseText(SIMPLE_DOC, 'test.md');
   const keywords = md.getKeywords(doc);
   assert.deepStrictEqual(keywords, ['foo', 'bar', 'baz']);
 });
 
+// @convention conventions/documentation.md [section Keywords Rule]
 test('getKeywords returns empty array when Keywords section absent', () => {
   const doc = md.parseText('# Title\n## Index\n', 'test.md');
   assert.deepStrictEqual(md.getKeywords(doc), []);
@@ -112,6 +121,7 @@ test('getKeywords returns empty array when Keywords section absent', () => {
 // getSections
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('getSections returns sections in document order', () => {
   const doc   = md.parseText(SIMPLE_DOC, 'test.md');
   const names = md.getSections(doc).map(s => s.name);
@@ -122,11 +132,13 @@ test('getSections returns sections in document order', () => {
 // getIssues / isConformant
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('isConformant returns true for fully conformant doc', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.strictEqual(md.isConformant(doc), true);
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('getIssues reports missing required sections', () => {
   const doc    = md.parseText('# Title\n## Quick Start\nok\n## Keywords\nfoo\n', 'test.md');
   const issues = md.getIssues(doc);
@@ -134,6 +146,7 @@ test('getIssues reports missing required sections', () => {
   assert.ok(issues.some(i => i.includes('Changelog')));
 });
 
+// @convention conventions/documentation.md [section Keywords Rule]
 test('getIssues reports empty Keywords section', () => {
   const doc    = md.parseText('# Title\n## Quick Start\nok\n## Keywords\n\n## Index\n\n## Changelog\n', 'test.md');
   const issues = md.getIssues(doc);
@@ -144,17 +157,20 @@ test('getIssues reports empty Keywords section', () => {
 // setTitle
 // ---------------------------------------------------------------------------
 
+// @convention none — purely technical mutation behaviour
 test('setTitle updates the document title', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   md.setTitle(doc, 'New Title');
   assert.strictEqual(md.getTitle(doc), 'New Title');
 });
 
+// @convention none — purely technical mutation behaviour
 test('setTitle throws on empty string', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.throws(() => md.setTitle(doc, ''), /non-empty/);
 });
 
+// @convention none — purely technical mutation behaviour
 test('setTitle throws on non-string', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.throws(() => md.setTitle(doc, null), /non-empty/);
@@ -164,18 +180,21 @@ test('setTitle throws on non-string', () => {
 // setSection
 // ---------------------------------------------------------------------------
 
+// @convention none — purely technical mutation behaviour
 test('setSection replaces existing section content', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   md.setSection(doc, 'Quick Start', 'Updated content.');
   assert.strictEqual(md.getSection(doc, 'Quick Start'), 'Updated content.');
 });
 
+// @convention none — purely technical mutation behaviour
 test('setSection creates new section when absent', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   md.setSection(doc, 'Rationale', 'New section content.');
   assert.strictEqual(md.getSection(doc, 'Rationale'), 'New section content.');
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('setSection inserts new section before Index', () => {
   const doc   = md.parseText(SIMPLE_DOC, 'test.md');
   md.setSection(doc, 'Rationale', 'content');
@@ -185,6 +204,7 @@ test('setSection inserts new section before Index', () => {
   assert.ok(iRat < iIdx, 'Rationale should appear before Index');
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('regression: setSection inserts before Changelog when Index is absent', () => {
   const doc = md.parseText('# Title\n## Quick Start\nok\n## Keywords\nfoo\n## Changelog\n', 'test.md');
   md.setSection(doc, 'NewSection', 'content');
@@ -194,6 +214,7 @@ test('regression: setSection inserts before Changelog when Index is absent', () 
   assert.ok(iNew < iCl, 'NewSection should appear before Changelog');
 });
 
+// @convention none — purely technical mutation behaviour
 test('setSection throws on empty name', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.throws(() => md.setSection(doc, '', 'content'), /non-empty/);
@@ -203,12 +224,14 @@ test('setSection throws on empty name', () => {
 // toMarkdown
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('toMarkdown includes H1 title', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   const out = md.toMarkdown(doc);
   assert.ok(out.startsWith('# My Title'));
 });
 
+// @convention conventions/documentation.md [section Document Structure]
 test('toMarkdown includes all section headers', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   const out = md.toMarkdown(doc);
@@ -218,6 +241,7 @@ test('toMarkdown includes all section headers', () => {
   assert.ok(out.includes('## Changelog'));
 });
 
+// @convention none — purely technical reconstruction behaviour
 test('toMarkdown round-trips section content', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   md.setSection(doc, 'Quick Start', 'Round-trip content.');
@@ -229,12 +253,14 @@ test('toMarkdown round-trips section content', () => {
 // parseText — edge cases
 // ---------------------------------------------------------------------------
 
+// @convention none — edge case, no specific convention applies
 test('parseText: document with title only has no sections', () => {
   const doc = md.parseText('# Title Only\n', 'test.md');
   assert.strictEqual(md.getTitle(doc), 'Title Only');
   assert.deepStrictEqual(md.getSections(doc), []);
 });
 
+// @convention none — edge case, no specific convention applies
 test('parseText: empty string produces null title and no sections', () => {
   const doc = md.parseText('', 'test.md');
   assert.strictEqual(md.getTitle(doc), null);
@@ -245,6 +271,7 @@ test('parseText: empty string produces null title and no sections', () => {
 // getFilePath
 // ---------------------------------------------------------------------------
 
+// @convention none — purely technical accessor behaviour
 test('getFilePath returns the filePath passed to parseText', () => {
   const doc = md.parseText(SIMPLE_DOC, 'my/path/file.md');
   assert.strictEqual(md.getFilePath(doc), 'my/path/file.md');
@@ -254,11 +281,13 @@ test('getFilePath returns the filePath passed to parseText', () => {
 // getSection — present but empty
 // ---------------------------------------------------------------------------
 
+// @convention none — purely technical accessor behaviour
 test('getSection: present section with no content returns empty string', () => {
   const doc = md.parseText('# Title\n## Quick Start\n\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'test.md');
   assert.strictEqual(md.getSection(doc, 'Quick Start'), '');
 });
 
+// @convention none — purely technical accessor behaviour
 test('getSection: absent section returns null, not empty string', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   assert.strictEqual(md.getSection(doc, 'Absent'), null);
@@ -268,6 +297,7 @@ test('getSection: absent section returns null, not empty string', () => {
 // getKeywords — whitespace tolerance
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Keywords Rule]
 test('getKeywords: trims whitespace around each keyword', () => {
   const doc = md.parseText('# T\n## Quick Start\nok\n## Keywords\n  foo ,  bar ,baz  \n## Index\n\n## Changelog\n', 'test.md');
   assert.deepStrictEqual(md.getKeywords(doc), ['foo', 'bar', 'baz']);
@@ -277,6 +307,7 @@ test('getKeywords: trims whitespace around each keyword', () => {
 // getSections — empty document
 // ---------------------------------------------------------------------------
 
+// @convention none — edge case, no specific convention applies
 test('getSections: returns empty array when document has no sections', () => {
   const doc = md.parseText('# Title Only\n', 'test.md');
   assert.deepStrictEqual(md.getSections(doc), []);
@@ -286,6 +317,7 @@ test('getSections: returns empty array when document has no sections', () => {
 // getIssues — all required sections missing
 // ---------------------------------------------------------------------------
 
+// @convention conventions/documentation.md [section Document Structure]
 test('getIssues: reports all four required sections when document has none', () => {
   const doc    = md.parseText('# Title\n', 'test.md');
   const issues = md.getIssues(doc);
@@ -295,18 +327,21 @@ test('getIssues: reports all four required sections when document has none', () 
   assert.ok(issues.some(i => i.includes('Changelog')));
 });
 
+// @convention conventions/documentation.md [section Quick Start Rule]
 test('getIssues: missing Quick Start is reported', () => {
   const doc    = md.parseText('# Title\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'test.md');
   const issues = md.getIssues(doc);
   assert.ok(issues.some(i => i.includes('Quick Start')));
 });
 
+// @convention conventions/documentation.md [section Changelog Rule]
 test('getIssues: missing Changelog is reported', () => {
   const doc    = md.parseText('# Title\n## Quick Start\nok\n## Keywords\nfoo\n## Index\n\n', 'test.md');
   const issues = md.getIssues(doc);
   assert.ok(issues.some(i => i.includes('Changelog')));
 });
 
+// @convention none — edge case, title is not checked by getIssues
 test('getIssues: absent title does not produce an issue', () => {
   const doc    = md.parseText('## Quick Start\nok\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'test.md');
   const issues = md.getIssues(doc);
@@ -317,6 +352,7 @@ test('getIssues: absent title does not produce an issue', () => {
 // setSection — insert with no anchor section
 // ---------------------------------------------------------------------------
 
+// @convention none — edge case, no specific convention applies
 test('setSection: inserts at end when neither Index nor Changelog exist', () => {
   const doc = md.parseText('# Title\n## Quick Start\nok\n## Keywords\nfoo\n', 'test.md');
   md.setSection(doc, 'NewSection', 'content');
@@ -329,12 +365,13 @@ test('setSection: inserts at end when neither Index nor Changelog exist', () => 
 // toMarkdown — edge cases
 // ---------------------------------------------------------------------------
 
-test('toMarkdown: document without title has no H1 line', () => {
+// @convention conventions/documentation.md [section Document Structure]
+test('toMarkdown: throws when document has no title', () => {
   const doc = md.parseText('## Quick Start\nok\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'test.md');
-  const out = md.toMarkdown(doc);
-  assert.ok(!out.startsWith('#'));
+  assert.throws(() => md.toMarkdown(doc), /title/);
 });
 
+// @convention none — purely technical reconstruction behaviour
 test('toMarkdown: empty section produces heading with no content lines', () => {
   const doc = md.parseText(SIMPLE_DOC, 'test.md');
   md.setSection(doc, 'Quick Start', '');

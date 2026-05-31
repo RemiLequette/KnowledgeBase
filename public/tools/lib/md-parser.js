@@ -283,12 +283,12 @@ function setSection(doc, name, content) {
  * @returns {string}
  */
 function toMarkdown(doc) {
+  if (!doc.title) throw new Error('toMarkdown: document has no title');
+
   const parts = [];
 
-  if (doc.title) {
-    parts.push(`# ${doc.title}`);
-    parts.push('');
-  }
+  parts.push(`# ${doc.title}`);
+  parts.push('');
 
   for (const s of doc.sections) {
     parts.push(`## ${s.name}`);
@@ -330,6 +330,11 @@ module.exports = {
 // ---------------------------------------------------------------------------
 // Changelog
 // ---------------------------------------------------------------------------
+//
+// Version 1.2 - toMarkdown throws on missing title
+// Date: 2026-05-31
+// toMarkdown now throws an Error if doc.title is absent, enforcing the
+// documentation convention that requires a mandatory H1 title.
 //
 // Version 1.1 - Mutations
 // Date: 2026-05-30

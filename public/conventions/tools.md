@@ -302,6 +302,24 @@ process.exit(failed > 0 ? 1 : 0);
   - Good: `getSection returns null when section is absent`
   - Bad: `test getSection null`
 
+### Convention reference
+
+Each test must carry a `@convention` comment on the line immediately before the `test(` call.
+
+When the test enforces a rule from a convention file:
+```js
+// @convention conventions/documentation.md [section Quick Start Rule]
+test('toMarkdown: throws when document has no title', () => {
+```
+
+When no convention applies (edge case, purely technical behaviour):
+```js
+// @convention none — edge case, no specific convention applies
+test('parseText: empty string produces null title and no sections', () => {
+```
+
+The comment is machine-extractable — it enables auditing which tests cover which conventions.
+
 ### Regression tests
 
 When a bug is fixed, add a test named after the bug:
@@ -350,6 +368,13 @@ test('regression: setSection inserts before Index when Changelog is absent', () 
 ---
 
 ## Changelog
+
+### Version 1.5 - Convention reference comment
+**Date:** 2026-05-31
+**Reason:** Added `### Convention reference` subsection in `## Tests` — each test must carry a `@convention` comment referencing the convention it enforces, or `@convention none` for purely technical tests.
+
+**Changes:**
+- `### Convention reference` added under `## Tests`
 
 ### Version 1.4 - Clarifications post-review
 **Date:** 2026-05-30

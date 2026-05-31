@@ -10,6 +10,5 @@
 
 - [ ] Review and update `guides/guide-maintenance.md` — cleanup French, references to Claude.md and old BP numbers
 - [ ] Translate `conventions/md-doc-usage.md` to English — section names and content are in French, violating the documentation convention. Also clarify `dump` command description (structured JSON export, not raw output).
-- [ ] Move `public/tools/tests/` to `tools/tests/` at KB root — tests are KB maintenance artifacts, not public resources.
 
 ## Basse priorite
