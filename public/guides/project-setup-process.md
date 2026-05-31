@@ -9,25 +9,33 @@ For the canonical project structure, see: `conventions/project-structure.md`
 
 ## Table of Contents
 
-- [For AI Assistant](#for-ai-assistant)
-  - [Rule 1: Session Dedication](#rule-1-session-dedication)
-  - [Rule 2: Follow Steps Sequentially](#rule-2-follow-steps-sequentially)
-  - [Rule 3: Generate Templates](#rule-3-generate-templates)
-  - [Rule 4: Propose Audit at End](#rule-4-propose-audit-at-end)
-- [Quick Start](#quick-start)
-- [Step 1: Create Project Folder](#step-1-create-project-folder)
-- [Step 2: Configure the Bootstrap File](#step-2-configure-the-bootstrap-file)
-- [Step 3: Create PROJECT.md](#step-3-create-projectmd)
-- [Step 4: Create README.md](#step-4-create-readmemd)
-- [Step 5: Identify Relevant Conventions](#step-5-identify-relevant-conventions)
-- [Step 6: Test the Session](#step-6-test-the-session)
-- [Checklist](#checklist)
-- [Examples](#examples)
-- [Troubleshooting](#troubleshooting)
-- [Related Best Practices](#related-best-practices)
-- [Index](#index)
-- [Changelog](#changelog)
-- [Keywords](#keywords)
+- [Project Setup Process](#project-setup-process)
+  - [Table of Contents](#table-of-contents)
+  - [For AI Assistant](#for-ai-assistant)
+    - [Rule 1: Session Dedication](#rule-1-session-dedication)
+    - [Rule 2: Follow Steps Sequentially](#rule-2-follow-steps-sequentially)
+    - [Rule 3: Generate Templates](#rule-3-generate-templates)
+    - [Rule 4: Propose Audit at End (Separate Session)](#rule-4-propose-audit-at-end-separate-session)
+  - [Quick Start](#quick-start)
+  - [Step 1: Create Project Folder](#step-1-create-project-folder)
+  - [Step 2: Configure the Bootstrap File](#step-2-configure-the-bootstrap-file)
+    - [Template — Claude (Claude.ai project instructions)](#template--claude-claudeai-project-instructions)
+  - [Step 3: Create PROJECT.md](#step-3-create-projectmd)
+  - [Step 4: Create README.md](#step-4-create-readmemd)
+  - [Step 5: Identify Relevant Conventions](#step-5-identify-relevant-conventions)
+  - [Step 6: Test the Session](#step-6-test-the-session)
+  - [Checklist](#checklist)
+  - [Examples](#examples)
+    - [Minimal Project](#minimal-project)
+    - [Project with AI Agent Setup overrides](#project-with-ai-agent-setup-overrides)
+  - [Troubleshooting](#troubleshooting)
+  - [Related Best Practices](#related-best-practices)
+  - [Index](#index)
+  - [Changelog](#changelog)
+    - [Version 1.2 — Suppression Claude.md + generalisation AI-assisted](#version-12--suppression-claudemd--generalisation-ai-assisted)
+    - [Version 1.1 — Suppression session-startup](#version-11--suppression-session-startup)
+    - [Version 1.0 — Initial Release](#version-10--initial-release)
+  - [Keywords](#keywords)
 
 ---
 
@@ -137,33 +145,31 @@ Generate the text below (substituting actual values) and copy-paste it into the 
 
 ```
 My name is [USER-NAME].
-You are Claude, my AI Assistant.
+You are [AI-NAME], my AI Assistant helping me with my project
 
-Project folder: [ABSOLUTE-PATH-TO-PROJECT-ROOT]
-Knowledge Base folder: [ABSOLUTE-PATH-TO-KNOWLEDGEBASE-PUBLIC]
+Read [FULL-PATH-KNOWLEDGE-BASE-PUBLIC]\public\INDEX.md
+It gives you access to important skills to answer my requests
 
-Use the `filesystem` MCP tool to read INDEX.md from the Knowledge Base folder.
-Then use the `filesystem` MCP tool to read PROJECT.md at the root of the project folder.
+Read [FULL-PATH-PROJECT]\PROJECT.md
+It gives you important information about my project
 
-WHY: filesystem MCP reads from your local machine, not Claude's Linux container.
-INDEX.md bootstraps the session and loads shared conventions.
-PROJECT.md loads project metadata and AI Agent Setup.
+Please greet me with my project name and your name and role
+
 ```
 
 **Example (filled in):**
 ```
-My name is Remi Lequette.
-You are Claude, my AI Assistant.
+My name is Remi.
+You are Claude, my AI Assistant helping me with my project
 
-Project folder: C:\Users\RemiLequette\Development\projects\my-data-analysis
-Knowledge Base folder: C:\Users\RemiLequette\Development\projects\knowledgebase\public
+Read C:\Users\RemiLequette\Development\projects\knowledgebase\public\INDEX.md
+It gives you access to important skills to answer my requests
 
-Use the `filesystem` MCP tool to read INDEX.md from the Knowledge Base folder.
-Then use the `filesystem` MCP tool to read PROJECT.md at the root of the project folder.
+Read C:\Users\RemiLequette\Development\projects\knowledgebase\PROJECT.md
+It gives you important information about my project
 
-WHY: filesystem MCP reads from your local machine, not Claude's Linux container.
-INDEX.md bootstraps the session and loads shared conventions.
-PROJECT.md loads project metadata and AI Agent Setup.
+Please greet me with my project name and your name and role
+
 ```
 
 See `conventions/project-structure.md` — Bootstrap Files section — for the full specification.

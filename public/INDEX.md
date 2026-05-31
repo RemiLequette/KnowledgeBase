@@ -2,23 +2,9 @@
 
 ## Quick Start
 
-Entry point for every Claude session in any project.
+Entry point for every AI assisted session in any project.
 Read this file first, then load only the conventions relevant to the current task.
 Does not contain the conventions themselves — navigation map only.
-
----
-
-## Session Bootstrap
-
-Execute these steps at the start of every session, before considering any user input.
-
-1. **Greet the user** — introduce yourself with the name given to you, remind the project folder and knowledge base folder.
-2. **Load the knowledge base** — state "Loading knowledge base...", then read this file (`INDEX.md`). Apply the Decision Layer below based on the current task.
-3. **Load the project context** — state "Loading project context...", then read `PROJECT.md` at the root of the project folder.
-4. **Load documentation conventions** — read `conventions/documentation.md`. These apply to every session.
-5. **State the project** — state the project name and its purpose. If the project is unknown, report it clearly instead.
-
-**If no `PROJECT.md` exists at the project root:** report it as a serious issue, contact Remi Lequette, and stop.
 
 ---
 

@@ -15,11 +15,12 @@ md-doc, tool, write, documentation, workflow, tmp, conformance, audit, create, u
 ## Table of Contents
 
 1. [Principle](#principle)
-2. [Prerequisites](#prerequisites)
-3. [Writing a Document](#writing-a-document)
-4. [Temporary JSON Files](#temporary-json-files)
-5. [Conformance](#conformance)
-6. [Index](#index)
+2. [Rationale](#rationale)
+3. [Prerequisites](#prerequisites)
+4. [Writing a Document](#writing-a-document)
+5. [Temporary JSON Files](#temporary-json-files)
+6. [Conformance](#conformance)
+7. [Index](#index)
 
 ## Principle
 [up](#table-of-contents)
@@ -29,6 +30,22 @@ md-doc, tool, write, documentation, workflow, tmp, conformance, audit, create, u
 **Write** via `md-doc.js` — only the changed sections are sent as a JSON diff. This avoids reconstructing and emitting the entire file on every modification.
 
 md-doc is a **write tool**, not a read tool.
+
+## Rationale
+[up](#table-of-contents)
+md-doc is a **reliability and conformance tool**, not a performance tool.
+
+**What md-doc provides:**
+- **Surgical modification** — only the target section is rewritten; the rest of the file is untouched
+- **Automatic TOC rebuild** — after every write, the TOC is rebuilt mechanically from actual headings; no risk of anchor errors or missed entries
+- **Automatic backup** — a `.bak` file is created before every write
+- **Built-in conformance** — `check` verifies the document structure after every operation
+
+**What md-doc does not optimize:**
+- **Speed** — each invocation spawns a new Node.js process (~140 ms overhead vs ~1 ms for a direct `fs.writeFileSync`). The overhead is structural, not algorithmic.
+- **Tokens** — both md-doc and a direct filesystem write are tool calls; the difference in payload size has no meaningful impact on token consumption.
+
+Use md-doc when correctness matters more than raw speed — which is the case for every documentation file in this knowledge base.
 
 ## Prerequisites
 [up](#table-of-contents)
@@ -99,6 +116,8 @@ Returns `ERROR:PROTECTED_SECTION` if the section is mandatory (`Quick Start`, `K
 
 **Rule:** Always write the JSON input to a tmp file via `filesystem` MCP — never pass content inline via `node -e`. Inline `-e` arguments are subject to shell parsing rules and will silently fail or error on content containing backticks, quotes, or special characters.
 
+**Rule:** Never include `[up](#table-of-contents)` in section content passed to `create` or `update` — md-doc injects it automatically after every section heading. Including it in the content produces a duplicate.
+
 **Rule:** always run `check` after any write to verify the result is conformant.
 
 **Rule:** When a transformation is total (renaming multiple sections, full translation, structural reorganization), use `filesystem:write_file` directly on the file — chaining `delete`/`update` with `__positions` is error-prone and risks misplacing mandatory sections.
@@ -147,7 +166,6 @@ Output after `OK`: list of issues (empty = conformant). Issues include missing r
 **Changes:**
 - `## Writing a Document`: added rule recommending `filesystem:write_file` for total rewrites
 
----
 
 ### Version 3.1 - Section definition and position clarification
 **Date:** 2026-05-31
@@ -157,7 +175,6 @@ Output after `OK`: list of issues (empty = conformant). Issues include missing r
 - `## Writing a Document`: added `### Section definition` note
 - `## Writing a Document`: `beginning` and `before/after` position rules clarified
 
----
 
 ### Version 3.0 - Read removed, write-only tool
 **Date:** 2026-05-31
@@ -175,7 +192,6 @@ Output after `OK`: list of issues (empty = conformant). Issues include missing r
 - Conformance — check rule extended to delete
 - Tool path corrected: knowledgebase/public/tools/md-doc.js
 
----
 
 ### Version 2.2 - update position control documented
 **Date:** 2026-05-31
@@ -184,7 +200,6 @@ Output after `OK`: list of issues (empty = conformant). Issues include missing r
 **Changes:**
 - Writing a Document: `update` description expanded with `__positions` format, valid values, and error
 
----
 
 ### Version 2.1 - delete command documented
 **Date:** 2026-05-31
@@ -193,7 +208,6 @@ Output after `OK`: list of issues (empty = conformant). Issues include missing r
 **Changes:**
 - Writing a Document: `delete` command added with signature, error codes, and rule
 
----
 
 ### Version 2.0 - Full translation to English
 **Date:** 2026-05-31
@@ -202,7 +216,6 @@ Output after `OK`: list of issues (empty = conformant). Issues include missing r
 **Changes:**
 - Full content translated to English, section names normalized, TOC added, return links added
 
----
 
 ### Version 1.0 - Creation
 **Date:** 2026-05-30
