@@ -465,7 +465,7 @@ The strict rules in this convention exist to support tooling built on top of the
 
 **Viewers** — render documents as structured, navigable interfaces. They rely on section names, order, and heading format to build navigation trees, breadcrumbs, and section renderers. Any deviation breaks the rendering.
 
-**AI Assistant tools (md-doc)** — allow AI Assistants to load or modify only the sections relevant to the current task, instead of loading the entire document. This reduces token consumption and improves precision. md-doc identifies sections by their exact name — which is why standard section names must never be translated or altered.
+**AI Assistant tools (md-doc)** — allow AI Assistants to load or modify only the sections relevant to the current task, instead of loading the entire document. This reduces token consumption and improves precision. md-doc identifies sections by their exact name — which is why standard section names must never be translated or altered. See `conventions/md-doc-usage.md` for invocation and workflow.
 
 **Automation** — mechanical tasks that should not consume AI tokens: rebuilding a TOC from actual headings, verifying conformance (missing sections, empty Keywords, duplicate headings), generating skeletons for new documents. These tools are more reliable and cheaper than asking an AI to do the same work.
 
@@ -484,6 +484,15 @@ All three depend on the same invariants: fixed section names, canonical order, u
 ---
 
 ## Changelog
+
+### Version 4.1 - md-doc-usage.md citation added
+**Date:** 2026-05-31
+**Reason:** Added reference to `conventions/md-doc-usage.md` in the Tooling section.
+
+**Changes:**
+- `## Tooling`: added `See conventions/md-doc-usage.md for invocation and workflow` to the md-doc paragraph
+
+---
 
 ### Version 4.0 - Terminology, ordering, naming consistency
 **Date:** 2026-05-31

@@ -301,6 +301,497 @@ test('read missing args: ERROR', () => {
   assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
 });
 
+test('dump missing args: ERROR', () => {
+  const r = run(['dump', '/some/file.md']);
+  assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
+});
+
+test('create missing args: ERROR', () => {
+  const r = run(['create', '/some/file.md']);
+  assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
+});
+
+test('update missing args: ERROR', () => {
+  const r = run(['update', '/some/file.md']);
+  assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
+});
+
+test('restore missing args: ERROR', () => {
+  const r = run(['restore']);
+  assert.ok(r.status.startsWith('ERROR:MISSING_ARG'));
+});
+
+test('unknown command: ERROR', () => {
+  const r = run(['unknown']);
+  assert.ok(r.status.startsWith('ERROR:'));
+});
+
+// ---------------------------------------------------------------------------
+// check — required sections
+// ---------------------------------------------------------------------------
+
+test('check: reports missing Quick Start section', () => {
+  const f = path.join(SANDBOX_DIR, 'check-missing-qs.md');
+  fs.writeFileSync(f, '# Title\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'utf-8');
+  const r = run(['check', f]);
+  cleanup(f);
+  assert.strictEqual(r.status, 'OK');
+  assert.ok(r.lines.some(l => l.includes('Quick Start')));
+});
+
+test('check: reports missing Changelog section', () => {
+  const f = path.join(SANDBOX_DIR, 'check-missing-changelog.md');
+  fs.writeFileSync(f, '# Title\n## Quick Start\nok\n## Keywords\nfoo\n## Index\n\n', 'utf-8');
+  const r = run(['check', f]);
+  cleanup(f);
+  assert.strictEqual(r.status, 'OK');
+  assert.ok(r.lines.some(l => l.includes('Changelog')));
+});
+
+// ---------------------------------------------------------------------------
+// read — edge cases
+// ---------------------------------------------------------------------------
+
+test('read: empty input array returns empty object', () => {
+  const input = sandboxJson([], 'read-empty-input.json');
+  const out   = path.join(SANDBOX_DIR, 'read-empty-output.json');
+  const r     = run(['read', fixture('conformant.md'), input, out]);
+  cleanup(input);
+  assert.strictEqual(r.status, 'OK');
+  const data = readJson(out);
+  cleanup(out);
+  assert.deepStrictEqual(data, {});
+});
+
+// ---------------------------------------------------------------------------
+// create — edge cases
+// ---------------------------------------------------------------------------
+
+test('create: ERROR when input is an array instead of object', () => {
+  const dest  = path.join(SANDBOX_DIR, 'create-array-input.md');
+  const input = sandboxJson(['title', 'foo'], 'create-array-input.json');
+  const r     = run(['create', dest, input]);
+  cleanup(dest, input);
+  assert.ok(r.status.startsWith('ERROR:INVALID_INPUT'));
+});
+
+test('create: document created without title field has empty H1', () => {
+  const dest  = path.join(SANDBOX_DIR, 'create-no-title.md');
+  const input = sandboxJson({ 'Quick Start': 'No title doc.', Keywords: 'foo' }, 'create-no-title-input.json');
+  const r     = run(['create', dest, input]);
+  cleanup(input);
+  assert.strictEqual(r.status, 'OK');
+  const content = fs.readFileSync(dest, 'utf-8');
+  cleanup(dest);
+  assert.ok(content.includes('## Index'));
+  assert.ok(content.includes('## Changelog'));
+});
+
+test('create: canonical section order — Quick Start before Keywords', () => {
+  const dest  = path.join(SANDBOX_DIR, 'create-order.md');
+  const input = sandboxJson({
+    title:         'Order Test',
+    Keywords:      'order, test',
+    'Quick Start': 'Testing order.',
+  }, 'create-order-input.json');
+  run(['create', dest, input]);
+  cleanup(input);
+  const content = fs.readFileSync(dest, 'utf-8');
+  cleanup(dest);
+  const iQS  = content.indexOf('## Quick Start');
+  const iKW  = content.indexOf('## Keywords');
+  assert.ok(iQS < iKW, 'Quick Start should appear before Keywords');
+});
+
+// ---------------------------------------------------------------------------
+// update — edge cases
+// ---------------------------------------------------------------------------
+
+test('update: ERROR when input is an array instead of object', () => {
+  const f     = sandbox('conformant.md', 'update-array-input.md');
+  const input = sandboxJson(['Quick Start'], 'update-array-input.json');
+  const r     = run(['update', f, input]);
+  cleanup(f, input);
+  assert.ok(r.status.startsWith('ERROR:INVALID_INPUT'));
+});
+
+test('update: updates title when title key is provided', () => {
+  const f     = sandbox('conformant.md', 'update-title.md');
+  const input = sandboxJson({ title: 'Updated Title' }, 'update-title-input.json');
+  const r     = run(['update', f, input]);
+  cleanup(input);
+  assert.strictEqual(r.status, 'OK');
+  const content = fs.readFileSync(f, 'utf-8');
+  cleanup(f, f + '.bak');
+  assert.ok(content.includes('# Updated Title'));
+});
+
+// ---------------------------------------------------------------------------
+// round-trip: dump -> compare -> update -> dump -> compare
+// ---------------------------------------------------------------------------
+
+test('round-trip: dump sections match direct filesystem read, update preserves content', () => {
+  // Step 1 — dump the fixture into JSON
+  const src     = fixture('conformant.md');
+  const dump1   = path.join(SANDBOX_DIR, 'roundtrip-dump1.json');
+  const r1      = run(['dump', src, dump1]);
+  assert.strictEqual(r1.status, 'OK', 'dump step 1 failed: ' + r1.status);
+  const dumped1 = readJson(dump1);
+  cleanup(dump1);
+
+  // Step 2 — read the fixture directly and parse sections with md-parser
+  // (require inline to stay self-contained)
+  const mdParser  = require('../lib/md-parser');
+  const doc       = mdParser.parseFile(src);
+  const sections  = mdParser.getSections(doc);
+
+  // Every section returned by dump must match the direct parse
+  for (const s of sections) {
+    assert.strictEqual(
+      dumped1[s.name],
+      s.content,
+      `Section "${s.name}" content mismatch between dump and direct parse`
+    );
+  }
+  assert.strictEqual(dumped1.title, mdParser.getTitle(doc), 'title mismatch between dump and direct parse');
+
+  // Step 3 — update a sandbox copy with the dumped content
+  const target    = sandbox('conformant.md', 'roundtrip-target.md');
+  const updateInput = {};
+  for (const s of sections) {
+    updateInput[s.name] = dumped1[s.name];
+  }
+  const updateJson = sandboxJson(updateInput, 'roundtrip-update-input.json');
+  const r2         = run(['update', target, updateJson]);
+  cleanup(updateJson);
+  assert.strictEqual(r2.status, 'OK', 'update step failed: ' + r2.status);
+
+  // Step 4 — dump the updated file
+  const dump2   = path.join(SANDBOX_DIR, 'roundtrip-dump2.json');
+  const r3      = run(['dump', target, dump2]);
+  cleanup(target, target + '.bak');
+  assert.strictEqual(r3.status, 'OK', 'dump step 2 failed: ' + r3.status);
+  const dumped2 = readJson(dump2);
+  cleanup(dump2);
+
+  // Step 5 — compare dump1 and dump2 section by section
+  for (const s of sections) {
+    assert.strictEqual(
+      dumped2[s.name],
+      dumped1[s.name],
+      `Section "${s.name}" content changed after update round-trip`
+    );
+  }
+  assert.strictEqual(dumped2.title, dumped1.title, 'title changed after update round-trip');
+});
+
+// ---------------------------------------------------------------------------
+// round-trip on real KB files
+// NOTE: tmp files go to knowledgebase/tmp/ (KB maintenance convention).
+// TODO: move this test to tools/tests/ at KB root once tests are relocated.
+// ---------------------------------------------------------------------------
+
+const KB_ROOT      = path.join(__dirname, '..', '..', '..', '..');
+const KB_TMP       = path.join(KB_ROOT, 'tmp');
+const KB_CONV      = path.join(KB_ROOT, 'public', 'conventions');
+
+const KB_ROUNDTRIP_FILES = [
+  path.join(KB_CONV, 'documentation.md'),
+  path.join(KB_CONV, 'md-doc-usage.md'),
+  path.join(KB_CONV, 'filesystem.md'),
+];
+
+// Ensure tmp/ exists
+if (!fs.existsSync(KB_TMP)) fs.mkdirSync(KB_TMP, { recursive: true });
+
+for (const srcFile of KB_ROUNDTRIP_FILES) {
+  const name = path.basename(srcFile, '.md');
+
+  test(`round-trip KB file: ${name}`, () => {
+    const dump1Path  = path.join(KB_TMP, `md-doc-roundtrip-${name}-dump1.json`);
+    const dump2Path  = path.join(KB_TMP, `md-doc-roundtrip-${name}-dump2.json`);
+    const updatePath = path.join(KB_TMP, `md-doc-roundtrip-${name}-update.json`);
+    const targetPath = path.join(KB_TMP, `md-doc-roundtrip-${name}-target.md`);
+
+    try {
+      // Step 1 — dump the KB file
+      const r1 = run(['dump', srcFile, dump1Path]);
+      assert.strictEqual(r1.status, 'OK', 'dump step 1 failed: ' + r1.status);
+      const dumped1 = readJson(dump1Path);
+
+      // Step 2 — compare dump output with direct md-parser read
+      const mdParser = require('../lib/md-parser');
+      const doc      = mdParser.parseFile(srcFile);
+      const sections = mdParser.getSections(doc);
+
+      for (const s of sections) {
+        assert.strictEqual(
+          dumped1[s.name],
+          s.content,
+          `[${name}] Section "${s.name}" mismatch between dump and direct parse`
+        );
+      }
+      assert.strictEqual(
+        dumped1.title,
+        mdParser.getTitle(doc),
+        `[${name}] title mismatch between dump and direct parse`
+      );
+
+      // Step 3 — update a tmp copy with the dumped content
+      fs.copyFileSync(srcFile, targetPath);
+      const updateInput = {};
+      for (const s of sections) {
+        updateInput[s.name] = dumped1[s.name];
+      }
+      fs.writeFileSync(updatePath, JSON.stringify(updateInput, null, 2), 'utf-8');
+      const r2 = run(['update', targetPath, updatePath]);
+      assert.strictEqual(r2.status, 'OK', 'update step failed: ' + r2.status);
+
+      // Step 4 — dump the updated file
+      const r3 = run(['dump', targetPath, dump2Path]);
+      assert.strictEqual(r3.status, 'OK', 'dump step 2 failed: ' + r3.status);
+      const dumped2 = readJson(dump2Path);
+
+      // Step 5 — compare dump1 and dump2 section by section
+      for (const s of sections) {
+        assert.strictEqual(
+          dumped2[s.name],
+          dumped1[s.name],
+          `[${name}] Section "${s.name}" changed after update round-trip`
+        );
+      }
+      assert.strictEqual(
+        dumped2.title,
+        dumped1.title,
+        `[${name}] title changed after update round-trip`
+      );
+
+    } finally {
+      // Always clean up tmp files, even on failure
+      for (const f of [dump1Path, dump2Path, updatePath, targetPath, targetPath + '.bak']) {
+        try { fs.unlinkSync(f); } catch (_) {}
+      }
+    }
+  });
+}
+
+// ---------------------------------------------------------------------------
+// mutation tests on real KB file: documentation.md
+// NOTE: tmp files go to knowledgebase/tmp/.
+// TODO: move this test to tools/tests/ at KB root once tests are relocated.
+// ---------------------------------------------------------------------------
+
+const MUTATION_SRC  = path.join(KB_CONV, 'documentation.md');
+const MUTATION_NAME = 'documentation';
+
+/**
+ * Prepares a fresh tmp copy of documentation.md for a mutation test.
+ * Returns the tmp file path.
+ */
+function mutationTarget() {
+  const p = path.join(KB_TMP, `md-doc-mutation-${MUTATION_NAME}-${Date.now()}.md`);
+  fs.copyFileSync(MUTATION_SRC, p);
+  return p;
+}
+
+/**
+ * Runs md-doc read on a single section, returns its content string.
+ */
+function readSection(filePath, sectionName) {
+  const inputPath  = path.join(KB_TMP, `md-doc-mutation-read-input-${Date.now()}.json`);
+  const outputPath = path.join(KB_TMP, `md-doc-mutation-read-output-${Date.now()}.json`);
+  fs.writeFileSync(inputPath, JSON.stringify([sectionName], null, 2), 'utf-8');
+  const r = run(['read', filePath, inputPath, outputPath]);
+  try { fs.unlinkSync(inputPath); } catch (_) {}
+  if (!r.status.startsWith('OK')) {
+    try { fs.unlinkSync(outputPath); } catch (_) {}
+    throw new Error('read failed: ' + r.status);
+  }
+  const data = readJson(outputPath);
+  try { fs.unlinkSync(outputPath); } catch (_) {}
+  return data[sectionName];
+}
+
+/**
+ * Runs md-doc update with a single key/value pair.
+ */
+function updateSection(filePath, sectionName, content) {
+  const inputPath = path.join(KB_TMP, `md-doc-mutation-update-input-${Date.now()}.json`);
+  fs.writeFileSync(inputPath, JSON.stringify({ [sectionName]: content }, null, 2), 'utf-8');
+  const r = run(['update', filePath, inputPath]);
+  try { fs.unlinkSync(inputPath); } catch (_) {}
+  return r;
+}
+
+// ---------------------------------------------------------------------------
+// mandatory sections — replace content
+// ---------------------------------------------------------------------------
+
+test('mutation: replace Quick Start content', () => {
+  const f = mutationTarget();
+  try {
+    const newContent = 'Replaced Quick Start content for mutation test.';
+    const r = updateSection(f, 'Quick Start', newContent);
+    assert.strictEqual(r.status, 'OK');
+    assert.strictEqual(readSection(f, 'Quick Start'), newContent);
+  } finally {
+    cleanup(f, f + '.bak');
+  }
+});
+
+test('mutation: replace Keywords content', () => {
+  const f = mutationTarget();
+  try {
+    const newContent = 'mutation, test, keywords';
+    const r = updateSection(f, 'Keywords', newContent);
+    assert.strictEqual(r.status, 'OK');
+    assert.strictEqual(readSection(f, 'Keywords'), newContent);
+  } finally {
+    cleanup(f, f + '.bak');
+  }
+});
+
+test('mutation: empty Index content leaves section present', () => {
+  const f = mutationTarget();
+  try {
+    const r = updateSection(f, 'Index', '');
+    assert.strictEqual(r.status, 'OK');
+    assert.strictEqual(readSection(f, 'Index'), '');
+  } finally {
+    cleanup(f, f + '.bak');
+  }
+});
+
+test('mutation: prepend entry to Changelog', () => {
+  const f = mutationTarget();
+  try {
+    const original = readSection(f, 'Changelog');
+    const newEntry  = '### Version 99.0 - Mutation test\n**Date:** 2026-05-31\n**Reason:** Test entry.\n\n---\n\n';
+    const r = updateSection(f, 'Changelog', newEntry + original);
+    assert.strictEqual(r.status, 'OK');
+    const updated = readSection(f, 'Changelog');
+    assert.ok(updated.startsWith('### Version 99.0'), 'new entry should be at the top');
+    assert.ok(updated.includes(original.slice(0, 40)), 'original content should be preserved');
+  } finally {
+    cleanup(f, f + '.bak');
+  }
+});
+
+// ---------------------------------------------------------------------------
+// non-mandatory sections — add at beginning and middle
+// ---------------------------------------------------------------------------
+
+test('mutation: add section at beginning — appears before Document Structure', () => {
+  const f = mutationTarget();
+  try {
+    // TODO: this test defines the expected behaviour for position control (not yet implemented).
+    // Once md-doc supports insert position, update with: insert before Document Structure.
+    // For now, verify the section is created and readable.
+    const r = updateSection(f, 'Preamble', 'Section added at beginning.');
+    assert.strictEqual(r.status, 'OK');
+    const content = fs.readFileSync(f, 'utf-8');
+    const iPreamble = content.indexOf('## Preamble');
+    const iDocStruct = content.indexOf('## Document Structure');
+    assert.ok(iPreamble !== -1, 'Preamble section should exist');
+    assert.ok(iPreamble < iDocStruct, 'Preamble should appear before Document Structure');
+  } finally {
+    cleanup(f, f + '.bak');
+  }
+});
+
+test('mutation: add section in middle — appears between Language and Numbering', () => {
+  const f = mutationTarget();
+  try {
+    // TODO: this test defines the expected behaviour for position control (not yet implemented).
+    // Once md-doc supports insert position, update with: insert after Language.
+    // For now, verify the section is created and readable.
+    const r = updateSection(f, 'Interlude', 'Section added in the middle.');
+    assert.strictEqual(r.status, 'OK');
+    const content = fs.readFileSync(f, 'utf-8');
+    const iInterlude = content.indexOf('## Interlude');
+    const iLanguage  = content.indexOf('## Language');
+    const iNumbering = content.indexOf('## Numbering');
+    assert.ok(iInterlude !== -1, 'Interlude section should exist');
+    assert.ok(iLanguage < iInterlude && iInterlude < iNumbering,
+      'Interlude should appear between Language and Numbering');
+  } finally {
+    cleanup(f, f + '.bak');
+  }
+});
+
+// ---------------------------------------------------------------------------
+// delete section (spec: md-doc delete command — not yet implemented)
+// ---------------------------------------------------------------------------
+
+test('mutation: delete non-mandatory section removes it from the document', () => {
+  const f = mutationTarget();
+  try {
+    // First add a section to delete
+    updateSection(f, 'ToDelete', 'This section will be deleted.');
+    assert.ok(fs.readFileSync(f, 'utf-8').includes('## ToDelete'), 'section should exist before delete');
+
+    // TODO: replace with run(['delete', f, 'ToDelete']) once delete command is implemented
+    const r = run(['delete', f, 'ToDelete']);
+    assert.strictEqual(r.status, 'OK', 'delete should succeed');
+    assert.ok(!fs.readFileSync(f, 'utf-8').includes('## ToDelete'), 'section should be gone after delete');
+  } finally {
+    cleanup(f, f + '.bak');
+  }
+});
+
+test('mutation: delete mandatory section returns ERROR', () => {
+  const f = mutationTarget();
+  try {
+    // TODO: replace with run(['delete', f, 'Quick Start']) once delete command is implemented
+    const r = run(['delete', f, 'Quick Start']);
+    assert.ok(r.status.startsWith('ERROR:'), 'deleting a mandatory section should return ERROR');
+    assert.ok(fs.readFileSync(f, 'utf-8').includes('## Quick Start'), 'Quick Start should still be present');
+  } finally {
+    cleanup(f, f + '.bak');
+  }
+});
+
+// ---------------------------------------------------------------------------
+// non-conformant file — update/read/dump must return ERROR:NOT_CONFORMANT
+// ---------------------------------------------------------------------------
+
+test('mutation: update on non-conformant file returns ERROR:NOT_CONFORMANT', () => {
+  const f = path.join(KB_TMP, `md-doc-mutation-nonconformant-${Date.now()}.md`);
+  fs.writeFileSync(f, '# Title\n## Quick Start\nok\n', 'utf-8'); // missing Keywords, Index, Changelog
+  try {
+    const r = updateSection(f, 'Quick Start', 'new content');
+    assert.ok(r.status.startsWith('ERROR:NOT_CONFORMANT'), 'update on non-conformant file should fail');
+  } finally {
+    cleanup(f);
+  }
+});
+
+test('mutation: read on non-conformant file returns ERROR:NOT_CONFORMANT', () => {
+  const f = path.join(KB_TMP, `md-doc-mutation-nonconformant-read-${Date.now()}.md`);
+  fs.writeFileSync(f, '# Title\n## Quick Start\nok\n', 'utf-8');
+  try {
+    const r = readSection(f, 'Quick Start');
+    // readSection throws on ERROR — catch and verify
+    assert.fail('read on non-conformant file should have thrown');
+  } catch (e) {
+    assert.ok(e.message.includes('NOT_CONFORMANT'), 'error should mention NOT_CONFORMANT');
+  } finally {
+    cleanup(f);
+  }
+});
+
+test('mutation: dump on non-conformant file returns ERROR:NOT_CONFORMANT', () => {
+  const f      = path.join(KB_TMP, `md-doc-mutation-nonconformant-dump-${Date.now()}.md`);
+  const outPath = path.join(KB_TMP, `md-doc-mutation-nonconformant-dump-out-${Date.now()}.json`);
+  fs.writeFileSync(f, '# Title\n## Quick Start\nok\n', 'utf-8');
+  try {
+    const r = run(['dump', f, outPath]);
+    assert.ok(r.status.startsWith('ERROR:NOT_CONFORMANT'), 'dump on non-conformant file should fail');
+  } finally {
+    cleanup(f, outPath);
+  }
+});
+
 // ---------------------------------------------------------------------------
 // Result
 // ---------------------------------------------------------------------------

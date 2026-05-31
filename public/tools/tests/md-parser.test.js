@@ -226,6 +226,127 @@ test('toMarkdown round-trips section content', () => {
 });
 
 // ---------------------------------------------------------------------------
+// parseText — edge cases
+// ---------------------------------------------------------------------------
+
+test('parseText: document with title only has no sections', () => {
+  const doc = md.parseText('# Title Only\n', 'test.md');
+  assert.strictEqual(md.getTitle(doc), 'Title Only');
+  assert.deepStrictEqual(md.getSections(doc), []);
+});
+
+test('parseText: empty string produces null title and no sections', () => {
+  const doc = md.parseText('', 'test.md');
+  assert.strictEqual(md.getTitle(doc), null);
+  assert.deepStrictEqual(md.getSections(doc), []);
+});
+
+// ---------------------------------------------------------------------------
+// getFilePath
+// ---------------------------------------------------------------------------
+
+test('getFilePath returns the filePath passed to parseText', () => {
+  const doc = md.parseText(SIMPLE_DOC, 'my/path/file.md');
+  assert.strictEqual(md.getFilePath(doc), 'my/path/file.md');
+});
+
+// ---------------------------------------------------------------------------
+// getSection — present but empty
+// ---------------------------------------------------------------------------
+
+test('getSection: present section with no content returns empty string', () => {
+  const doc = md.parseText('# Title\n## Quick Start\n\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'test.md');
+  assert.strictEqual(md.getSection(doc, 'Quick Start'), '');
+});
+
+test('getSection: absent section returns null, not empty string', () => {
+  const doc = md.parseText(SIMPLE_DOC, 'test.md');
+  assert.strictEqual(md.getSection(doc, 'Absent'), null);
+});
+
+// ---------------------------------------------------------------------------
+// getKeywords — whitespace tolerance
+// ---------------------------------------------------------------------------
+
+test('getKeywords: trims whitespace around each keyword', () => {
+  const doc = md.parseText('# T\n## Quick Start\nok\n## Keywords\n  foo ,  bar ,baz  \n## Index\n\n## Changelog\n', 'test.md');
+  assert.deepStrictEqual(md.getKeywords(doc), ['foo', 'bar', 'baz']);
+});
+
+// ---------------------------------------------------------------------------
+// getSections — empty document
+// ---------------------------------------------------------------------------
+
+test('getSections: returns empty array when document has no sections', () => {
+  const doc = md.parseText('# Title Only\n', 'test.md');
+  assert.deepStrictEqual(md.getSections(doc), []);
+});
+
+// ---------------------------------------------------------------------------
+// getIssues — all required sections missing
+// ---------------------------------------------------------------------------
+
+test('getIssues: reports all four required sections when document has none', () => {
+  const doc    = md.parseText('# Title\n', 'test.md');
+  const issues = md.getIssues(doc);
+  assert.ok(issues.some(i => i.includes('Quick Start')));
+  assert.ok(issues.some(i => i.includes('Keywords')));
+  assert.ok(issues.some(i => i.includes('Index')));
+  assert.ok(issues.some(i => i.includes('Changelog')));
+});
+
+test('getIssues: missing Quick Start is reported', () => {
+  const doc    = md.parseText('# Title\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'test.md');
+  const issues = md.getIssues(doc);
+  assert.ok(issues.some(i => i.includes('Quick Start')));
+});
+
+test('getIssues: missing Changelog is reported', () => {
+  const doc    = md.parseText('# Title\n## Quick Start\nok\n## Keywords\nfoo\n## Index\n\n', 'test.md');
+  const issues = md.getIssues(doc);
+  assert.ok(issues.some(i => i.includes('Changelog')));
+});
+
+test('getIssues: absent title does not produce an issue', () => {
+  const doc    = md.parseText('## Quick Start\nok\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'test.md');
+  const issues = md.getIssues(doc);
+  assert.strictEqual(issues.length, 0);
+});
+
+// ---------------------------------------------------------------------------
+// setSection — insert with no anchor section
+// ---------------------------------------------------------------------------
+
+test('setSection: inserts at end when neither Index nor Changelog exist', () => {
+  const doc = md.parseText('# Title\n## Quick Start\nok\n## Keywords\nfoo\n', 'test.md');
+  md.setSection(doc, 'NewSection', 'content');
+  const names = md.getSections(doc).map(s => s.name);
+  assert.ok(names.includes('NewSection'));
+  assert.strictEqual(names[names.length - 1], 'NewSection');
+});
+
+// ---------------------------------------------------------------------------
+// toMarkdown — edge cases
+// ---------------------------------------------------------------------------
+
+test('toMarkdown: document without title has no H1 line', () => {
+  const doc = md.parseText('## Quick Start\nok\n## Keywords\nfoo\n## Index\n\n## Changelog\n', 'test.md');
+  const out = md.toMarkdown(doc);
+  assert.ok(!out.startsWith('#'));
+});
+
+test('toMarkdown: empty section produces heading with no content lines', () => {
+  const doc = md.parseText(SIMPLE_DOC, 'test.md');
+  md.setSection(doc, 'Quick Start', '');
+  const out = md.toMarkdown(doc);
+  assert.ok(out.includes('## Quick Start'));
+  // Content between Quick Start and next section should be empty
+  const afterQS = out.split('## Quick Start')[1];
+  const nextSection = afterQS.trimStart();
+  assert.ok(nextSection.startsWith('##'));
+});
+
+// ---------------------------------------------------------------------------
 // Result
 // ---------------------------------------------------------------------------
 

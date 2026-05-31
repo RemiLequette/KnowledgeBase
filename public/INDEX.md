@@ -15,7 +15,8 @@ Execute these steps at the start of every session, before considering any user i
 1. **Greet the user** — introduce yourself with the name given to you, remind the project folder and knowledge base folder.
 2. **Load the knowledge base** — state "Loading knowledge base...", then read this file (`INDEX.md`). Apply the Decision Layer below based on the current task.
 3. **Load the project context** — state "Loading project context...", then read `PROJECT.md` at the root of the project folder.
-4. **State the project** — state the project name and its purpose. If the project is unknown, report it clearly instead.
+4. **Load documentation conventions** — read `conventions/documentation.md` and `conventions/md-doc-usage.md`. These apply to every session.
+5. **State the project** — state the project name and its purpose. If the project is unknown, report it clearly instead.
 
 **If no `PROJECT.md` exists at the project root:** report it as a serious issue, contact Remi Lequette, and stop.
 
@@ -80,6 +81,7 @@ Technical and tooling conventions.
 | File | Summary | Keywords |
 |------|---------|----------|
 | filesystem.md | Use `filesystem` for reads, `edit-file-lines` for writes, `node` for mechanical copy/replace ops (zero tokens) | filesystem, MCP, read, write, copy, node, regex, files |
+| md-doc-usage.md | Read/write docs via md-doc tool — section-level access, token efficiency, conformance check, tmp file management | md-doc, tool, read, write, documentation, conformance, tmp |
 | documentation.md | Convention universelle pour tous les fichiers Markdown — structure, titres, TOC, Keywords, Index, Changelog, Quick Start, citations | markdown, documentation, TOC, titres, ancres, keywords, index, changelog, quick-start, citations |
 | sqlite.md | One statement per call, DELETE before INSERT, always verify after writes, update schema.sql after DDL | sqlite, MCP, SQL, database, schema, write, query |
 | commwise-layout.md | `max-height` is the only reliable way to constrain flex children overridden by CommWise `!important` rules | CommWise, flex, layout, max-height, viewport, CSS, override |
@@ -119,6 +121,35 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 2.1 - Decision Layer trigger md-doc removed
+**Date:** 2026-05-31
+**Reason:** Trigger redundant — md-doc-usage.md is now loaded unconditionally at bootstrap (step 4).
+
+**Modifications :**
+- Decision Layer : trigger `Reading or writing a .md file via md-doc` removed
+
+---
+
+### Version 2.0 - Documentation conventions loaded at every session
+**Date:** 2026-05-31
+**Reason:** Most sessions touch documentation files. Loading documentation.md and md-doc-usage.md unconditionally at bootstrap avoids relying on the Decision Layer trigger.
+
+**Modifications :**
+- Session Bootstrap : step 4 added — load `conventions/documentation.md` and `conventions/md-doc-usage.md`
+- Step numbering updated (State the project is now step 5)
+
+---
+
+### Version 1.9 - md-doc-usage.md referenced
+**Date:** 2026-05-31
+**Raison:** Convention md-doc-usage.md ajoutee dans la table conventions/ et dans le Decision Layer.
+
+**Modifications :**
+- Decision Layer : ajout du trigger `Reading or writing a .md file via md-doc` -> `conventions/md-doc-usage.md`
+- Table conventions/ : ajout de `md-doc-usage.md`
+
+---
 
 ### Version 1.8 - Scope Rule + suppression Claude.md + dossier public/
 **Date:** 2026-05-31
