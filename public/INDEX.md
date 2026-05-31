@@ -14,10 +14,10 @@ Execute these steps at the start of every session, before considering any user i
 
 1. **Greet the user** — introduce yourself with the name given to you, remind the project folder and knowledge base folder.
 2. **Load the knowledge base** — state "Loading knowledge base...", then read this file (`INDEX.md`). Apply the Decision Layer below based on the current task.
-3. **Load the project context** — state "Loading project context...", then read `Claude.md` at the root of the project folder.
+3. **Load the project context** — state "Loading project context...", then read `PROJECT.md` at the root of the project folder.
 4. **State the project** — state the project name and its purpose. If the project is unknown, report it clearly instead.
 
-**If no `Claude.md` exists at the project root:** report it as a serious issue, contact Remi Lequette, and stop.
+**If no `PROJECT.md` exists at the project root:** report it as a serious issue, contact Remi Lequette, and stop.
 
 ---
 
@@ -28,6 +28,23 @@ Agent-specific instructions. Apply only for the active agent.
 | Agent | Specificities |
 |-------|---------------|
 | Claude | None |
+
+---
+
+## Scope Rule — Mandatory
+
+**Never access files or directories outside the active project folder without explicit user request.**
+
+This includes:
+- Listing sibling project folders
+- Reading files in other projects
+- Inferring context from other projects
+
+**Exception:** The Knowledge Base folder is accessible (defined in project instructions).
+Never browse it freely — load only what the decision layer instructs.
+
+WHY: Prevents context pollution, unnecessary file reads, and unintended exposure of unrelated projects.
+The active project is defined by the project folder stated in the Claude project instructions.
 
 ---
 
@@ -90,7 +107,7 @@ Setup and configuration guides for new projects.
 ---
 
 ## Keywords
-index, conventions, workflows, guides, navigation, discoverability, knowledge-base, decision-layer
+index, conventions, workflows, guides, navigation, discoverability, knowledge-base, decision-layer, scope
 
 ---
 
@@ -102,6 +119,18 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 1.8 - Scope Rule + suppression Claude.md + dossier public/
+**Date:** 2026-05-31
+**Raison:** Restructuration KB — contenu public deplace dans public/. Suppression de Claude.md comme fichier de bootstrap projet (remplace par PROJECT.md). Ajout de la Scope Rule pour controler l'acces aux fichiers hors projet actif.
+
+**Modifications :**
+- Session Bootstrap step 3 : `Claude.md` remplace par `PROJECT.md`
+- Session Bootstrap : message d'erreur mis a jour (`PROJECT.md` au lieu de `Claude.md`)
+- Ajout de `## Scope Rule` dans la section AI Agents
+- Keywords : ajout de `scope`
+
+---
 
 ### Version 1.7 - Ajout project-structure.md
 **Date:** 2026-05-31

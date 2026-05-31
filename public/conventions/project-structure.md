@@ -1,0 +1,201 @@
+# Project Structure Convention
+
+Convention for the structure of any AI-assisted project.
+
+## Quick Start
+
+Source of truth for how any AI-assisted project is structured.
+Load when setting up a new project, auditing an existing one, or updating project instructions.
+Covers: folder structure, mandatory files, PROJECT.md content, bootstrap files.
+Does not cover: content rules for individual files — see conventions/documentation.md.
+
+## Keywords
+project-structure, ai-project, instructions, template, bootstrap, PROJECT.md, README.md, folder, scaffold, ai-agent-setup, scope
+
+## Table des matieres
+
+1. [Folder Structure](#folder-structure)
+2. [Mandatory Files](#mandatory-files)
+3. [PROJECT.md](#projectmd)
+4. [Bootstrap Files](#bootstrap-files)
+5. [Bootstrap Chain](#bootstrap-chain)
+
+---
+
+## Folder Structure
+[up](#table-des-matieres)
+
+Minimal structure for any AI-assisted project:
+
+```
+[project-root]/
+├── PROJECT.md         <- Project metadata + AI Agent Setup
+├── README.md          <- Human navigation
+├── GLOSSARY.md        <- Project terminology
+└── TODO.md            <- Active backlog
+```
+
+**Rules:**
+- The project root folder is defined in the bootstrap file — no assumed location
+- Root folder name is typically the project name in a filesystem-friendly format (lowercase, hyphens, no spaces)
+- The canonical project name is defined explicitly in `PROJECT.md` (may differ slightly from folder name)
+- No project name in subfolder names — only in the root folder
+- All file references inside the project use paths relative to the project root
+
+---
+
+## Mandatory Files
+[up](#table-des-matieres)
+
+| File | Purpose | Owner | Convention |
+|------|---------|-------|------------|
+| `PROJECT.md` | Project metadata + AI Agent Setup | Humans + AI | See [PROJECT.md](#projectmd) below |
+| `README.md` | Human navigation — plain language, quick links | Humans | `conventions/documentation.md` |
+| `GLOSSARY.md` | Project terminology — domains, terms, cross-references | Humans + AI | `conventions/glossary.md` |
+| `TODO.md` | Active backlog — ideas, tasks, improvements | Humans + AI | `conventions/todo.md` |
+
+**At session start:** only `PROJECT.md` is verified (it is loaded as part of the bootstrap chain).
+**All other mandatory files** are verified at audit only.
+
+---
+
+## PROJECT.md
+[up](#table-des-matieres)
+
+`PROJECT.md` is the central metadata file for any AI-assisted project. It is read by both humans and AI Assistants.
+
+### Expected content
+
+| Section | Purpose | Required |
+|---------|---------|----------|
+| `## Purpose` | What this project does, and its canonical project name | Yes |
+| `## Structure` | Folder layout and key files | Yes |
+| `## AI Agent Setup` | Agent-specific configuration | Yes |
+| `## Audit` | How to audit this project | Yes |
+| `## Glossary` | Pointer to `GLOSSARY.md` | Yes |
+| `## Keywords` | Discoverability | Yes |
+| `## Changelog` | Modification history | Yes |
+
+The canonical project name must be stated explicitly in `## Purpose` — it is the reference for all documentation and agent sessions.
+
+### AI Agent Setup section
+
+The `## AI Agent Setup` section carries configuration specific to the AI Agent named in the bootstrap file.
+It must be coherent with the agent name defined in the bootstrap file.
+In most cases it is empty — project-specific overrides are the exception, not the rule.
+
+```markdown
+## AI Agent Setup
+
+AI Assistant: [AGENT-NAME as defined in the bootstrap file]
+
+[Project-specific rules or overrides — leave empty if none]
+```
+
+---
+
+## Bootstrap Files
+[up](#table-des-matieres)
+
+Bootstrap files are configuration inputs provided by AI orchestrators to initialize an agent session.
+They are configured manually in the orchestrator tool — not generated automatically.
+
+Each orchestrator has its own mechanism (project instructions, system prompt, config file, etc.).
+The content and format vary, but the expected information is the same.
+
+### Expected content
+
+| Field | Purpose |
+|-------|---------|
+| User name | Who is interacting with the agent |
+| AI Agent name | Name given to the agent for this project |
+| Project folder | Absolute path to the project root |
+| Knowledge Base folder | Absolute path to the KB public folder |
+
+### Example — Claude (Claude.ai project instructions)
+
+In Claude.ai, bootstrap configuration is set in the project instructions field.
+See `guides/project-setup-process.md` for a ready-to-copy template.
+
+```
+My name is [USER-NAME].
+You are Claude, my AI Assistant.
+
+Project folder: [ABSOLUTE-PATH-TO-PROJECT-ROOT]
+Knowledge Base folder: [ABSOLUTE-PATH-TO-KNOWLEDGEBASE-PUBLIC]
+
+Use the `filesystem` MCP tool to read INDEX.md from the Knowledge Base folder.
+Then use the `filesystem` MCP tool to read PROJECT.md at the root of the project folder.
+
+WHY: filesystem MCP reads from your local machine, not Claude's Linux container.
+INDEX.md bootstraps the session and loads shared conventions.
+PROJECT.md loads project metadata and AI Agent Setup.
+```
+
+**Notes:**
+- Configured manually in the orchestrator UI — use `guides/project-setup-process.md` to generate a version to copy-paste
+- The canonical project name must be consistent with what is stated in `PROJECT.md`
+- The KB itself skips the INDEX.md step — it IS the knowledge base
+
+---
+
+## Bootstrap Chain
+[up](#table-des-matieres)
+
+Every session follows this load sequence:
+
+```
+Bootstrap file (orchestrator)
+        |
+        v
+  public/INDEX.md  (knowledge base bootstrap + decision layer)
+        |
+        v
+  PROJECT.md  (project metadata + AI Agent Setup)
+        |
+        v
+  [conventions loaded per decision layer]
+```
+
+**Single file, zero relay hops.** The bootstrap file points directly to `public/INDEX.md` — no intermediate files.
+
+---
+
+## Index
+
+| Terme | Occurrences |
+|-------|-------------|
+
+---
+
+## Changelog
+
+### Version 1.3 - Corrections structure et semantique
+**Date:** 2026-05-31
+**Raison:** src/ retire de la folder structure (pas universel). Reference a projects/ supprimee (le project root est defini dans le bootstrap). Nom canonique du projet dans PROJECT.md clarifie. Verification au bootstrap limitee a PROJECT.md. AI Agent Setup simplifiee. Exemple bootstrap corrige (Claude).
+
+**Modifications :**
+- Folder Structure : src/ supprime ; projects/ supprime ; note sur le project root via bootstrap
+- Rules : nom canonique defini dans PROJECT.md (pas le nom de dossier)
+- Mandatory Files : distinction bootstrap (PROJECT.md uniquement) vs audit (tout le reste)
+- PROJECT.md : nom canonique mentionne dans ## Purpose ; AI Agent Setup simplifiee (vide par defaut)
+- Bootstrap Files exemple : "You are Claude" au lieu de [AGENT-NAME]
+- Keywords : inchange
+
+---
+
+### Version 1.2 - Generalisation + sections PROJECT.md + Bootstrap Files
+**Date:** 2026-05-31
+**Raison:** Convention generalisee pour tout projet AI-assisted. Ajout sections PROJECT.md et Bootstrap Files. Mandatory files enrichis avec references aux conventions.
+
+---
+
+### Version 1.1 - Suppression Claude.md + dossier public/
+**Date:** 2026-05-31
+**Raison:** Claude.md supprime. Contenu AI-specifique migre dans PROJECT.md ## AI Agent Setup. KB reorganisee dans public/.
+
+---
+
+### Version 1.0 - Creation
+**Date:** 2026-05-31
+**Raison:** Convention manquante — structure de projet et template des instructions sans source de verite dedicee.

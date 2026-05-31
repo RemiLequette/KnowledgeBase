@@ -4,7 +4,7 @@
 
 Métadonnées du projet claude-knowledge — description, structure, et point d'entrée pour l'audit.
 À lire par tout AI Assistant pour comprendre le projet avant de commencer.
-Ne contient pas les conventions ni les best practices — voir INDEX.md pour la navigation.
+Ne contient pas les conventions ni les best practices — voir public/INDEX.md pour la navigation.
 
 ## Purpose
 Centralized knowledge repository shared across all Claude projects.
@@ -12,21 +12,29 @@ Contains conventions, workflows, and best practices to ensure consistency.
 
 ## Structure
 
-### Knowledge Base — universal
-See `INDEX.md` for the full navigation map.
+### public/ — accessible to all Claude projects
+See `public/INDEX.md` for the full navigation map.
+
+```
+public/
+├── INDEX.md         ← session bootstrap + decision layer
+├── conventions/     ← technical conventions
+├── guides/          ← setup & best practices guides
+└── tools/           ← development tooling
+```
 
 ### Project files — specific to this KB project
 - **PROJECT.md** — this file
 - **README.md** — human navigation
 - **GLOSSARY.md** — project terminology
 - **TODO.md** — active backlog
-- **tools/** — development tooling
+- **howto/** — practical guides for humans
 - **tmp/** — temporary working files (not committed)
 
 ## Usage
-See `INDEX.md` for session bootstrap instructions and navigation.
+See `public/INDEX.md` for session bootstrap instructions and navigation.
 
-For new Claude projects using this knowledge base, see `guides/project-setup-process.md`.
+For new Claude projects using this knowledge base, see `public/guides/project-setup-process.md`.
 
 ---
 
@@ -41,9 +49,9 @@ This section applies **only when working on the knowledge base itself** — not 
 - An innovation improves quality or reduces token cost noticeably — capture it.
 
 **How to add:**
-- Check `INDEX.md` first — the convention may already exist or belong in an existing file.
-- Create a new file in `conventions/` if the topic is distinct enough to stand alone.
-- Always update `INDEX.md` after adding or modifying a file — it is the entry point for every session.
+- Check `public/INDEX.md` first — the convention may already exist or belong in an existing file.
+- Create a new file in `public/conventions/` if the topic is distinct enough to stand alone.
+- Always update `public/INDEX.md` after adding or modifying a file — it is the entry point for every session.
 
 **Format:** English only. Concise. Actionable. Prefer rules and examples over prose explanations.
 
@@ -51,7 +59,7 @@ This section applies **only when working on the knowledge base itself** — not 
 
 ## Decisions projet
 
-- Les conventions (`conventions/`) et best practices (`guides/best-practices.md`) de ce projet sont **universelles** — elles s'appliquent à tous les projets, pas uniquement à cette KB.
+- Les conventions (`public/conventions/`) et best practices (`public/guides/best-practices.md`) de ce projet sont **universelles** — elles s'appliquent à tous les projets, pas uniquement à cette KB.
 - Chaque convention devrait avoir une best practice associée quand ça a du sens — la BP pointe vers la convention, elle ne duplique pas son contenu.
 
 ---
@@ -66,10 +74,10 @@ See `GLOSSARY.md` at project root.
 
 To audit this project's conformance to best practices:
 
-1. Read: `guides/audit-process.md` — The audit methodology
-2. Verify against: `guides/best-practices.md` — The best practices
+1. Read: `public/guides/audit-process.md` — The audit methodology
+2. Verify against: `public/guides/best-practices.md` — The best practices
 
-See `guides/audit-process.md` for the complete process.
+See `public/guides/audit-process.md` for the complete process.
 
 ---
 
@@ -86,6 +94,21 @@ project, knowledge-base, conventions, workflows, guides, structure, audit, metad
 ---
 
 ## Changelog
+
+### Version 1.5 - Restructuration public/
+**Date:** 2026-05-31
+**Raison:** Contenu public de la KB deplace dans public/. Tous les chemins mis a jour. Ajout de howto/ dans la structure projet.
+
+**Modifications :**
+- Quick Start : reference mise a jour (public/INDEX.md)
+- Structure : section public/ ajoutee avec arborescence, tools/ retire de la racine
+- Structure projet : ajout de howto/
+- Usage : liens mis a jour vers public/
+- KB Maintenance : liens mis a jour vers public/
+- Decisions projet : chemins mis a jour
+- Audit : chemins mis a jour
+
+---
 
 ### Version 1.4 - Structure simplifiee
 **Date:** 2026-05-31
