@@ -13,7 +13,7 @@ The 15 principles in 60 seconds:
 3. Never use circular references
 4. Always use absolute paths (never relative)
 5. Add WHY comments to rules
-6. Load conventions systematically via session-startup
+6. Load conventions systematically via the decision layer in INDEX.md
 7. Use minimal, custom rules only when truly unique
 8. File structure: top-down, linear (no backtracking)
 9. Instructions must be clear and actionable
@@ -29,30 +29,89 @@ The 15 principles in 60 seconds:
 
 ## Table of Contents
 
-- [Quick Start](#quick-start)
-- [Principles](#principles)
+- [Claude.ai Best Practices](#claudeai-best-practices)
+  - [Quick Start](#quick-start)
+  - [Table of Contents](#table-of-contents)
   - [1. Instruction Minimalism](#1-instruction-minimalism)
+    - [Claude Project Instructions](#claude-project-instructions)
+    - [Why](#why)
+    - [Anti-Pattern ❌](#anti-pattern-)
   - [2. Separate Claude-Specific from Generic Context](#2-separate-claude-specific-from-generic-context)
+    - [Generic Context (any AI assistant)](#generic-context-any-ai-assistant)
+    - [Claude-Specific Setup](#claude-specific-setup)
+    - [Example Structure](#example-structure)
+      - [context.md](#contextmd)
+      - [Claude.md](#claudemd)
+    - [Why This Matters](#why-this-matters)
   - [3. No Circular References](#3-no-circular-references)
+    - [Anti-Pattern ❌](#anti-pattern--1)
+    - [Correct Pattern ✅](#correct-pattern-)
   - [4. Reference External Knowledge Correctly](#4-reference-external-knowledge-correctly)
+    - [Correct Pattern ✅](#correct-pattern--1)
+    - [Anti-Pattern ❌](#anti-pattern--2)
   - [5. Imperative Rules with Comments](#5-imperative-rules-with-comments)
-  - [6. Explicit Conventions List](#6-explicit-conventions-list-optional-but-recommended)
+    - [Correct Pattern ✅](#correct-pattern--2)
+    - [Anti-Pattern ❌](#anti-pattern--3)
+  - [6. Explicit Conventions List (Optional but Recommended)](#6-explicit-conventions-list-optional-but-recommended)
+    - [Example](#example)
+    - [Why](#why-1)
   - [7. Minimal Custom Rules](#7-minimal-custom-rules)
+    - [Correct Pattern ✅](#correct-pattern--3)
+    - [When to Use Local Rules (Rare)](#when-to-use-local-rules-rare)
   - [8. File Paths: Always Absolute](#8-file-paths-always-absolute)
+    - [Correct ✅](#correct-)
+    - [Incorrect ❌](#incorrect-)
   - [9. Structure: Top-Down, Linear](#9-structure-top-down-linear)
+    - [Correct ✅](#correct--1)
+    - [Incorrect ❌](#incorrect--1)
   - [10. Documentation: Brief, Actionable](#10-documentation-brief-actionable)
+    - [Correct ✅](#correct--2)
+    - [Incorrect ❌](#incorrect--2)
   - [11. Claude Project Setup](#11-claude-project-setup)
+    - [Template for Setup Process](#template-for-setup-process)
+    - [Correct Pattern ✅](#correct-pattern--4)
+    - [Why](#why-2)
+    - [Anti-Pattern ❌](#anti-pattern--4)
+    - [What Gets Audited](#what-gets-audited)
   - [11a. Documentation Naming Consistency](#11a-documentation-naming-consistency)
-  - [11b. Project Transportability & Renaming](#11b-project-transportability--renaming)
+    - [Correct Pattern ✅](#correct-pattern--5)
+    - [Why](#why-3)
+    - [What Gets Audited](#what-gets-audited-1)
+  - [11b. Project Transportability \& Renaming](#11b-project-transportability--renaming)
+    - [Rule 1: No Project Name in File Paths](#rule-1-no-project-name-in-file-paths)
+    - [Rule 2: No Absolute File References](#rule-2-no-absolute-file-references)
+    - [Rule 3: Easy Identification of Project Name in Documentation](#rule-3-easy-identification-of-project-name-in-documentation)
+    - [What Gets Audited](#what-gets-audited-2)
+    - [Benefit](#benefit)
   - [12. Audit Section in Project Metadata](#12-audit-section-in-project-metadata)
+    - [Why](#why-4)
   - [13. README.md for Human Navigation](#13-readmemd-for-human-navigation)
+    - [Correct ✅](#correct--3)
+    - [Incorrect ❌](#incorrect--3)
+    - [Why](#why-5)
   - [13. Documentation Markdown](#13-documentation-markdown)
+    - [Reference](#reference)
+    - [Why](#why-6)
   - [14. Glossary](#14-glossary)
-- [Guide Maintenance Standards](#guide-maintenance-standards)
-- [Quick Checklist](#quick-checklist)
-- [Examples](#examples)
-- [Changelog](#changelog)
-- [Keywords](#keywords)
+    - [Reference](#reference-1)
+    - [Rule](#rule)
+    - [Why](#why-7)
+  - [15. Todo List](#15-todo-list)
+    - [Reference](#reference-2)
+    - [Why](#why-8)
+  - [Guide Maintenance Standards](#guide-maintenance-standards)
+  - [Quick Checklist](#quick-checklist)
+  - [Examples](#examples)
+  - [Changelog](#changelog)
+    - [Version 1.6 — BP#11 Audit des instructions Desktop](#version-16--bp11-audit-des-instructions-desktop)
+    - [Version 1.5 — BP#14 Glossary](#version-15--bp14-glossary)
+    - [Version 1.4 — BP#16 : Table des matières obligatoire](#version-14--bp16--table-des-matières-obligatoire)
+    - [Version 1.3 — BP#1 Template Updated + BP#11 Deduplication](#version-13--bp1-template-updated--bp11-deduplication)
+    - [Version 1.2 — Refined BP #11 \& Added BP 11a \& 11b: Project Naming \& Portability Strategy](#version-12--refined-bp-11--added-bp-11a--11b-project-naming--portability-strategy)
+    - [Version 1.1 — Enhanced BP #11: Claude Project Setup](#version-11--enhanced-bp-11-claude-project-setup)
+    - [Version 1.0 — Initial Release](#version-10--initial-release)
+  - [Keywords](#keywords)
+  - [Index](#index)
 
 ---
 
@@ -72,7 +131,7 @@ Project name: [PROJECT-NAME]
 Project folder: C:\Users\RemiLequette\Development\projects\[PROJECT-NAME]
 
 1. Use the `filesystem` MCP tool to read INDEX.md at:
-   C:\Users\RemiLequette\Development\projects\claude-knowledge\INDEX.md
+   C:\Users\RemiLequette\Development\projects\knowledgebase\INDEX.md
 2. Use the `filesystem` MCP tool to read Claude.md at the root of the project folder.
 
 WHY: filesystem MCP reads from your local machine, not Claude's Linux container.
@@ -120,8 +179,7 @@ File: **`Claude.md`**
 
 Contains:
 - IMPERATIVE: Read context.md first (with comment explaining why)
-- Reference to `session-startup.md`
-- Claude-specific conventions to load
+- Claude-specific conventions to always load (beyond the decision layer)
 - Anything unique to Claude's workflow
 
 **Who reads it:** Claude, at the start of every session
@@ -162,8 +220,9 @@ This is a data pipeline project that processes customer transactions.
 WHY: This file contains project knowledge relevant to any AI system.
 Separating it from Claude-specific setup keeps the project portable and clear.
 
-**THEN: Load Claude-specific setup**
-- C:\Users\RemiLequette\Development\projects\claude-knowledge\workflows\session-startup.md
+**THEN: Claude.md loads project-specific setup**
+- The knowledge base bootstrap is handled by the Claude project instructions (INDEX.md)
+- Claude.md contains only project-specific additions
 
 ---
 
@@ -204,8 +263,7 @@ Then read Claude.md again
 ### Correct Pattern ✅
 ```
 Read context.md
-Then read workflows/session-startup.md
-Then proceed
+Then proceed with project-specific setup
 ```
 
 ---
@@ -215,15 +273,13 @@ Then proceed
 **Principle:** Load knowledge from knowledge base systematically, not ad-hoc.
 
 ### Correct Pattern ✅
-Claude.md specifies:
+Claude project instructions load INDEX.md directly:
 ```
-Read: workflows/session-startup.md
+Use the `filesystem` MCP tool to read INDEX.md at:
+C:\Users\RemiLequette\Development\projects\knowledgebase\INDEX.md
+```
 
-This workflow automatically loads:
-- INDEX.md (conventions overview)
-- Relevant conventions based on project type
-- Rules that apply
-```
+INDEX.md contains the decision layer — conventions are loaded based on the current task, not pre-loaded exhaustively.
 
 ### Anti-Pattern ❌
 ```
@@ -234,7 +290,7 @@ Load rules/tool-modification-protocol.md
 Load ...
 ```
 
-Reason: Session-startup.md already has this logic. Duplicate loading is inefficient.
+Reason: The decision layer in INDEX.md already handles this. Pre-loading everything is inefficient.
 
 ---
 
@@ -313,14 +369,14 @@ This project uses PostgreSQL. Always use psycopg2, never raw SQL strings.
 
 ### Correct ✅
 ```
-C:\Users\RemiLequette\Development\projects\claude-knowledge\workflows\session-startup.md
+C:\Users\RemiLequette\Development\projects\knowledgebase\INDEX.md
 ```
 
 ### Incorrect ❌
 ```
-./knowledge/workflows/session-startup.md
-../claude-knowledge/workflows/session-startup.md
-~/projects/claude-knowledge/...
+./knowledge/INDEX.md
+../knowledgebase/INDEX.md
+~/projects/knowledgebase/...
 ```
 
 Reason: Relative paths break when folder structure changes or is accessed from different locations.
@@ -333,9 +389,9 @@ Reason: Relative paths break when folder structure changes or is accessed from d
 
 ### Correct ✅
 ```
-1. Read context.md (generic project knowledge)
-2. Read session-startup.md (Claude setup)
-3. [Optional project-specific additions]
+1. Claude project instructions load INDEX.md (knowledge base bootstrap)
+2. Claude project instructions load Claude.md (project-specific setup)
+3. Claude.md: Read context.md (generic project knowledge)
 4. [Then proceed to request]
 ```
 
@@ -729,7 +785,7 @@ See `guides/guide-maintenance.md` for complete standards.
 - [ ] Claude Project instructions use `filesystem` MCP tool explicitly?
 - [ ] `context.md` exists and contains generic project knowledge?
 - [ ] `Claude.md` starts with: "Read context.md first"?
-- [ ] `Claude.md` references `session-startup.md`?
+- [ ] Claude project instructions load INDEX.md via `filesystem` MCP?
 - [ ] All external paths are absolute, not relative?
 - [ ] No circular references (files don't reference themselves)?
 - [ ] Rules have WHY comments explaining intent?
@@ -758,6 +814,24 @@ Both follow these best practices.
 ---
 
 ## Changelog
+
+### Version 1.7 — Suppression session-startup
+**Date:** 2026-05-31
+**Rationale:** session-startup.md supprime. Le bootstrap passe desormais directement par INDEX.md via les instructions Claude projet. Mise a jour de toutes les references.
+
+**Changes:**
+- Quick Start point 6 : "via session-startup" -> "via le decision layer dans INDEX.md"
+- BP#2 Claude-Specific Setup : suppression de la reference a session-startup.md
+- BP#2 exemple Claude.md : mis a jour
+- BP#3 Correct Pattern : mis a jour
+- BP#4 : session-startup remplace par INDEX.md + decision layer
+- BP#8 exemple correct : mis a jour (INDEX.md au lieu de session-startup.md)
+- BP#9 Correct Pattern : mis a jour
+- Quick Checklist : "references session-startup.md" -> "charge INDEX.md via filesystem MCP"
+
+**Benefit:** Aucune reference obsolete a session-startup.md. La convention reflète l'architecture actuelle.
+
+---
 
 ### Version 1.6 — BP#11 Audit des instructions Desktop
 **Date:** 2026-05-30

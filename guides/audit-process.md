@@ -301,7 +301,7 @@ Batch 1: Keywords Missing (Best Practice #14)
 - sqlite.md
 - commwise-layout.md
 - claude-chrome-mcp.md
-- session-startup.md
+- tools.md
 → Solution: Add "## Keywords" section with relevant terms
 
 Batch 2: Quick Start Section Missing (Best Practice #15)

@@ -2,32 +2,63 @@
 
 ## Quick Start
 
-Point d'entrée de la knowledge base — à lire en début de chaque session.
-Indique quels fichiers charger selon le type de tâche (fichiers, base de données, CSS, etc.).
-Ne contient pas les conventions elles-mêmes — sert uniquement de carte de navigation.
+Entry point for every Claude session in any project.
+Read this file first, then load only the conventions relevant to the current task.
+Does not contain the conventions themselves — navigation map only.
 
-## About this knowledge base
+---
 
-This repository captures conventions, patterns, and innovations discovered during work sessions with the designer. It is the canonical place to persist operational knowledge across Claude sessions.
+## Session Bootstrap
 
-**When to add here:**
-- A tool behaves unexpectedly and a workaround is found — document it.
-- A pattern proves reliable across multiple sessions — promote it.
-- The designer explicitly asks to remember something technical — it belongs here, not in ephemeral memory.
-- An innovation improves quality or reduces token cost noticeably — capture it.
+Execute these steps at the start of every session, before considering any user input.
 
-**How to add:**
-- Check `INDEX.md` first — the convention may already exist or belong in an existing file.
-- Create a new file in `conventions/` if the topic is distinct enough to stand alone.
-- Always update `INDEX.md` after adding or modifying a file — it is the entry point for every session.
+1. **Greet the user** — introduce yourself with the name given to you, remind the project folder and knowledge base folder.
+2. **Load the knowledge base** — state "Loading knowledge base...", then read this file (`INDEX.md`). Apply the Decision Layer below based on the current task.
+3. **Load the project context** — state "Loading project context...", then read `Claude.md` at the root of the project folder.
+4. **State the project** — state the project name and its purpose. If the project is unknown, report it clearly instead.
 
-**Format:** English only. Concise. Actionable. Prefer rules and examples over prose explanations.
+**If no `Claude.md` exists at the project root:** report it as a serious issue, contact Remi Lequette, and stop.
+
+---
+
+## AI Agents
+
+Agent-specific instructions. Apply only for the active agent.
+
+| Agent | Specificities |
+|-------|---------------|
+| Claude | None |
+
+---
+
+## Decision Layer — What to load
+
+Match the current task against the triggers below. Load only the files that match.
+
+| Trigger | Load |
+|---------|------|
+| Reading, writing, copying local files | `conventions/filesystem.md` |
+| Creating or editing a `.md` file | `conventions/documentation.md` |
+| SQL query, database read/write, schema change | `conventions/sqlite.md` |
+| CommWise layout, CSS, flex, viewport constraints | `conventions/commwise-layout.md` |
+| CommWise modal, overlay, disabled button | `conventions/commwise-modals.md` |
+| Live DOM debug, JS validation in browser | `conventions/claude-chrome-mcp.md` |
+| Complex analysis, structured reasoning, multi-step problem | `conventions/claude-structured-reasoning.md` |
+| `file://` HTML page with persistent storage | `conventions/indexeddb-file-protocol.md` |
+| Creating or auditing a GLOSSARY.md | `conventions/glossary.md` |
+| Node.js automation script, cross-project tool | `conventions/tools.md` |
+| Creating or managing a TODO.md | `conventions/todo.md` |
+| Setting up or auditing Claude project structure or instructions | `conventions/project-structure.md` |
+| Setting up a new Claude project | `guides/project-setup-process.md` |
+| Auditing a project for conformance | `guides/audit-process.md` |
+| Updating a guide file | `guides/guide-maintenance.md` |
+
+**If no trigger matches:** proceed without loading additional files.
 
 ---
 
 ## conventions/
 Technical and tooling conventions.
-**Load when:** working with files, tools, APIs, code patterns, or any technical setup.
 
 | File | Summary | Keywords |
 |------|---------|----------|
@@ -41,22 +72,13 @@ Technical and tooling conventions.
 | indexeddb-file-protocol.md | IndexedDB replaces localStorage for `file://` HTML pages — Chrome blocks localStorage in file:// context; IndexedDB works reliably. Includes reusable async snippet and migration table. | IndexedDB, localStorage, file-protocol, browser-storage, persistence, patch, HTML |
 | glossary.md | Convention pour GLOSSARY.md dans chaque projet — domaines, termes, references croisees, chargement selectif par un AI Assistant. Section ## Glossary obligatoire dans PROJECT.md. | glossaire, glossary, terminologie, domaines, definitions, conformite, audit |
 | tools.md | Node.js script-based tools — when to use, structure, standard interface (args, stdout, exit codes), invocation via commands MCP, output rules, catalogue. | tools, scripts, node, automation, token-efficiency, commands-mcp, cross-project |
-
----
-
-## workflows/
-Recurring processes and startup procedures.
-**Load when:** Starting a new session, or executing a specific workflow.
-
-| File | Summary | Keywords |
-|------|---------|----------|
-| session-startup.md | MANDATORY: Read INDEX.md, load project Claude.md, identify relevant conventions before answering. Checklist-based workflow. | startup, initialization, session, workflow, conventions |
+| todo.md | Lightweight backlog for any project — format, states, archiving, AI Assistant role. Two files: TODO.md (active) + TODO-archive.md (done). | todo, backlog, tasks, priority, archiving, session |
+| project-structure.md | Canonical structure for any Claude project — folder layout, mandatory files, Claude project instructions template, bootstrap chain. | project-structure, claude-project, instructions, template, bootstrap, scaffold |
 
 ---
 
 ## guides/
 Setup and configuration guides for new projects.
-**Load when:** Creating a new Claude Project, or setting up existing projects to use the knowledge base.
 
 | File | Summary | Keywords |
 |------|---------|----------|
@@ -68,7 +90,7 @@ Setup and configuration guides for new projects.
 ---
 
 ## Keywords
-index, conventions, workflows, guides, navigation, discoverability, knowledge-base
+index, conventions, workflows, guides, navigation, discoverability, knowledge-base, decision-layer
 
 ---
 
@@ -80,6 +102,57 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 1.7 - Ajout project-structure.md
+**Date:** 2026-05-31
+**Raison:** Nouvelle convention project-structure.md creee — source de verite pour la structure de projet et le template des instructions Claude.
+
+**Modifications :**
+- Ajout de `project-structure.md` dans la table conventions/
+- Ajout du trigger correspondant dans le Decision Layer
+
+---
+
+### Version 1.6 - Ajout todo.md
+**Date:** 2026-05-31
+**Raison:** Convention todo.md existante non referencee dans l'INDEX.
+
+**Modifications :**
+- Ajout de `todo.md` dans la table conventions/
+- Ajout du trigger `Creating or managing a TODO.md` dans le Decision Layer
+
+---
+
+### Version 1.5 - Session Bootstrap + AI Agents
+**Date:** 2026-05-31
+**Raison:** Fusion de KNOWLEDGEBASE.md et Claude.md dans INDEX.md. Elimination des fichiers relais et des allers-retours LLM inutiles.
+
+**Modifications :**
+- Ajout de `## Session Bootstrap` — instructions de demarrage de session (ancien KNOWLEDGEBASE.md)
+- Ajout de `## AI Agents` — specificites par agent IA (remplace Claude.md)
+- KNOWLEDGEBASE.md et Claude.md supprimes
+
+---
+
+### Version 1.4 - Suppression workflows/
+**Date:** 2026-05-31
+**Raison:** Dossier workflows/ vide apres suppression de session-startup.md — concept supprime.
+
+**Modifications :**
+- Suppression de la section `## workflows/`
+- Suppression du trigger `Starting a new session` dans le Decision Layer
+
+---
+
+### Version 1.3 - Decision layer + maintenance separation
+**Date:** 2026-05-31
+**Raison:** Refactoring de l'INDEX pour separer navigation (INDEX.md) et maintenance (PROJECT.md). Ajout du decision layer explicite.
+
+**Modifications :**
+- Suppression du bloc "About this knowledge base" (migre vers PROJECT.md ## KB Maintenance)
+- Ajout de `## Decision Layer` — mapping situation -> fichier a charger
+- Reformulation du Quick Start
+- Ajout du keyword `decision-layer`
 
 ### Version 1.2 - Tools convention
 **Date:** 2026-05-30

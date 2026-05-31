@@ -44,8 +44,9 @@ audit, maintenance). A guide is action-oriented, not rule-oriented.
 **See also:** Convention, Workflow
 
 ### Workflow
-**Definition:** Markdown file in `workflows/` describing a recurring sequence of steps
-to execute in a specific order (e.g. session-startup).  
+**Definition:** Recurring sequence of steps to execute in a specific order,
+documented as a Markdown file. Currently not used — the session bootstrap is handled
+directly by `INDEX.md`.  
 **See also:** Convention, Guide
 
 ### INDEX.md
@@ -73,8 +74,9 @@ Terms related to the lifecycle of a working session between an AI Assistant and 
 Relevant for understanding context loading, session continuity, and knowledge persistence.
 
 ### Session Startup
-**Definition:** Mandatory workflow executed at the start of every Claude session. Covers
-reading CLAUDE.md, loading INDEX.md, and loading relevant conventions before answering.  
+**Definition:** Sequence executed at the start of every Claude session. The Claude
+project instructions load `INDEX.md` directly (bootstrap + decision layer), then
+`Claude.md` for project-specific setup.  
 **See also:** [Knowledge Base — INDEX.md](#indexmd)
 
 ### Context Window

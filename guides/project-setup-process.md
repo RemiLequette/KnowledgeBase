@@ -121,17 +121,24 @@ See **Best Practice #9** (Top-Down, Linear structure).
 
 ## Step 2: Set Claude Desktop Instructions (Minimal)
 
-In Claude.ai or Claude Desktop project settings, set instructions to:
+In Claude.ai or Claude Desktop project settings, use the standard template from `conventions/project-structure.md`:
 
 ```
-Your project folder is: C:\Users\RemiLequette\Development\projects\[PROJECT_NAME]
+Project name: [PROJECT-NAME]
 
-Read Claude.md at the root of your project folder first.
+Project folder: C:\Users\RemiLequette\Development\projects\[PROJECT-NAME]
+
+Use the `filesystem` MCP tool to read INDEX.md at:
+C:\Users\RemiLequette\Development\projects\knowledgebase\INDEX.md
+
+Then use the `filesystem` MCP tool to read Claude.md at the root of the project folder.
+
+WHY: filesystem MCP reads from your local machine, not Claude's Linux container.
+INDEX.md bootstraps the session and loads shared conventions.
+Claude.md loads project-specific setup.
 ```
 
-**That's it. Keep it 2-3 lines max.**
-
-See **Best Practice #11** (Minimal & Pointing) and **Best Practice #1** (Instruction Minimalism).
+See `conventions/project-structure.md` for the canonical template and notes.
 
 ---
 
@@ -140,23 +147,20 @@ See **Best Practice #11** (Minimal & Pointing) and **Best Practice #1** (Instruc
 In your project root, create `Claude.md`:
 
 ```markdown
-# [PROJECT_NAME]
-
-Read and follow this first:
-C:\Users\RemiLequette\Development\projects\claude-knowledge\workflows\session-startup.md
-
----
+# [PROJECT-NAME]
 
 ## Project-Specific Setup
 
 [Add any project-specific instructions here]
 
 Examples:
-- Required conventions to load from knowledge base
+- Conventions to always load (beyond the decision layer)
 - File paths that matter for this project
-- Tools that are forbidden/required
-- Custom workflows or patterns unique to this project
+- Tools that are forbidden or required
+- Patterns unique to this project
 ```
+
+**Note:** The knowledge base bootstrap (INDEX.md) is handled by the Claude project instructions — not by Claude.md. Claude.md contains only project-specific setup.
 
 See **Best Practice #2** (Separate Claude-Specific from Generic Context).
 
@@ -253,7 +257,7 @@ Identify which conventions apply to your project:
 | CSS/Layout | `commwise-layout.md` | If CommWise project |
 | Other | Check INDEX.md | As needed |
 
-Reference them in your `Claude.md` via `session-startup.md`.
+Reference them explicitly in your `Claude.md` if they should always load, regardless of task.
 
 See **Best Practice #4** (Reference External Knowledge Correctly).
 
@@ -263,9 +267,9 @@ See **Best Practice #4** (Reference External Knowledge Correctly).
 
 Start a Claude session in your project and verify:
 
+- [ ] Claude reads `INDEX.md` automatically (via project instructions)
 - [ ] Claude reads `Claude.md` automatically
-- [ ] `session-startup.md` loads
-- [ ] Correct conventions are loaded
+- [ ] Correct conventions are loaded per decision layer
 - [ ] First request works as expected
 
 ---
@@ -273,7 +277,7 @@ Start a Claude session in your project and verify:
 ## Checklist: New Project Setup
 
 - [ ] Create folder: `C:\Users\RemiLequette\Development\projects\[PROJECT_NAME]`
-- [ ] Create `Claude.md` (minimal, references session-startup.md)
+- [ ] Create `Claude.md` (project-specific setup only)
 - [ ] Create `PROJECT.md` (with Audit section)
 - [ ] Create `README.md` (for humans)
 - [ ] Set Claude Desktop instructions (2-3 lines, point to Claude.md)
@@ -289,22 +293,28 @@ Start a Claude session in your project and verify:
 
 **Claude Project Instructions:**
 ```
-Your project folder is: C:\Users\RemiLequette\Development\projects\my-data-analysis
+Project name: my-data-analysis
 
-Read Claude.md at the root of your project folder first.
+Project folder: C:\Users\RemiLequette\Development\projects\my-data-analysis
+
+Use the `filesystem` MCP tool to read INDEX.md at:
+C:\Users\RemiLequette\Development\projects\knowledgebase\INDEX.md
+
+Then use the `filesystem` MCP tool to read Claude.md at the root of the project folder.
+
+WHY: filesystem MCP reads from your local machine, not Claude's Linux container.
+INDEX.md bootstraps the session and loads shared conventions.
+Claude.md loads project-specific setup.
 ```
 
 **Claude.md:**
 ```markdown
-# My Data Analysis Project
-
-Read and follow:
-C:\Users\RemiLequette\Development\projects\claude-knowledge\workflows\session-startup.md
+# my-data-analysis
 
 ## Setup
 
 This project analyzes data using SQLite.
-The sqlite.md convention should be loaded automatically.
+The sqlite.md convention will be loaded automatically when relevant.
 ```
 
 **PROJECT.md:**
@@ -335,10 +345,7 @@ Quick links:
 
 **Claude.md:**
 ```markdown
-# Complex Application
-
-Read and follow:
-C:\Users\RemiLequette\Development\projects\claude-knowledge\workflows\session-startup.md
+# complex-application
 
 ## Project-Specific Rules
 
@@ -362,7 +369,7 @@ C:\Users\RemiLequette\Development\projects\claude-knowledge\workflows\session-st
 ## Troubleshooting
 
 **Q: Claude doesn't load the knowledge base automatically**  
-A: Check that Claude.md references `session-startup.md` correctly. Verify the path is absolute and exact.
+A: Check that the Claude project instructions reference `INDEX.md` with the `filesystem` MCP tool. Verify the path is absolute and exact.
 
 **Q: I want to add a custom rule/convention**  
 A: Add a new file to `conventions/` in the knowledge base and reference it in your Claude.md.
@@ -402,6 +409,21 @@ See `guides/best-practices.md` for all 15 practices.
 ---
 
 ## Changelog
+
+### Version 1.1 — Suppression session-startup
+**Date:** 2026-05-31
+**Raison:** session-startup.md supprime. Le bootstrap passe desormais directement par INDEX.md via les instructions Claude projet.
+
+**Modifications :**
+- Step 2 : nouveau template d'instructions depuis conventions/project-structure.md
+- Step 3 : Claude.md ne reference plus session-startup.md — bootstrap gere par les instructions projet
+- Step 6 : reference a session-startup supprimee
+- Step 7 : checklist mise a jour (INDEX.md au lieu de session-startup.md)
+- Checklist : libelle corrige
+- Exemples : templates mis a jour (Minimal + Complex)
+- Troubleshooting : reponse mise a jour
+
+---
 
 ### Version 1.0 — Initial Release
 **Date:** 2026-05-29  

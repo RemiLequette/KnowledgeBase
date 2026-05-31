@@ -1,277 +1,178 @@
 # Documentation Convention
 
-Rules for all Markdown files across all projects.
+Rules for all Markdown documents across all projects.
 
 ## Quick Start
 
-Convention universelle pour tous les fichiers Markdown du projet — structure, titres, navigation, traçabilité.
-Charger quand on crée ou modifie un fichier Markdown, ou quand on audite la conformité documentaire d'un projet.
-Ne couvre pas le contenu métier des fichiers — uniquement leur forme et leur organisation.
-Voir [Indexation en base de données](#indexation-en-base-de-données) pour les implications sur la rédaction et les citations.
+Universal convention for all Markdown files (referred to as "documents" in the rest of this convention) — structure, headings, navigation, traceability.
+Load when creating or modifying a document, or when auditing documentation conformance.
+Does not cover the business content of documents — only their form and organization.
+See [Tooling](#tooling) for why these rules are strict. See [Citations](#citations) for inter-document reference format.
 
 ## Keywords
-documentation, markdown, titres, ancres, TOC, index, keywords, changelog, quick-start, convention, navigation, VS-Code
+documentation, markdown, headings, anchors, TOC, index, keywords, changelog, quick-start, convention, navigation, VS-Code, tooling, citations
 
-## Table des matieres
+## Table of Contents
 
-1. [Structure des sections](#structure-des-sections)
-2. [Langue](#langue)
-3. [Numerotation](#numerotation)
-4. [TOC](#toc)
-5. [Regle Keywords](#regle-keywords)
-6. [Regle Index](#regle-index)
-7. [Regle Changelog](#regle-changelog)
-8. [Indexation en base de données](#indexation-en-base-de-données)
-9. [Regle Quick Start](#regle-quick-start)
+1. [Document Structure](#document-structure)
+2. [Section Structure](#section-structure)
+3. [Language](#language)
+4. [Numbering](#numbering)
+5. [Quick Start Rule](#quick-start-rule)
+6. [Keywords Rule](#keywords-rule)
+7. [TOC Rule](#toc-rule)
+8. [Index Rule](#index-rule)
+9. [Changelog Rule](#changelog-rule)
+10. [Citations](#citations)
+11. [Tooling](#tooling)
 
 ---
 
-## Structure des sections
-[up](#table-des-matieres)
+## Document Structure
+[up](#table-of-contents)
 
-### Titres
+Canonical structure of any document. Elements must appear in this exact order.
 
-Les titres servent de base aux ancres de navigation. Tout caractere non standard casse les ancres.
+```
+# Title
 
-**Regle :** Les titres (`#`, `##`, `###`) sont composes uniquement de :
-- Caracteres alphanumeriques
-- Accents (`é`, `è`, `à`, `û`, etc.)
-- Espaces
-- Tirets `-`
+Short description (1-2 lines, plain text, no markup)
 
-**Interdit dans les titres :**
+*Language: ...*            <- optional, see Language
+
+## Quick Start             <- mandatory, see Quick Start Rule
+## Keywords                <- mandatory, see Keywords Rule
+## Table of Contents       <- mandatory if more than 2 content sections, see TOC Rule
+
+## Section 1               <- content sections
+## Section 2
+...
+
+## Index                   <- mandatory, in TOC, see Index Rule
+## Changelog               <- mandatory, NOT in TOC, see Changelog Rule
+```
+
+| Element | Status | Rule |
+|---------|--------|------|
+| `# Title` | Mandatory | Unique, plain text |
+| Short description | Mandatory | 1-2 lines under title, no markup |
+| Language declaration | Optional | Required only when not English — see [Language](#language) |
+| `## Quick Start` | Mandatory | See [Quick Start Rule](#quick-start-rule) |
+| `## Keywords` | Mandatory | See [Keywords Rule](#keywords-rule) |
+| `## Table of Contents` | Conditional | Required if more than 2 content sections — see [TOC Rule](#toc-rule) |
+| Content sections | At least 1 | See [Section Structure](#section-structure) |
+| `## Index` | Mandatory | Included in TOC — see [Index Rule](#index-rule) |
+| `## Changelog` | Mandatory | Excluded from TOC — see [Changelog Rule](#changelog-rule) |
+
+**Standard section names are fixed in English regardless of document language** — see [Language](#language).
+
+**Excluded from TOC count:** `## Quick Start`, `## Keywords`, `## Table of Contents`, `## Changelog`.
+
+---
+
+## Section Structure
+[up](#table-of-contents)
+
+### Headings
+
+Headings are the basis for navigation anchors. Any non-standard character breaks anchors.
+
+**Rule:** Headings (`#`, `##`, `###`) must consist only of:
+- Alphanumeric characters
+- Accented characters (`é`, `è`, `à`, `û`, etc.)
+- Spaces
+- Hyphens `-`
+
+**Forbidden in headings:**
 - Emojis
-- Ponctuation speciale (`.`, `:`, `!`, `?`, `—`, `'`, etc.)
-- Symboles (`↑`, `⏸`, `✅`, etc.)
-- Caracteres encodes (`%XX`)
+- Special punctuation (`.`, `:`, `!`, `?`, `—`, `'`, etc.)
+- Symbols (`↑`, `⏸`, `✅`, etc.)
+- Encoded characters (`%XX`)
 
-**Unicite :** Chaque titre `##` doit etre unique dans le fichier — les doublons cassent les ancres.
+**Uniqueness:** Each `##` heading must be unique within the document — duplicates break anchors.
 
-#### Exemples
+#### Examples
 
 | Incorrect | Correct |
 |-----------|---------|
-| `## 1. Vue d'ensemble ⏸️` | `## 1 - Vue densemble` |
-| `## Etape 1: Charger le contexte` | `## Etape 1 - Charger le contexte` |
-| `## ✅ Resultats` | `## Resultats` |
-| `## Balisage — contrat HTML↔scripts` | `## Balisage - contrat HTML et scripts` |
+| `## 1. Overview ⏸️` | `## 1 - Overview` |
+| `## Step 1: Load context` | `## Step 1 - Load context` |
+| `## ✅ Results` | `## Results` |
+| `## Layout — HTML↔scripts contract` | `## Layout - HTML and scripts contract` |
 
 ---
 
-### Longueur et découpage
+### Length and Splitting
 
-Une section `##` doit couvrir un seul sujet, traitable en une lecture.
+A `##` section must cover a single topic, readable in one sitting.
 
-Si une section nécessite plusieurs sous-thèmes distincts, la diviser en sections séparées. Une section trop longue est souvent le signe qu'elle couvre plusieurs sujets.
+If a section requires several distinct sub-topics, split it into separate sections. A section that is too long usually covers multiple subjects.
 
-Cette règle s'applique aussi à la lisibilité pour un AI Assistant : une section trop large augmente le coût de chargement sans améliorer la pertinence.
-
----
-
-### Sous-sections
-
-Utiliser `###` pour structurer le contenu interne d'une section sans alourdir la TOC — les sous-sections n'y apparaissent pas.
-
-Si une `###` devient une cible de citation ou de navigation autonome, la promouvoir en `##`.
+This rule also applies to readability for an AI Assistant: an overly large section increases loading cost without improving relevance.
 
 ---
 
-## TOC
-[up](#table-des-matieres)
+### Subsections
 
-### Regle
+Use `###` to structure internal content of a section without bloating the TOC — subsections do not appear in it.
 
-Tout fichier Markdown avec plus de 2 sections `##` de contenu doit avoir une TOC.
+If a `###` becomes an autonomous citation or navigation target, promote it to `##`.
 
-- Le seuil s'evalue sur les sections de contenu uniquement — `## Quick Start`, `## Keywords`, `## Table des matieres`, `## Index` et `## Changelog` sont exclus du comptage
-- Titre fixe : `## Table des matieres`
-- La TOC liste uniquement les sections de premier niveau (`##`), pas les sous-sections (`###`)
-- Placement : apres `## Keywords`, avant le premier `##` de contenu
+---
 
-### Format des ancres
+## Language
+[up](#table-of-contents)
 
-VS Code genere les ancres selon ces regles :
-- Tout en minuscules
-- Espaces convertis en tirets `-`
-- Accents conserves (`é`, `à`, `û`, etc.)
-- Caracteres speciaux supprimes (sauf tirets)
-- Apostrophes supprimees
-- Un tiret entoure d'espaces (` - `) genere 3 tirets dans l'ancre (`---`) — privilegier les titres sans tirets pour des ancres plus lisibles
+The default language of all documents is **English**.
 
-| Titre | Ancre VS Code |
-|-------|--------------|
-| `## Table des matieres` | `#table-des-matieres` |
-| `## Scripts` | `#scripts` |
-| `## Gestion de lhistorique` | `#gestion-de-lhistorique` |
-| `## Etape 1 - Chargement` | `#etape-1---chargement` |
-| `## 1. Vue d'ensemble` | `#1-vue-densemble` |
-| `## 2. Balisage - contrat HTML et scripts` | `#2-balisage---contrat-html-et-scripts` |
+### Standard section names
 
-**Note :** GitHub utilise des règles différentes (les accents sont encodés en `%XX`). Cette convention cible VS Code uniquement.
+The following section names are **fixed in English regardless of the document language**. Tools rely on these exact names to parse and process documents.
 
-### Quand utiliser une TOC
+| Section | Fixed name |
+|---------|------------|
+| Quick Start | `## Quick Start` |
+| Keywords | `## Keywords` |
+| Table of Contents | `## Table of Contents` |
+| Index | `## Index` |
+| Changelog | `## Changelog` |
 
-Une TOC est nécessaire quand le document ne gagne pas à être lu en une fois — soit parce qu'il est long, soit parce que le lecteur a besoin de naviguer vers une section spécifique (lisibilité, indexation).
+Content inside these sections may be written in any language. The section name itself must never be translated.
 
-Pour être valide, une TOC doit :
-- Avoir le titre fixe `## Table des matieres`
-- Lister les sections `##` avec des ancres correspondant exactement aux titres réels
-- Être accompagnée de liens retour `[up]` sous chaque titre de section
+### Language exceptions
 
-### Format de la TOC
+**Tooling-imposed names:** When external tools or systems impose predefined names in another language (section titles, field names, configuration keys), those names may be kept as-is. Declare the exception under the document title:
 
 ```markdown
-## Table des matieres
+# Document Title
 
-1. [Titre section 1](#ancre-1)
-2. [Titre section 2](#ancre-2)
-3. [Titre section 3](#ancre-3)
+*Language: English. Exception: [section name] uses French — imposed by [tool/system name].*
 ```
 
-### Lien retour
-
-Chaque section `##` de contenu porte un lien retour vers la TOC, place **sur la ligne suivant le titre** (pas dans le titre — cela casserait l'ancre).
+**Document in another language:** If a document is intentionally written in another language, declare it under the title with a short justification:
 
 ```markdown
-## Ma Section
-[up](#table-des-matieres)
+# Document Title
 
-Contenu de la section...
+*Language: French — this document targets a French-speaking team.*
 ```
 
 ---
 
-## Regle Keywords
-[up](#table-des-matieres)
-
-### Regle
-
-Tout fichier Markdown doit avoir une section `## Keywords` placee apres le Quick Start, avant la TOC.
-
-### Format
-
-```markdown
-## Keywords
-mot-cle-1, mot-cle-2, mot-cle-3
-```
-
-### Criteres
-
-- Termes de 1 a 3 mots, separes par des virgules
-- Couvrent le sujet, les outils, les contextes d'usage
-- Permettent de retrouver le fichier par recherche dans la KB
-
----
-
-## Regle Index
-[up](#table-des-matieres)
-
-### Regle
-
-Tout fichier Markdown doit avoir une section `## Index` en fin de fichier, avant `## Changelog`.
-
-L'index liste les termes importants du fichier avec des pointeurs vers leurs occurrences dans le texte.
-
-### Balises dans le texte
-
-Chaque occurrence a indexer est balisee avec une ancre HTML :
-
-```markdown
-La notion de <a id="index-terme-N">terme</a> est importante.
-```
-
-- Format de l'id : `index-terme-N` ou `terme` est le mot indexe et `N` le numero d'occurrence
-- La balise est invisible dans le preview Markdown
-- Le texte du terme reste visible normalement
-
-### Format de l'index
-
-```markdown
-## Index
-
-| Terme | Occurrences |
-|-------|-------------|
-| terme-1 | [1](#index-terme-1), [2](#index-terme-2) |
-| terme-2 | [1](#index-terme2-1) |
-```
-
-### Exemple complet
-
-Dans le texte :
-```markdown
-La <a id="index-convention-1">convention</a> de nommage est stricte.
-...
-Cette <a id="index-convention-2">convention</a> s'applique a tous les fichiers.
-```
-
-Dans l'index :
-```markdown
-## Index
-
-| Terme | Occurrences |
-|-------|-------------|
-| convention | [1](#index-convention-1), [2](#index-convention-2) |
-```
-
----
-
-## Regle Changelog
-[up](#table-des-matieres)
-
-### Regle
-
-Tout fichier qui evolue dans le temps doit avoir un `## Changelog` en fin de fichier, apres `## Index`.
-
-### Format
-
-```markdown
-## Changelog
-
-### Version X.Y - Titre court
-**Date:** YYYY-MM-DD
-**Raison:** Pourquoi ce changement.
-
-**Modifications :**
-- Changement 1
-- Changement 2
-```
-
-### Versionnage
-
-- `X.0` — changement majeur (restructuration, nouvelle regle importante)
-- `X.Y` — ajout ou modification mineure
-
----
-
-## Langue
-[up](#table-des-matieres)
-
-La langue par defaut de tout fichier Markdown est l'**anglais**.
-
-Si une autre langue est utilisee, elle doit etre declaree sous le titre du fichier avec une courte justification :
-
-```markdown
-# Titre du fichier
-
-*Langue : français — ce document est destine a une equipe francophone.*
-```
-
----
-
-## Numerotation
-[up](#table-des-matieres)
+## Numbering
+[up](#table-of-contents)
 
 ### Usage
 
-Les numéros attribués à des items (BP#1, Rule 3, etc.) servent à deux usages :
-- **Navigation interne** — se repérer dans un document long
-- **Discussion** — permettre de référencer rapidement un point pendant un échange avec un humain
+Numbers assigned to items (BP#1, Rule 3, etc.) serve two purposes:
+- **Internal navigation** — orientation within a long document
+- **Discussion** — quick reference during a conversation with a human
 
-Ce sont des outils contextuels, pas des identifiants stables.
+They are contextual tools, not stable identifiers.
 
-### Règle
+### Rule
 
-Ne jamais citer un item numéroté d'un autre document. Pour référencer une idée externe, citer le document ou une section par son titre.
+Never cite a numbered item from another document. To reference an external idea, cite the document or a section by its title.
 
 **Correct ✅**
 ```
@@ -285,214 +186,423 @@ Implements BP#1, BP#2, BP#8
 See Rule 3
 ```
 
-### Pas de registre obligatoire
+### No mandatory registry
 
-Les numéros n'étant pas des identifiants inter-documents, aucun registre n'est requis.
+Since numbers are not inter-document identifiers, no registry is required.
 
 ---
 
-## Indexation en base de données
-[up](#table-des-matieres)
+## Quick Start Rule
+[up](#table-of-contents)
 
-Cette convention est conçue pour supporter une indexation future des fichiers Markdown dans une base de données documentaire, afin d'accélérer la découverte et le chargement par les AI Assistants.
+### Rule
 
-### Implications sur la rédaction
+Every document must begin with a `## Quick Start` describing it in 3 to 6 lines.
 
-- **Quick Start** — doit être suffisamment descriptif pour servir de résumé indexable. Un moteur de recherche s'appuie dessus pour qualifier la pertinence d'un document sans le charger entièrement.
-- **Keywords** — doivent couvrir les termes de recherche réels par lesquels on chercherait ce fichier.
-- **Citations inter-documents** — doivent pointer vers une cible identifiable dans la base. Les numéros (BP#1, Rule 3) ne sont pas des identifiants indexables.
+### Writing guidance
 
-### Format des citations
+The Quick Start is the primary entry point for both humans and tools. It must be descriptive enough to allow relevance assessment without loading the full document.
 
-Utiliser des chemins relatifs depuis la racine du projet. Quatre formes de citation, combinables :
+- A search engine or AI tool uses it to decide whether to load this document at all
+- A human uses it to decide whether to read further
+- Keep it factual and specific — vague Quick Starts force full document loads
 
-```
-voir conventions/filesystem.md
-voir conventions/filesystem.md [section Optimal strategy by operation type]
-voir conventions/filesystem.md [keyword node]
-voir conventions/filesystem.md [index node-1]
-```
+### Purpose
 
-| Forme | Syntaxe | Cible |
-|-------|---------|-------|
-| Document | `voir path/fichier.md` | Le fichier entier |
-| Section | `voir path/fichier.md [section Titre de section]` | Un titre `##` sans numéro |
-| Keyword | `voir path/fichier.md [keyword terme]` | Un terme dans `## Keywords` |
-| Index | `voir path/fichier.md [index terme-N]` | Une ancre `## Index` spécifique |
+The Quick Start is an **orientation summary** — it answers the question "does this document concern me?"
 
-**Règle :** ne jamais citer par numéro (`BP#1`, `Rule 3`) — les numéros sont des outils de navigation interne et de discussion, pas des identifiants indexables.
+Two types of readers have different needs:
 
-## Regle Quick Start
-[up](#table-des-matieres)
+**Human** — wants to quickly understand the theme and scope before deciding to read in detail. They scan, they do not read linearly.
 
-### Regle
+**AI Assistant** — must decide at session start whether this document is relevant to the current task and worth loading into context. Each document loaded has a double cost: in **tokens** (limited context window) and in **relevance** (a context cluttered with irrelevant documents degrades response quality).
 
-Tout fichier Markdown doit commencer par un `## Quick Start` decrivant le document en 3 a 6 lignes.
+**Note:** When referring to an AI assistant in a document, do not use a specific name (Claude, Gemini, etc.) — use "AI Assistant".
 
-### Objectif
+The Quick Start must therefore answer:
+- **Theme** — what this document is about
+- **Scope** — what it covers and what it does not cover
+- **Conditions** — in what situations it is useful to read or load it
 
-Le Quick Start est un **resume d'orientation** — il repond a la question "est-ce que ce document me concerne ?"
+Combined with `## Keywords`, it allows a human or an AI to decide in seconds whether the document is relevant.
 
-Deux types de lecteurs ont des besoins differents :
+### What the Quick Start is not
 
-**Humain** — veut comprendre rapidement le theme et la portee du document avant de decider de le lire en detail. Il scanne, il ne lit pas lineairement.
-
-**AI Assistant** — doit decider en debut de session si ce fichier est pertinent pour la tache en cours et vaut la peine d'etre charge dans le contexte. Chaque fichier charge a un cout double : en **tokens** (fenetre de contexte limitee) et en **pertinence** (un contexte encombre de fichiers non pertinents degrade la qualite des reponses).
-
-**Note :** Quand on mentionne un assistant IA dans un document, ne pas utiliser de nom specifique (Claude, Gemini, etc.) — utiliser "AI Assistant".
-
-Le Quick Start doit donc repondre a :
-- **Theme** — de quoi parle ce document
-- **Portee** — ce qu'il couvre et ce qu'il ne couvre pas
-- **Conditions** — dans quelles situations il est utile de le lire ou de le charger
-
-Combine avec `## Keywords`, il permet a un humain ou une IA de decider en quelques secondes si le document est pertinent.
-
-### Ce que le Quick Start n'est pas
-
-- Pas un resume exhaustif du contenu
-- Pas une liste des sections (c'est le role de la TOC)
-- Pas un guide d'action etape par etape
-- Pas une enumeration chiffree du contenu ("X techniques", "Y principes") — ces nombres divergent avec le contenu reel et n'apportent aucune information utile au lecteur
+- Not an exhaustive summary of the content
+- Not a list of sections (that is the role of the TOC)
+- Not a step-by-step action guide
+- Not a numbered enumeration of content ("X techniques", "Y principles") — these numbers diverge from actual content and provide no useful information to the reader
 
 ### Placement
 
-Juste apres le titre `#` et la description courte, avant `## Keywords`.
+Immediately after the `#` title and short description, before `## Keywords`.
 
 ### Format
 
 ```markdown
 ## Quick Start
 
-[Theme : de quoi parle ce document]
-[Portee : ce qu'il couvre / ne couvre pas]
-[Conditions : quand le charger ou le lire]
+[Theme: what this document is about]
+[Scope: what it covers / does not cover]
+[Conditions: when to load or read it]
 ```
+
+---
+
+## Keywords Rule
+[up](#table-of-contents)
+
+### Rule
+
+Every document must have a `## Keywords` section placed after Quick Start, before the TOC.
+
+### Format
+
+```markdown
+## Keywords
+keyword-1, keyword-2, keyword-3
+```
+
+### Criteria
+
+- Terms of 1 to 3 words, comma-separated
+- Cover the subject, tools, and usage contexts
+- Allow the document to be found by search in the KB
+
+---
+
+## TOC Rule
+[up](#table-of-contents)
+
+### Rule
+
+Any document with more than 2 content `##` sections must have a TOC.
+
+- The threshold is evaluated on content sections only — `## Quick Start`, `## Keywords`, `## Table of Contents`, and `## Changelog` are excluded from the count
+- `## Index` is included in the count and must appear in the TOC
+- Fixed title: `## Table of Contents`
+- The TOC lists only top-level sections (`##`), not subsections (`###`)
+- Placement: after `## Keywords`, before the first content `##`
+
+### Anchor format
+
+VS Code generates anchors according to these rules:
+- All lowercase
+- Spaces converted to hyphens `-`
+- Accented characters preserved (`é`, `à`, `û`, etc.)
+- Special characters removed (except hyphens)
+- Apostrophes removed
+- A hyphen surrounded by spaces (` - `) generates 3 hyphens in the anchor (`---`) — prefer titles without hyphens for cleaner anchors
+
+| Heading | VS Code anchor |
+|---------|---------------|
+| `## Table of Contents` | `#table-of-contents` |
+| `## Scripts` | `#scripts` |
+| `## History Management` | `#history-management` |
+| `## Step 1 - Loading` | `#step-1---loading` |
+| `## 1. Overview` | `#1-overview` |
+| `## 2. Layout - HTML and scripts` | `#2-layout---html-and-scripts` |
+
+**Note:** GitHub uses different rules (accented characters are encoded as `%XX`). This convention targets VS Code only.
+
+### When to use a TOC
+
+A TOC is necessary when the document does not benefit from being read in one sitting — either because it is long, or because the reader needs to navigate to a specific section.
+
+To be valid, a TOC must:
+- Have the fixed title `## Table of Contents`
+- List `##` sections with anchors matching the actual headings exactly
+- Be accompanied by `[up]` return links under each section heading
+
+### TOC format
+
+```markdown
+## Table of Contents
+
+1. [Section title 1](#anchor-1)
+2. [Section title 2](#anchor-2)
+3. [Section title 3](#anchor-3)
+```
+
+### Return link
+
+Each content `##` section carries a return link to the TOC, placed **on the line following the heading** (not in the heading — that would break the anchor).
+
+```markdown
+## My Section
+[up](#table-of-contents)
+
+Section content...
+```
+
+---
+
+## Index Rule
+[up](#table-of-contents)
+
+### Rule
+
+Every document must have a `## Index` section before `## Changelog`.
+
+The index lists important terms with pointers to their occurrences in the text.
+
+### Inline tags
+
+Each occurrence to index is tagged with an HTML anchor:
+
+```markdown
+The notion of <a id="index-term-N">term</a> is important.
+```
+
+- ID format: `index-term-N` where `term` is the indexed word and `N` is the occurrence number
+- The tag is invisible in Markdown preview
+- The term text remains normally visible
+
+### Index format
+
+```markdown
+## Index
+
+| Term | Occurrences |
+|------|-------------|
+| term-1 | [1](#index-term-1), [2](#index-term-2) |
+| term-2 | [1](#index-term2-1) |
+```
+
+### Full example
+
+In the text:
+```markdown
+The <a id="index-convention-1">convention</a> for naming is strict.
+...
+This <a id="index-convention-2">convention</a> applies to all documents.
+```
+
+In the index:
+```markdown
+## Index
+
+| Term | Occurrences |
+|------|-------------|
+| convention | [1](#index-convention-1), [2](#index-convention-2) |
+```
+
+---
+
+## Changelog Rule
+[up](#table-of-contents)
+
+### Rule
+
+Any document that evolves over time must have a `## Changelog` at the end, after `## Index`.
+
+### Format
+
+```markdown
+## Changelog
+
+### Version X.Y - Short title
+**Date:** YYYY-MM-DD
+**Reason:** Why this change.
+
+**Changes:**
+- Change 1
+- Change 2
+```
+
+### Versioning
+
+- `X.0` — major change (restructuring, important new rule)
+- `X.Y` — minor addition or modification
+
+---
+
+## Citations
+[up](#table-of-contents)
+
+Inter-document citations must point to an identifiable, stable target. Numbers (`BP#1`, `Rule 3`) are not valid citation targets — they are contextual navigation tools, not stable identifiers.
+
+### Citation forms
+
+Use paths relative to the project root. Four forms, combinable:
+
+```
+see conventions/filesystem.md
+see conventions/filesystem.md [section Optimal strategy by operation type]
+see conventions/filesystem.md [keyword node]
+see conventions/filesystem.md [index node-1]
+```
+
+| Form | Syntax | Target |
+|------|--------|--------|
+| Document | `see path/file.md` | The entire document |
+| Section | `see path/file.md [section Section Title]` | A `##` heading |
+| Keyword | `see path/file.md [keyword term]` | A term in `## Keywords` |
+| Index | `see path/file.md [index term-N]` | A specific `## Index` anchor |
+
+### Rule
+
+Never cite by number. To reference an idea from another document, cite the document or section by its title.
+
+**Correct ✅**
+```
+see guides/best-practices.md
+see guides/best-practices.md [section Instruction Minimalism]
+```
+
+**Incorrect ❌**
+```
+Implements BP#1, BP#2
+See Rule 3
+```
+
+---
+
+## Tooling
+[up](#table-of-contents)
+
+The strict rules in this convention exist to support tooling built on top of the documentation structure. Three categories of tools depend on it:
+
+**Viewers** — render documents as structured, navigable interfaces. They rely on section names, order, and heading format to build navigation trees, breadcrumbs, and section renderers. Any deviation breaks the rendering.
+
+**AI Assistant tools (md-doc)** — allow AI Assistants to load or modify only the sections relevant to the current task, instead of loading the entire document. This reduces token consumption and improves precision. md-doc identifies sections by their exact name — which is why standard section names must never be translated or altered.
+
+**Automation** — mechanical tasks that should not consume AI tokens: rebuilding a TOC from actual headings, verifying conformance (missing sections, empty Keywords, duplicate headings), generating skeletons for new documents. These tools are more reliable and cheaper than asking an AI to do the same work.
+
+All three depend on the same invariants: fixed section names, canonical order, unique headings, and standard anchor format.
 
 ---
 
 ## Index
 
-| Terme | Occurrences |
-|-------|-------------|
-| ancre | [1](#index-ancre-1), [2](#index-ancre-2), [3](#index-ancre-3) |
+| Term | Occurrences |
+|------|-------------|
+| anchor | [1](#index-anchor-1), [2](#index-anchor-2), [3](#index-anchor-3) |
 | TOC | [1](#index-toc-1) |
-| titre | [1](#index-titre-1) |
+| heading | [1](#index-heading-1) |
 
 ---
 
 ## Changelog
 
-### Version 2.6 - Structure des sections
+### Version 4.0 - Terminology, ordering, naming consistency
+**Date:** 2026-05-31
+**Reason:** "Markdown file" replaced by "document" throughout (except Quick Start definition). Sections reordered to match Document Structure order. TOC renamed to TOC Rule. Database Indexing removed; replaced by Tooling and Citations. File Structure renamed to Document Structure.
+
+**Changes:**
+- "Markdown file" -> "document" everywhere except Quick Start first line
+- `## File Structure` renamed `## Document Structure`
+- `## TOC` renamed `## TOC Rule`
+- Sections reordered: Document Structure, Section Structure, Language, Numbering, Quick Start Rule, Keywords Rule, TOC Rule, Index Rule, Changelog Rule, Citations, Tooling
+- Tooling moved to last position
+- Citations moved just before Tooling
+- TOC updated to match new order and names
+- Keywords updated
+
+---
+
+### Version 3.4 - Tooling and Citations sections
+**Date:** 2026-05-31
+**Reason:** Database Indexing replaced by Tooling and Citations. Writing guidance added to Quick Start Rule.
+
+**Changes:**
+- Removed `## Database Indexing`
+- Added `## Tooling`, `## Citations`
+- Added `### Writing guidance` in Quick Start Rule
+
+---
+
+### Version 3.3 - Index included in TOC
+**Date:** 2026-05-31
+
+**Changes:**
+- `## Index` removed from TOC exclusion list
+
+---
+
+### Version 3.2 - Standard section names
+**Date:** 2026-05-31
+
+**Changes:**
+- `## Language`: added standard section names table
+
+---
+
+### Version 3.1 - File Structure section added
+**Date:** 2026-05-31
+
+**Changes:**
+- Added `## File Structure` with canonical skeleton and status table
+
+---
+
+### Version 3.0 - Full translation to English
+**Date:** 2026-05-31
+**Reason:** Document was written in French, violating its own language convention.
+
+**Changes:**
+- Full content translated to English
+- All section headings translated
+- Language exception rule added
+
+---
+
+### Version 2.6 - Section structure
 **Date:** 2026-05-30
-**Raison:** Regrouper les règles sur les titres, la longueur et les sous-sections dans une section dédiée. Rendre la convention plus navigable et cohérente.
 
-**Modifications :**
-- `## Titres` renommée `## Structure des sections`
-- Contenu titres déplacé en `### Titres` (sous-section)
-- Ajout `### Longueur et découpage` : une section = un sujet, traitable en une lecture
-- Ajout `### Sous-sections` : usage de `###`, promotion en `##` si citable
-- TOC mise à jour
+**Changes:**
+- Added `### Length and Splitting`, `### Subsections`
 
-### Version 2.5 - Fusion markdown-toc.md
+---
+
+### Version 2.5 - Merge markdown-toc.md
 **Date:** 2026-05-30
-**Raison:** `markdown-toc.md` couvrait partiellement le même périmètre avec des contenus distincts et une contradiction (lien retour dans le titre vs après). Fusion dans cette convention, suppression de `markdown-toc.md`.
 
-**Modifications :**
-- Ajout d'exemples d'ancres avec titres numérotés dans le tableau `## TOC`
-- Ajout note GitHub vs VS Code (règles d'ancres différentes)
-- Remplacement du critère d'audit mécanique par une règle de jugement : TOC nécessaire quand le document ne gagne pas à être lu en une fois
-- Rappels de validité TOC (titre fixe, ancres correctes, liens retour)
-- Suppression de `markdown-toc.md` et retrait de `INDEX.md`
+**Changes:**
+- Anchor examples, GitHub vs VS Code note, judgment-based TOC rule
 
-### Version 2.4 - Indexation en base de données et citations typées
+---
+
+### Version 2.4 - Database indexing and typed citations
 **Date:** 2026-05-30
-**Raison:** Préparer la convention pour une indexation future en base de données documentaire. Formaliser le format des citations inter-documents avec quatre formes typées.
 
-**Modifications :**
-- Ajout de la section `## Indexation en base de données` : implications sur Quick Start, Keywords, citations
-- Format de citation structuré : Document, Section, Keyword, Index — avec chemins relatifs
-- Règle explicite : ne jamais citer par numéro (BP#1, Rule 3)
-- Quick Start mis à jour avec lien vers la nouvelle section
-- TOC mise à jour
+**Changes:**
+- Added `## Database Indexing` with citation format table
 
-### Version 2.3 - Numerotation reformulee - Quick Start corrige
+---
+
+### Version 2.3 - Numbering reformulated
 **Date:** 2026-05-30
-**Raison:** La numérotation était définie comme un identifiant stable inter-documents, ce qui créait un problème de citations fragiles. Reformulation : les numéros sont des outils contextuels (navigation interne + discussion). Suppression du registre obligatoire. Quick Start du fichier corrigé pour être conforme à sa propre règle.
 
-**Modifications :**
-- Section `## Numerotation` reformulée : usage (navigation + discussion), règle (ne pas citer entre documents), suppression du registre obligatoire
-- Quick Start remplacé : liste mécanique -> résumé d'orientation (thème, portée, conditions)
+**Changes:**
+- Numbering redefined as contextual tool, registry removed
 
-### Version 2.2 - Quick Start - interdiction des enumerations chiffrees
+---
+
+### Version 2.2 - Quick Start numbered enumerations forbidden
 **Date:** 2026-05-30
-**Raison:** Les enumerations chiffrees dans le Quick Start ("X techniques", "Y principes") divergent avec le contenu reel et n'apportent aucune information utile.
 
-**Modifications :**
-- Ajout d'un point dans "Ce que le Quick Start n'est pas" : pas d'enumeration chiffree du contenu
+**Changes:**
+- No numbered enumeration of content in Quick Start
 
-### Version 2.0 - Ajout Index et reorganisation structure
+---
+
+### Version 2.1 - Language rule and Quick Start reformulated
 **Date:** 2026-05-30
-**Raison:** Ajout de la convention Index (ancres HTML, tableau de pointeurs). Reorganisation de la structure des fichiers MD — Keywords monte sous Quick Start, Index avant Changelog.
 
-**Modifications :**
-- Ajout de la section `## Regle Index` avec format complet et exemple
-- Deplacement de `## Keywords` : fin de fichier -> apres Quick Start
-- Nouvelle structure canonique : Quick Start -> Keywords -> TOC -> contenu -> Index -> Changelog
-- TOC mise a jour : exclusion de Quick Start, Keywords, Index, Changelog du comptage
-- Quick Start mis a jour
-- Changelog deplace apres Index
+**Changes:**
+- Added `## Language`, reformulated `## Quick Start Rule`
 
-### Version 2.1 - Ajout Langue et Quick Start reformule
+---
+
+### Version 2.0 - Index added and structure reorganized
 **Date:** 2026-05-30
-**Raison:** Ajout de la convention de langue (anglais par defaut, declaration obligatoire si autre langue). Reformulation complete de la regle Quick Start : resume d'orientation pour humain et IA, pas guide d'action.
 
-**Modifications :**
-- Ajout de la section `## Langue`
-- Reformulation de `## Regle Quick Start` : objectif, deux types de lecteurs, cout tokens et pertinence, ce que le Quick Start n'est pas
-- TOC mise a jour
+**Changes:**
+- Added `## Index Rule`, new canonical structure
 
-### Version 2.0 - Ajout Numerotation
-**Date:** 2026-05-30
-**Raison:** Centraliser la convention de numerotation des items references. S'applique a tout systeme ou un numero est cite ailleurs.
-
-**Modifications :**
-- Ajout de la section `## Numerotation` avec principes, registre obligatoire
-- TOC mise a jour
-
-### Version 1.3 - Note ancres avec tirets
-**Date:** 2026-05-30
-**Raison:** Un tiret entoure d'espaces dans un titre genere 3 tirets dans l'ancre. Ajout d'une note explicite.
-
-**Modifications :**
-- Ajout d'une note sur les tirets multiples dans le tableau des ancres
-
-### Version 1.2 - Unicite des titres
-**Date:** 2026-05-30
-**Raison:** Collision d'ancre entre le bloc Quick Start en haut et la section de regle. Ajout de la regle d'unicite des titres.
-
-**Modifications :**
-- Renommage de `## Quick Start 1` en `## Regle Quick Start`
-- Ajout de la regle d'unicite des titres dans la section Titres
-- TOC mise a jour
-
-### Version 1.1 - Corrections auto-conformite
-**Date:** 2026-05-30
-**Raison:** Le fichier ne respectait pas ses propres regles — Quick Start manquant, ordre incorrect.
-
-**Modifications :**
-- Ajout du Quick Start
-- Reordonnement : description -> Quick Start -> TOC
-- Precision : Quick Start et Table des matieres exclus du comptage TOC
-- Precision : placement du Changelog (avant Keywords)
+---
 
 ### Version 1.0 - Creation
 **Date:** 2026-05-30
-**Raison:** Centraliser toutes les regles de documentation Markdown en une convention universelle.
-
-**Contenu initial :**
-- Regle Titres : caracteres autorises, interdits, exemples
-- Regle TOC : seuil, ancres VS Code, lien retour sous le titre
-- Regle Keywords : format et criteres
-- Regle Changelog : format et versionnage
-- Regle Quick Start : format et placement
+**Reason:** Centralize all documentation rules in a universal convention.

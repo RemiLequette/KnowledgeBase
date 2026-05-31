@@ -13,7 +13,7 @@ Welcome to your centralized knowledge repository for managing Claude projects sy
 ## Quick Navigation
 
 **New to this project?**
-- Start here: `Claude.md`
+- Start here: `INDEX.md`
 
 **Setting up a new Claude project?**
 - Read: `guides/project-setup-process.md`
@@ -65,14 +65,16 @@ This knowledge base follows a **reference-based architecture**:
 ## Structure
 
 ```
-claude-knowledge/
-├── Claude.md              ← Instructions for Claude sessions
+claud-knowledge/
+├── INDEX.md               ← Bootstrap + navigation map
 ├── PROJECT.md             ← Project metadata
-├── INDEX.md               ← Quick index of all content
 ├── README.md              ← This file
+├── GLOSSARY.md            ← Project terminology
+├── TODO.md                ← Active backlog
 ├── conventions/           ← Technical standards & patterns
-├── workflows/             ← Recurring processes
-└── guides/                ← Setup & best practices documentation
+├── guides/                ← Setup & best practices documentation
+├── tools/                 ← Development tooling
+└── tmp/                   ← Temporary working files
 ```
 
 ---
@@ -91,11 +93,10 @@ Each new Claude project references this knowledge base, ensuring consistency acr
 ## Key Files
 
 | File | Purpose |
-|------|---------|
-| `Claude.md` | Instructions for Claude sessions using this KB |
+|------|--------|
+| `INDEX.md` | Bootstrap + content map — what’s in each folder & keywords |
 | `PROJECT.md` | Metadata and how to audit this project |
-| `INDEX.md` | Content map — what's in each folder & keywords |
-| `guides/project-setup.md` | How to create a new Claude project |
+| `guides/project-setup-process.md` | How to create a new Claude project |
 | `guides/best-practices.md` | 15 design principles for Claude projects |
 | `guides/audit-process.md` | How to audit a project |
 
@@ -104,16 +105,16 @@ Each new Claude project references this knowledge base, ensuring consistency acr
 ## For Humans & AI
 
 This repository works for:
-- **Claude** — Reads via `Claude.md` and `session-startup.md`
-- **You** — Start with `README.md` (this file) or `Claude.md`
-- **Teams** — See `guides/project-setup.md` for setting up shared projects
+- **AI Assistants** — Bootstrap via `INDEX.md` (loaded from Claude project instructions)
+- **You** — Start with `README.md` (this file)
+- **Teams** — See `guides/project-setup-process.md` for setting up shared projects
 
 ---
 
 ## Next Steps
 
 1. **Explore:** Browse `INDEX.md` to see what's available
-2. **Setup:** Use `guides/project-setup.md` to create a new project
+2. **Setup:** Use `guides/project-setup-process.md` to create a new project
 3. **Learn:** Read the best practices in `guides/best-practices.md`
 4. **Audit:** Use `guides/audit-process.md` to audit a project
 
@@ -132,6 +133,19 @@ readme, navigation, knowledge-base, human, quickstart, architecture, structure
 ---
 
 ## Changelog
+
+### Version 1.1 - Mise a jour post-refactoring
+**Date:** 2026-05-31
+**Raison:** README obsolete apres suppression de Claude.md, KNOWLEDGEBASE.md, workflows/. Liens et structure corriges.
+
+**Modifications :**
+- Quick Navigation : point d'entree corrige (INDEX.md au lieu de Claude.md)
+- Structure : workflows/ et Claude.md supprimes, tools/ et tmp/ ajoutes
+- Key Files : table mise a jour (INDEX.md en tete, liens corriges)
+- For Humans and AI : reference a session-startup supprimee
+- Next Steps : liens corriges
+
+---
 
 ### Version 1.0 - Creation
 **Date:** 2026-05-30
