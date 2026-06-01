@@ -44,6 +44,8 @@ Match the current task against the triggers below. Load only the files that matc
 | SQL query, database read/write, schema change | `conventions/sqlite.md` |
 | CommWise layout, CSS, flex, viewport constraints | `conventions/commwise-layout.md` |
 | CommWise modal, overlay, disabled button | `conventions/commwise-modals.md` |
+| CommWise block read/write, assembly, synchronisation | `conventions/commwise-framework.md` |
+| Modular architecture (Core, IService, Assembly, Framework) | `conventions/modular-architecture.md` |
 | Live DOM debug, JS validation in browser | `conventions/claude-chrome-mcp.md` |
 | Complex analysis, structured reasoning, multi-step problem | `conventions/claude-structured-reasoning.md` |
 | `file://` HTML page with persistent storage | `conventions/indexeddb-file-protocol.md` |
@@ -70,6 +72,8 @@ A taks in a project may require more than one convention.
 | sqlite.md | One statement per call, DELETE before INSERT, always verify after writes, update schema.sql after DDL | sqlite, MCP, SQL, database, schema, write, query |
 | commwise-layout.md | `max-height` is the only reliable way to constrain flex children overridden by CommWise `!important` rules | CommWise, flex, layout, max-height, viewport, CSS, override |
 | commwise-modals.md | Modal open/close requires both `dds-hidden` (display) and `visible` (opacity/visibility) + mandatory reflow between. Disabled buttons need ID-level CSS override. | CommWise, modal, overlay, dds-hidden, visible, disabled, button, CSS, trap |
+| commwise-framework.md | CommWise as a framework — MCP tool, block model, module assembly, PULL/PUSH synchronisation, session lifecycle, editing best practices. | CommWise, MCP, framework, blocks, assembly, synchronisation, pull, push, session |
+| modular-architecture.md | Architecture convention for modular SPAs — Core, IService, Assembly, Framework concepts and project doc structure. | architecture, modular, core, IService, assembly, framework, convention |
 | claude-chrome-mcp.md | Use Claude in Chrome MCP for live DOM diagnostics and JS fix validation — eliminates layout guesswork | Chrome, MCP, browser, DOM, debug, javascript, inspect, layout |
 | claude-structured-reasoning.md | 8 core techniques for clearer thinking: thinking tags, step-by-step decomposition, chain-of-thought, roles, structure, adversarial framing, constraints, reference-based | thinking-tags, chain-of-thought, structured-reasoning, prompting, clarity, analysis, constraints |
 | indexeddb-file-protocol.md | IndexedDB replaces localStorage for `file://` HTML pages — Chrome blocks localStorage in file:// context; IndexedDB works reliably. Includes reusable async snippet and migration table. | IndexedDB, localStorage, file-protocol, browser-storage, persistence, patch, HTML |

@@ -37,12 +37,21 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 ## Basse priorité
 [up](#table-of-contents)
 
+- [ ] **Convention version control / git tagging** — Aucune convention de tagging git dans la KB. Définir : format des tags (semver, date, nom de convention ?), quand tagger (après chaque convention majeure ? après chaque session ?), workflow recommandé. À créer comme convention ou guide.
+
 ## Index
 
 | Term | Occurrences |
 |------|-------------|
 
 ## Changelog
+
+### Version 1.3 - Convention version control / git tagging
+**Date:** 2026-06-01
+**Raison:** Todo créé en session DDScope — aucune convention de tagging git dans la KB.
+
+**Modifications :**
+- Basse priorité : ajout `Convention version control / git tagging`
 
 ### Version 1.2 - Ajout md-doc Changelog support
 **Date:** 2026-06-01
