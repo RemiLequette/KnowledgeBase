@@ -1,30 +1,45 @@
 # Documentation Convention
 
 ## Quick Start
-
 Universal convention for all Markdown files (referred to as "documents" in the rest of this convention) — structure, headings, navigation, traceability.
 Load when creating or modifying a document, or when auditing documentation conformance.
 Does not cover the business content of documents — only their form and organization.
+Some file types are exempt — see ## Scope.
 See [Tooling](#tooling) for why these rules are strict. See [Citations](#citations) for inter-document reference format.
+
+## Table of Contents
+
+1. [Scope](#scope)
+2. [Document Structure](#document-structure)
+3. [Section Structure](#section-structure)
+4. [Language](#language)
+5. [Numbering](#numbering)
+6. [Quick Start Rule](#quick-start-rule)
+7. [Keywords Rule](#keywords-rule)
+8. [TOC Rule](#toc-rule)
+9. [Index Rule](#index-rule)
+10. [Changelog Rule](#changelog-rule)
+11. [Citations](#citations)
+12. [Tooling](#tooling)
+13. [Index](#index)
+
+## Scope
+[up](#table-of-contents)
+This convention applies to all Markdown files except those governed by a specific convention.
+
+| Type | Convention | Remarque |
+|------|------------|----------|
+| `TODO.md` | `conventions/todo.md` | Structure backlog |
+| `GLOSSARY.md` | `conventions/glossary.md` | Structure glossaire |
+| Journaux et logs | — | Structure chronologique incompatible — pas de convention formelle |
+
+For exempt files, apply their specific convention instead.
 
 ## Keywords
 documentation, markdown, headings, anchors, TOC, index, keywords, changelog, quick-start, convention, navigation, VS-Code, tooling, citations
 
-## Table of Contents
-
-1. [Document Structure](#document-structure)
-2. [Section Structure](#section-structure)
-3. [Language](#language)
-4. [Numbering](#numbering)
-5. [Quick Start Rule](#quick-start-rule)
-6. [Keywords Rule](#keywords-rule)
-7. [TOC Rule](#toc-rule)
-8. [Index Rule](#index-rule)
-9. [Changelog Rule](#changelog-rule)
-10. [Citations](#citations)
-11. [Tooling](#tooling)
-
 ## Document Structure
+[up](#table-of-contents)
 Canonical structure of any document. Elements must appear in this exact order.
 
 ```
@@ -257,6 +272,7 @@ keyword-1, keyword-2, keyword-3
 
 ## TOC Rule
 [up](#table-of-contents)
+**Production:** The TOC is automatically generated and maintained by `md-doc` after every write. Do not write it by hand. See `conventions/md-doc-usage.md`.
 
 ### Rule
 

@@ -1,0 +1,25 @@
+RÉSUMÉ : ACCÈS AUX FICHIERS LOCAUX DEPUIS UNE PAGE HTML LOCALE (file://)
+
+Par défaut, la politique de sécurité des navigateurs (Same-Origin Policy) interdit aux scripts d'une page chargée via 'file://' d'accéder arbitrairement au système de fichiers local afin de protéger les données de l'utilisateur.
+
+Voici les 4 méthodes pour y parvenir selon le contexte :
+
+1. INTERACTION UTILISATEUR (Méthode standard et sécurisée)
+   - Balise <input type="file"> : L'utilisateur sélectionne un fichier, et le JavaScript le lit via l'API 'FileReader'.
+   - File System Access API : Permet de demander l'autorisation de lire/écrire dans des fichiers ou dossiers (supporté sur Chrome/Edge via 'window.showOpenFilePicker()').
+
+2. CONTOURNEMENT DU NAVIGATEUR (Réservé au développement uniquement)
+   - Chrome / Edge : Lancer le navigateur en ligne de commande avec l'argument :
+     --allow-file-access-from-files
+   - Firefox : Aller sur 'about:config' et passer la variable 'privacy.file_unique_origin' à 'false'.
+
+3. UTILISATION D'UN SERVEUR LOCAL (Solution recommandée)
+   - Permet de passer du protocole 'file://' à 'http://localhost'.
+   - Commandes rapides pour lancer un serveur dans le dossier du projet :
+     * Avec Python : python -m http.server 8000
+     * Avec Node.js : npx serve
+   - Les requêtes (fetch, XHR) vers les fichiers du dossier fonctionnent alors normalement.
+
+4. ENCAPSULATION (Pour distribuer une application de bureau)
+   - Utilisation de frameworks comme Electron ou Tauri.
+   - La page HTML/JS est packagée dans une application native où le code de l'interface communique avec un processus backend (Node.js ou Rust) disposant des droits d'accès complets au disque dur.
