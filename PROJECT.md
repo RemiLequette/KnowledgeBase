@@ -1,18 +1,17 @@
-# Claude Knowledge Base
+# Project Knowledge Base Maintenance
 
 ## Quick Start
 
-Métadonnées du projet claude-knowledge — description, structure, et point d'entrée pour l'audit.
-À lire par tout AI Assistant pour comprendre le projet avant de commencer.
-Ne contient pas les conventions ni les best practices — voir public/INDEX.md pour la navigation.
+Project dedicated to the maintenance of the Knowledge Base shae by all AI Assited projects.
 
 ## Purpose
-Centralized knowledge repository shared across all Claude projects.
+Centralized knowledge repository shared across all projects.
 Contains conventions, workflows, and best practices to ensure consistency.
 
 ## Structure
 
-### public/ — accessible to all Claude projects
+### public/ — is the part accessible to all projects
+THe rest is private to the project and supports the maintenance of the public psart
 See `public/INDEX.md` for the full navigation map.
 
 ```
@@ -31,16 +30,10 @@ public/
 - **howto/** — practical guides for humans
 - **tmp/** — temporary working files (not committed)
 
-## Usage
-See `public/INDEX.md` for session bootstrap instructions and navigation.
-
-For new Claude projects using this knowledge base, see `public/guides/project-setup-process.md`.
 
 ---
 
 ## KB Maintenance
-
-This section applies **only when working on the knowledge base itself** — not when using it in other projects.
 
 **When to add content:**
 - A tool behaves unexpectedly and a workaround is found — document it.

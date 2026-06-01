@@ -2,9 +2,9 @@
 
 ## Quick Start
 
-Entry point for every AI assisted session in any project.
-Read this file first, then load only the conventions relevant to the current task.
-Does not contain the conventions themselves — navigation map only.
+Entry point to the knowledge base also known as KB.
+It gives a Decision Layer to decide which files to load to perform tasks
+Does not contain the knowledge itself — navigation map only.
 
 ---
 
@@ -27,11 +27,9 @@ This includes:
 - Reading files in other projects
 - Inferring context from other projects
 
-**Exception:** The Knowledge Base folder is accessible (defined in project instructions).
-Never browse it freely — load only what the decision layer instructs.
+**Exception:** The Knowledge Base folder is accessible load what the decision layer instructs.
 
 WHY: Prevents context pollution, unnecessary file reads, and unintended exposure of unrelated projects.
-The active project is defined by the project folder stated in the Claude project instructions.
 
 ---
 
@@ -57,12 +55,12 @@ Match the current task against the triggers below. Load only the files that matc
 | Auditing a project for conformance | `guides/audit-process.md` |
 | Updating a guide file | `guides/guide-maintenance.md` |
 
-**If no trigger matches:** proceed without loading additional files.
 
 ---
 
 ## conventions/
-Technical and tooling conventions.
+A convention is a collection of knowledge and rules relevant to a task, for example reading and writing documentation, using a databses, ...
+A taks in a project may require more than one convention.
 
 | File | Summary | Keywords |
 |------|---------|----------|
@@ -83,7 +81,7 @@ Technical and tooling conventions.
 ---
 
 ## guides/
-Setup and configuration guides for new projects.
+Guides are used to perform specifi taasks
 
 | File | Summary | Keywords |
 |------|---------|----------|

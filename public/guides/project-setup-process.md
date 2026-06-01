@@ -147,6 +147,7 @@ Generate the text below (substituting actual values) and copy-paste it into the 
 My name is [USER-NAME].
 You are [AI-NAME], my AI Assistant helping me with my project
 
+use the filesystem MCP tool to read files
 Read [FULL-PATH-KNOWLEDGE-BASE-PUBLIC]\public\INDEX.md
 It gives you access to important skills to answer my requests
 
@@ -162,6 +163,7 @@ Please greet me with my project name and your name and role
 My name is Remi.
 You are Claude, my AI Assistant helping me with my project
 
+use the filesystem MCP tool to read files
 Read C:\Users\RemiLequette\Development\projects\knowledgebase\public\INDEX.md
 It gives you access to important skills to answer my requests
 
