@@ -70,6 +70,15 @@ function createBackup(filePath) {
   }
 }
 
+function deleteBackup(filePath) {
+  const bak = backupPath(filePath);
+  try {
+    if (nodefs.existsSync(bak)) nodefs.unlinkSync(bak);
+  } catch (e) {
+    // Non-fatal — backup deletion failure does not affect the write result
+  }
+}
+
 // ---------------------------------------------------------------------------
 // JSON file helpers
 // ---------------------------------------------------------------------------
@@ -180,6 +189,7 @@ function cmdUpdate(filePath, jsonInputPath) {
   }
 
   fs.writeFile(filePath, md.toMarkdown(doc));
+  deleteBackup(filePath);
   ok();
 }
 
@@ -197,6 +207,7 @@ function cmdDelete(filePath, sectionName) {
 
   createBackup(filePath);
   fs.writeFile(filePath, md.toMarkdown(doc));
+  deleteBackup(filePath);
   ok();
 }
 

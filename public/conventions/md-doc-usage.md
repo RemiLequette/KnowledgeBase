@@ -38,7 +38,7 @@ md-doc is a **reliability and conformance tool**, not a performance tool.
 **What md-doc provides:**
 - **Surgical modification** — only the target section is rewritten; the rest of the file is untouched
 - **Automatic TOC rebuild** — after every write, the TOC is rebuilt mechanically from actual headings; no risk of anchor errors or missed entries
-- **Automatic backup** — a `.bak` file is created before every write
+- **Transient backup** — a `.bak` file is created before every write and deleted automatically after success. It is only retained if the write fails, enabling recovery via `restore`.
 - **Built-in conformance** — `check` verifies the document structure after every operation
 
 **What md-doc does not optimize:**
