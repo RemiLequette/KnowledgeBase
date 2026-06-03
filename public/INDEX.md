@@ -41,6 +41,7 @@ Match the current task against the triggers below. Load only the files that matc
 |---------|------|
 | Reading, writing, copying local files | `conventions/filesystem.md` |
 | Creating or editing a `.md` file | `conventions/documentation.md` |
+| Declaring a document type, auditing content style | `conventions/documentation-style.md` |
 | SQL query, database read/write, schema change | `conventions/sqlite.md` |
 | CommWise layout, CSS, flex, viewport constraints | `conventions/commwise-layout.md` |
 | CommWise modal, overlay, disabled button | `conventions/commwise-modals.md` |
@@ -69,6 +70,7 @@ A taks in a project may require more than one convention.
 | filesystem.md | Use `filesystem` for reads, `edit-file-lines` for writes, `node` for mechanical copy/replace ops (zero tokens) | filesystem, MCP, read, write, copy, node, regex, files |
 | md-doc-usage.md | Read/write docs via md-doc tool — section-level access, token efficiency, conformance check, tmp file management | md-doc, tool, read, write, documentation, conformance, tmp |
 | documentation.md | Convention universelle pour tous les fichiers Markdown — structure, titres, TOC, Keywords, Index, Changelog, Quick Start, citations | markdown, documentation, TOC, titres, ancres, keywords, index, changelog, quick-start, citations |
+| documentation-style.md | Document types taxonomy and Why-What-How content hierarchy — every document declares its type; process specs and conventions separate intent, model, and implementation. | document-type, style, taxonomy, process, spec, convention, why-what-how, intent, model, implementation |
 | sqlite.md | One statement per call, DELETE before INSERT, always verify after writes, update schema.sql after DDL | sqlite, MCP, SQL, database, schema, write, query |
 | commwise-layout.md | `max-height` is the only reliable way to constrain flex children overridden by CommWise `!important` rules | CommWise, flex, layout, max-height, viewport, CSS, override |
 | commwise-modals.md | Modal open/close requires both `dds-hidden` (display) and `visible` (opacity/visibility) + mandatory reflow between. Disabled buttons need ID-level CSS override. | CommWise, modal, overlay, dds-hidden, visible, disabled, button, CSS, trap |
@@ -109,6 +111,16 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 2.2 - documentation-style.md added
+**Date:** 2026-06-03
+**Reason:** New convention `documentation-style.md` created — document type taxonomy and Why-What-How content hierarchy.
+
+**Modifications:**
+- Decision Layer: trigger `Declaring a document type, auditing content style` added
+- Table conventions/: `documentation-style.md` entry added
+
+---
 
 ### Version 2.1 - Decision Layer trigger md-doc removed
 **Date:** 2026-05-31

@@ -35,6 +35,12 @@ This convention applies to all Markdown files except those governed by a specifi
 
 For exempt files, apply their specific convention instead.
 
+### Document type declaration
+
+Every document must declare its type. This declaration is part of the document header, governed by `conventions/documentation-style.md`.
+
+See `conventions/documentation-style.md [section Document Type Declaration]` for the format and valid types.
+
 ## Keywords
 documentation, markdown, headings, anchors, TOC, index, keywords, changelog, quick-start, convention, navigation, VS-Code, tooling, citations
 
@@ -472,6 +478,12 @@ All three depend on the same invariants: fixed heading names, canonical order, u
 | heading | [1](#index-heading-1) |
 
 ## Changelog
+### Version 4.4 - Document type declaration
+**Date:** 2026-06-03
+**Reason:** Every document must now declare its type. Rule added in `## Scope` with reference to `conventions/documentation-style.md`.
+
+**Changes:**
+- `## Scope`: added `### Document type declaration` with format and reference to `conventions/documentation-style.md`
 
 ### Version 4.3 - Section terminology clarified
 **Date:** 2026-05-31
@@ -614,3 +626,6 @@ All three depend on the same invariants: fixed heading names, canonical order, u
 ### Version 1.0 - Creation
 **Date:** 2026-05-30
 **Reason:** Centralize all documentation rules in a universal convention.
+
+
+---

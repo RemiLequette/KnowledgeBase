@@ -27,6 +27,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## Normale
 [up](#table-of-contents)
+
+- [ ] **Add Design document type** — Add `Design document` to the taxonomy in `conventions/documentation-style.md`. Define style, WWH obligations, and examples. Deferred from session 2026-06-03.
 - [ ] Review and update `guides/guide-maintenance.md` — cleanup French, references to Claude.md and old BP numbers
 - [ ] md-doc Index support — inline anchor tags (`<a id="index-term-N">`) currently point nowhere; implement renderer support so index references resolve correctly
 - [ ] md-doc Citations support — implement cross-document citation resolution; consider renaming Citations to References
@@ -45,6 +47,13 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 1.4 - Add Design document type todo
+**Date:** 2026-06-03
+**Reason:** Design document type deferred from documentation-style.md session.
+
+**Modifications:**
+- Normale: added `Add Design document type`
 
 ### Version 1.3 - Convention version control / git tagging
 **Date:** 2026-06-01
