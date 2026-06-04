@@ -1,4 +1,4 @@
-# Todo Convention
+# Todo List Convention
 
 Convention for the lightweight backlog of any project — ideas, improvements, tasks.
 

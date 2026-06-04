@@ -53,7 +53,7 @@ Match the current task against the triggers below. Load only the files that matc
 | `file://` HTML page with persistent storage | `conventions/indexeddb-file-protocol.md` |
 | Creating or auditing a GLOSSARY.md | `conventions/glossary.md` |
 | Node.js automation script, cross-project tool | `conventions/tools.md` |
-| Creating or managing a TODO.md | `conventions/todo.md` |
+| Creating or managing a TODO.md | `conventions/todo-list.md` |
 | Setting up or auditing Claude project structure or instructions | `conventions/project-structure.md` |
 | Setting up a new Claude project | `guides/project-setup-process.md` |
 | Auditing a project for conformance | `guides/audit-process.md` |
@@ -83,7 +83,7 @@ A taks in a project may require more than one convention.
 | indexeddb-file-protocol.md | IndexedDB replaces localStorage for `file://` HTML pages — Chrome blocks localStorage in file:// context; IndexedDB works reliably. Includes reusable async snippet and migration table. | IndexedDB, localStorage, file-protocol, browser-storage, persistence, patch, HTML |
 | glossary.md | Convention pour GLOSSARY.md dans chaque projet — domaines, termes, references croisees, chargement selectif par un AI Assistant. Section ## Glossary obligatoire dans PROJECT.md. | glossaire, glossary, terminologie, domaines, definitions, conformite, audit |
 | tools.md | Node.js script-based tools — when to use, structure, standard interface (args, stdout, exit codes), invocation via commands MCP, output rules, catalogue. | tools, scripts, node, automation, token-efficiency, commands-mcp, cross-project |
-| todo.md | Lightweight backlog for any project — format, states, archiving, AI Assistant role. Two files: TODO.md (active) + TODO-archive.md (done). | todo, backlog, tasks, priority, archiving, session |
+| todo-list.md | Lightweight backlog for any project — format, states, archiving, AI Assistant role. Two files: TODO.md (active) + TODO-archive.md (done). | todo, backlog, tasks, priority, archiving, session |
 | project-structure.md | Canonical structure for any Claude project — folder layout, mandatory files, Claude project instructions template, bootstrap chain. | project-structure, claude-project, instructions, template, bootstrap, scaffold |
 
 ---

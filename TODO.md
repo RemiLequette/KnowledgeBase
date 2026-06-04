@@ -35,6 +35,10 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] md-doc Changelog support — add/update Changelog entries via md-doc (new command or extension of update)
 - [ ] Rename `conventions/` folder to `contracts/`
 - [ ] Best practices — vérifier que `guides/best-practices.md` référence la convention `todo.md`
+- [ ] Rename artifact scripts to English — `ouvrir-revision.js` → `open-revision.js`, `cloturer-revision.js` → `close-revision.js`. Update references in `conventions/artifact.md` and all specialization files.
+- [ ] Document GitHub Pages as a publication pattern — create `conventions/github-pages.md` covering the static site publication pattern (embedded variables, injection script, publication conditions). `artifact.md` currently references a project-level `github-pages.md`; the convention should document the generic pattern independently of any specific project.
+- [ ] Document Git workflow for AI Assistants — create `conventions/git.md` covering: commit before large rewrites, commit message format, when to suggest a commit, how an AI Assistant can execute Git operations via the commands MCP. Enables AI Assistants to manage Git directly rather than delegating all commits to the user.
+- [ ] Consider externalizing Changelogs from documents — Changelogs are loaded with every document but rarely needed in context. Explore moving them to separate `<filename>-changelog.md` files or a shared `CHANGELOG.md` per folder. Evaluate token savings vs navigation cost. Consider impact on tooling (md-doc, conformance checks).
 
 ## Basse priorité
 [up](#table-of-contents)
@@ -47,6 +51,22 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 1.6 - Externalize Changelogs idea
+**Date:** 2026-06-04
+**Reason:** Changelogs loaded with every document consume tokens and attention unnecessarily.
+
+**Modifications:**
+- Normale: added `Consider externalizing Changelogs from documents`
+
+### Version 1.5 - artifact.md feedback items
+**Date:** 2026-06-04
+**Reason:** Three items identified during artifact.md creation session.
+
+**Modifications:**
+- Normale: added `Rename artifact scripts to English`
+- Normale: added `Document GitHub Pages as a publication pattern`
+- Normale: added `Document Git workflow for AI Assistants`
 
 ### Version 1.4 - Add Design document type todo
 **Date:** 2026-06-03

@@ -2,6 +2,8 @@
 
 Convention for managing structured datasets that evolve over time through a series of versioned revisions.
 
+*Document type: Convention — see `conventions/documentation-style.md`*
+
 ## Quick Start
 
 Generic convention for any time-tracked structured dataset: file structure,
@@ -32,6 +34,19 @@ local server, URL modes, embed, GitHub Pages, scripts, convention
 ## Definition
 [up](#table-of-contents)
 
+### Why
+
+Some datasets are not static — they evolve at discrete points in time (typically during
+review sessions) and their history matters. Tracking only the current state loses the
+ability to answer: what changed, when, and what was the state at a given point in time.
+
+The artifact pattern solves this by separating the current reference state from the
+in-progress modifications, and by keeping a full dated history. It also separates
+local editing (dynamic, server-assisted) from publication (static, self-contained) —
+so the same interface works in both contexts without duplication.
+
+### What
+
 An **artifact** is a structured dataset tracked over time. It evolves through
 discrete revisions, each tied to a date. Every change is recorded and traceable.
 
@@ -40,6 +55,22 @@ An artifact has:
 - a dated revision history in `historique/`
 - a revision index: `historique/index.html`
 - standard scripts to open and close revisions
+
+### Local and published modes
+
+An artifact operates in two distinct modes:
+
+**Local mode** — the interface fetches data dynamically from a local server.
+Data files live on disk (`historique/`). The server handles reads and auto-saves.
+Editing is possible. This is the working mode.
+
+**Published mode** — the interface is self-contained: data is embedded directly
+into the HTML at export time. No server required. Read-only.
+This enables sharing with users who have no access to the local environment.
+
+GitHub Pages is one example of a publication target. Any static hosting works.
+The export script (see `## GitHub Pages publication`) performs the embedding;
+the working `index.html` is never modified.
 
 ## File structure
 [up](#table-of-contents)
@@ -245,6 +276,17 @@ Expected content of a specialization:
 |------|-------------|
 
 ## Changelog
+
+### Version 1.1 - WWH compliance and local/published clarification
+**Date:** 2026-06-04
+**Reason:** Convention was missing its Why level and document type declaration.
+Local vs published mode distinction was implicit.
+
+**Changes:**
+- Added document type declaration (Convention)
+- `## Definition`: restructured with `### Why`, `### What`, `### Local and published modes`
+- Why explains the problem the pattern solves
+- Local/published modes clarifies the two operating contexts; GitHub Pages positioned as one example of publication
 
 ### Version 1.0 - Creation
 **Date:** 2026-06-04

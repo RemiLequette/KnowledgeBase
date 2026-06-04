@@ -143,7 +143,7 @@ A document that defines a schema, API, data structure, or lookup table. Read sel
 
 Files that structure a project: `PROJECT.md`, `README.md`, `GLOSSARY.md`, `TODO.md`. Each is governed by its own convention.
 
-**Style:** Governed by the relevant convention — see `conventions/glossary.md`, `conventions/todo.md`, `conventions/project-structure.md`.
+**Style:** Governed by the relevant convention — see `conventions/glossary.md`, `conventions/todo-list.md`, `conventions/project-structure.md`.
 
 ---
 

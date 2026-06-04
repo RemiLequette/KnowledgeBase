@@ -30,7 +30,7 @@ This convention applies to all Markdown files except those governed by a specifi
 
 | Type | Convention | Remarque |
 |------|------------|----------|
-| `TODO.md` | `conventions/todo.md` | Structure backlog |
+| `TODO.md` | `conventions/todo-list.md` | Structure backlog |
 | `GLOSSARY.md` | `conventions/glossary.md` | Structure glossaire |
 | Journaux et logs | — | Structure chronologique incompatible — pas de convention formelle |
 
