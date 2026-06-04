@@ -20,7 +20,7 @@ The `Claude in Chrome` MCP connector gives Claude direct access to a live Chrome
 1. `list_connected_browsers` — see which browsers are connected
 2. `select_browser` — connect to the right one (or ask the user)
 3. `tabs_context_mcp` with `createIfEmpty: true` — get a tab ID
-4. Have the developer navigate to the app manually (navigation to CommWise is permission-blocked)
+4. `navigate` to the target URL if it's a local server (`localhost`). For CommWise, have the developer navigate manually (permission-blocked).
 5. `javascript_tool` — run diagnostic or validation JS in the page context
 
 ## Key constraints
@@ -60,6 +60,25 @@ document.getElementById('target').style.maxHeight = '500px';
 document.getElementById('target').getBoundingClientRect().bottom
 ```
 
+**Verify a CSS layout fix (display + position):**
+```javascript
+var odj = document.querySelector('.odj-layout');
+var panel = document.getElementById('note-col');
+({ display: getComputedStyle(odj).display, panelLeft: Math.round(panel.getBoundingClientRect().left), panelWidth: Math.round(panel.getBoundingClientRect().width) })
+```
+
+## Token cost
+
+Screenshots are expensive (image encoded in context). `javascript_tool` calls are cheap (text only).
+
+**Rule: diagnose and verify entirely in JS. Screenshot only for final visual confirmation, at most once.**
+
+- CSS/layout bugs → JS computed styles + getBoundingClientRect, no screenshot needed for diagnosis
+- Fix validation → JS check first, screenshot only if the user needs to see the result
+- Avoid redundant screenshots mid-workflow
+
+The biggest token cost in a session is often a large file read (filesystem), not Chrome MCP itself.
+
 ## Value
 
 Live JS execution eliminates guesswork on layout bugs. A diagnostic that would take 10 back-and-forth exchanges (describe → guess → fix → test) can be resolved in 2-3 `javascript_tool` calls.
@@ -79,6 +98,15 @@ Chrome, MCP, browser, DOM, debug, javascript, inspect, layout, conventions
 ---
 
 ## Changelog
+
+### Version 1.1 - Token cost + navigate localhost + pattern layout
+**Date:** 2026-06-03
+**Raison:** Retour d'experience session debug bug CSS mode-cr panneau note.
+
+**Modifications :**
+- Workflow step 4 : `navigate` possible pour localhost, restriction limitee a CommWise
+- Ajout pattern `Verify a CSS layout fix` (display + getBoundingClientRect)
+- Ajout section `## Token cost` : regle JS-first, screenshot seulement pour confirmation finale
 
 ### Version 1.0 - Creation
 **Date:** 2026-05-30

@@ -20,8 +20,9 @@ See [Tooling](#tooling) for why these rules are strict. See [Citations](#citatio
 9. [Index Rule](#index-rule)
 10. [Changelog Rule](#changelog-rule)
 11. [Citations](#citations)
-12. [Tooling](#tooling)
-13. [Index](#index)
+12. [AI Assistant workflow](#ai-assistant-workflow)
+13. [Tooling](#tooling)
+14. [Index](#index)
 
 ## Scope
 [up](#table-of-contents)
@@ -456,6 +457,22 @@ Implements BP#1, BP#2
 See Rule 3
 ```
 
+## AI Assistant workflow
+[up](#table-of-contents)
+
+When creating or modifying `.md` files, always write directly to the target path —
+never display Markdown content in the chat. Markdown rendered inside the chat
+interface collides with the interface's own rendering, making the output hard to
+read and wasting tokens. The chat should contain only discussion and decisions.
+
+| Situation | Approach |
+|-----------|----------|
+| Initial creation | `create_file` at the target path directly |
+| Section edit | `str_replace` (or equivalent) in place, one section at a time |
+| Large rewrite | Suggest a Git commit first, then rewrite in place |
+
+This applies to both KB files and project files.
+
 ## Tooling
 [up](#table-of-contents)
 
@@ -478,6 +495,15 @@ All three depend on the same invariants: fixed heading names, canonical order, u
 | heading | [1](#index-heading-1) |
 
 ## Changelog
+### Version 4.5 - AI Assistant workflow
+**Date:** 2026-06-04
+**Reason:** Writing `.md` content in the chat collides with the interface's Markdown
+rendering and wastes tokens. Rule added to enforce writing directly to the target path.
+
+**Changes:**
+- Added `## AI Assistant workflow` between Citations and Tooling
+- TOC updated (entries renumbered)
+
 ### Version 4.4 - Document type declaration
 **Date:** 2026-06-03
 **Reason:** Every document must now declare its type. Rule added in `## Scope` with reference to `conventions/documentation-style.md`.

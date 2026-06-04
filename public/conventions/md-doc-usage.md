@@ -49,23 +49,29 @@ Use md-doc when correctness matters more than raw speed — which is the case fo
 
 ## Prerequisites
 [up](#table-of-contents)
-
 Before the first call in any session, load the tool schema via `tool_search`:
 
 ```
 tool_search query="execute command node"
 ```
 
-Tool path (absolute, always pass this):
+Tool path — relative to the KB root:
 ```
-C:\Users\RemiLequette\Development\projects\knowledgebase\public\tools\md-doc.js
+public/tools/md-doc.js
+```
+
+To resolve the absolute path, prefix with the KB root (read from PROJECT.md or passed by the user at session start).
+
+Example (KB root = `C:\Users\RemiLequette\Development\with-claude\knowledgebase`):
+```
+C:\Users\RemiLequette\Development\with-claude\knowledgebase\public\tools\md-doc.js
 ```
 
 Invocation pattern:
 ```
 commands:execute_command
   command: node
-  args: ["<tool-path>", "<command>", ...args]
+  args: ["<absolute-tool-path>", "<command>", ...args]
 ```
 
 First line of stdout is always `OK` or `ERROR:<code>:<message>`. Always read it before proceeding.
@@ -159,6 +165,13 @@ Output after `OK`: list of issues (empty = conformant). Issues include missing r
 |-------|-------------|
 
 ## Changelog
+### Version 3.3 - Relative tool path
+**Date:** 2026-06-03
+**Reason:** Absolute path in Prerequisites was broken — pointed to `projects\knowledgebase` instead of `with-claude\knowledgebase`. Replaced with a path relative to the KB root so the convention stays valid if the KB moves.
+
+**Changes:**
+- `## Prerequisites`: tool path replaced by relative form `public/tools/md-doc.js`; resolution example added
+
 ### Version 3.2 - Total rewrite rule added
 **Date:** 2026-05-31
 **Reason:** Chaining delete/update with __positions for total transformations proved error-prone — mandatory sections can end up misplaced.

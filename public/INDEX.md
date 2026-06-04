@@ -47,6 +47,7 @@ Match the current task against the triggers below. Load only the files that matc
 | CommWise modal, overlay, disabled button | `conventions/commwise-modals.md` |
 | CommWise block read/write, assembly, synchronisation | `conventions/commwise-framework.md` |
 | Modular architecture (Core, IService, Assembly, Framework) | `conventions/modular-architecture.md` |
+| Architecture of a time-tracked structured dataset (artifact) | `conventions/artifact.md` |
 | Live DOM debug, JS validation in browser | `conventions/claude-chrome-mcp.md` |
 | Complex analysis, structured reasoning, multi-step problem | `conventions/claude-structured-reasoning.md` |
 | `file://` HTML page with persistent storage | `conventions/indexeddb-file-protocol.md` |
@@ -76,6 +77,7 @@ A taks in a project may require more than one convention.
 | commwise-modals.md | Modal open/close requires both `dds-hidden` (display) and `visible` (opacity/visibility) + mandatory reflow between. Disabled buttons need ID-level CSS override. | CommWise, modal, overlay, dds-hidden, visible, disabled, button, CSS, trap |
 | commwise-framework.md | CommWise as a framework — MCP tool, block model, module assembly, PULL/PUSH synchronisation, session lifecycle, editing best practices. | CommWise, MCP, framework, blocks, assembly, synchronisation, pull, push, session |
 | modular-architecture.md | Architecture convention for modular SPAs — Core, IService, Assembly, Framework concepts and project doc structure. | architecture, modular, core, IService, assembly, framework, convention |
+| artifact.md | Generic convention for time-tracked structured datasets — file structure, revision lifecycle, URL modes, local server, revision index, scripts, GitHub Pages. | artifact, structured data, revisions, JSON, lifecycle, scripts, GitHub Pages |
 | claude-chrome-mcp.md | Use Claude in Chrome MCP for live DOM diagnostics and JS fix validation — eliminates layout guesswork | Chrome, MCP, browser, DOM, debug, javascript, inspect, layout |
 | claude-structured-reasoning.md | 8 core techniques for clearer thinking: thinking tags, step-by-step decomposition, chain-of-thought, roles, structure, adversarial framing, constraints, reference-based | thinking-tags, chain-of-thought, structured-reasoning, prompting, clarity, analysis, constraints |
 | indexeddb-file-protocol.md | IndexedDB replaces localStorage for `file://` HTML pages — Chrome blocks localStorage in file:// context; IndexedDB works reliably. Includes reusable async snippet and migration table. | IndexedDB, localStorage, file-protocol, browser-storage, persistence, patch, HTML |
@@ -111,6 +113,16 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 2.3 - artifact.md added
+**Date:** 2026-06-04
+**Reason:** New convention `artifact.md` created — generic pattern for time-tracked structured datasets.
+
+**Modifications:**
+- Decision Layer: trigger `Architecture of a time-tracked structured dataset (artifact)` added
+- Table conventions/: `artifact.md` entry added
+
+---
 
 ### Version 2.2 - documentation-style.md added
 **Date:** 2026-06-03
