@@ -19,17 +19,18 @@ local server, URL modes, embed, GitHub Pages, scripts, convention
 ## Table of Contents
 
 1. [Definition](#definition)
-2. [File structure](#file-structure)
-3. [State detection](#state-detection)
-4. [URL parameters and modes](#url-parameters-and-modes)
-5. [index.html behavior](#indexhtml-behavior)
-6. [Revision index](#revision-index)
-7. [Embedded variables](#embedded-variables)
-8. [Standard scripts](#standard-scripts)
-9. [Local server API contract](#local-server-api-contract)
-10. [GitHub Pages publication](#github-pages-publication)
-11. [Specializations](#specializations)
-12. [Index](#index)
+2. [The mandatory split - index.html and historique/index.html](#the-mandatory-split---indexhtml-and-historiqueindexhtml)
+3. [File structure](#file-structure)
+4. [State detection](#state-detection)
+5. [URL parameters and modes](#url-parameters-and-modes)
+6. [index.html behavior](#indexhtml-behavior)
+7. [Revision index](#revision-index)
+8. [Embedded variables](#embedded-variables)
+9. [Standard scripts](#standard-scripts)
+10. [Local server API contract](#local-server-api-contract)
+11. [GitHub Pages publication](#github-pages-publication)
+12. [Specializations](#specializations)
+13. [Index](#index)
 
 ## Definition
 [up](#table-of-contents)
@@ -71,6 +72,76 @@ This enables sharing with users who have no access to the local environment.
 GitHub Pages is one example of a publication target. Any static hosting works.
 The export script (see `## GitHub Pages publication`) performs the embedding;
 the working `index.html` is never modified.
+
+## The mandatory split - index.html and historique/index.html
+[up](#table-of-contents)
+
+**This rule is absolute. Every artifact must implement the split described here.**
+
+### Why this split is non-negotiable
+
+When a single HTML file handles both the list of revisions and the detail view of one
+revision, two problems arise that compound each other over time:
+
+**Complexity creep.** A file that does two things grows in two directions simultaneously.
+State management (which view am I in? which date is selected?) pollutes every function.
+The code that renders a revision detail must coexist with the code that renders the list —
+they share globals, fight over the DOM, and make each other harder to read and test.
+Every new feature added to one view risks breaking the other.
+
+**Navigation breakdown.** A page that is simultaneously a list and a detail has no stable
+identity. The breadcrumb cannot say where you are — because the answer changes depending
+on whether a date is selected. A link from another page cannot carry meaningful context —
+because the destination is ambiguous. The `nav` parameter (see `nav-breadcrumb.md`) only
+works when a page has a single, well-defined identity.
+
+Both problems are invisible at first and become severe at scale. The single-file approach
+feels simpler to build initially, and becomes the most expensive architectural decision
+in the project within weeks.
+
+### What the split means
+
+```
+<artifact>/
+  index.html              <- ONE identity: the detail view of ONE revision (?date=...)
+  historique/
+    index.html            <- ONE identity: the list of ALL revisions
+```
+
+`index.html` always receives a `?date=` parameter. Without it, it has no meaningful
+content to show — it redirects to `historique/index.html`.
+It never renders a list.
+
+`historique/index.html` always shows the full revision list. It never renders a detail.
+It links to `../index.html?date=YYYY-MM-DD` for each revision.
+
+### How this enables clean navigation
+
+Each page has exactly one `NAV_CURRENT_NAME`. The breadcrumb is unambiguous:
+
+```
+Tableau de bord › Réunions › Réunion du 27/05/2026
+                  ^                  ^
+          historique/index.html    index.html?date=2026-05-27
+```
+
+The `navTo()` function (see `nav-breadcrumb.md`) propagates context correctly because
+each page knows its own identity at load time — no runtime switching.
+
+### The anti-pattern to avoid absolutely
+
+```javascript
+// WRONG — one file, two responsibilities
+if (URL_DATE) {
+  showDetailView();   // index.html acting as a detail page
+} else {
+  showListView();     // index.html acting as a list page
+}
+```
+
+This pattern produces the complexity and navigation problems described above.
+Any file containing this branching logic is not conformant with this convention
+and must be refactored.
 
 ## File structure
 [up](#table-of-contents)
@@ -279,6 +350,18 @@ Expected content of a specialization:
 |------|-------------|
 
 ## Changelog
+
+### Version 1.3 - Mandatory split WWH section added
+**Date:** 2026-06-04
+**Reason:** The single-file anti-pattern (list + detail in one index.html) was not
+explicitly forbidden. Added a dedicated section with full WWH rationale -- complexity
+creep, navigation breakdown, the clean split model, and the anti-pattern to avoid.
+
+**Changes:**
+- Added `## The mandatory split - index.html and historique/index.html` with Why/What/How
+- TOC updated (section renumbered, new entry added)
+
+---
 
 ### Version 1.2 - Local server API updated to generic endpoints
 **Date:** 2026-06-04
