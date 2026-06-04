@@ -54,7 +54,9 @@ Canonical structure of any document. Elements must appear in this exact order.
 
 Subtitle (an optional short, plain-text description, no markup)
 
-*Language: ...*            <- optional, see Language
+*Document type: ...*       <- see documentation-style.md
+
+*Language: ...*            <- optional, see Language; blank line required between declarations
 
 ## Quick Start             <- mandatory, see Quick Start Rule
 ## Keywords                <- mandatory, see Keywords Rule
@@ -72,7 +74,8 @@ Subtitle (an optional short, plain-text description, no markup)
 |---------|--------|------|
 | `# Title` | Mandatory | Unique, plain text |
 | Subtitle | Optional | Short, plain-text, no markup — placed immediately under `# Title` |
-| Language declaration | Optional | Required only when not English — see [Language](#language) |
+| Document type declaration | Conditional | Required — see `conventions/documentation-style.md` |
+| Language declaration | Optional | Required only when not English — see [Language](#language). **Each declaration on its own line, separated by a blank line** to prevent Markdown from merging consecutive italic lines into a single paragraph. |
 | `## Quick Start` | Mandatory | See [Quick Start Rule](#quick-start-rule) |
 | `## Keywords` | Mandatory | See [Keywords Rule](#keywords-rule) |
 | `## Table of Contents` | Conditional | Required if more than 2 content sections — see [TOC Rule](#toc-rule) |
@@ -470,6 +473,7 @@ read and wasting tokens. The chat should contain only discussion and decisions.
 | Initial creation | `create_file` at the target path directly |
 | Section edit | `str_replace` (or equivalent) in place, one section at a time |
 | Large rewrite | Suggest a Git commit first, then rewrite in place |
+| Convert to HTML or PDF | Use `tools/md-to-html.js` via `commands` MCP: `node tools/md-to-html.js <source.md> <output.html>`. Ask the user for the output path if not specified. |
 
 This applies to both KB files and project files.
 
@@ -495,6 +499,17 @@ All three depend on the same invariants: fixed heading names, canonical order, u
 | heading | [1](#index-heading-1) |
 
 ## Changelog
+### Version 4.6 - Header declarations formatting rule + md-to-html reference
+**Date:** 2026-06-04
+**Reason:** Two additions in the same session: declarations formatting rule, and reference to `md-to-html.js` for HTML/PDF conversion.
+
+**Changes:**
+- `## Document Structure`: skeleton updated — blank line shown between declarations
+- `## Document Structure`: table updated — Language declaration rule notes mandatory blank line separation
+- `## AI Assistant workflow`: row added — convert to HTML or PDF via `tools/md-to-html.js`
+
+---
+
 ### Version 4.5 - AI Assistant workflow
 **Date:** 2026-06-04
 **Reason:** Writing `.md` content in the chat collides with the interface's Markdown

@@ -77,6 +77,7 @@ Tools `require` them with a relative path: `const md = require('./lib/md-parser'
 | Module | Responsibility |
 |--------|---------------|
 | `md-parser.js` | Parse a Markdown file into a structured doc object; access sections by name |
+| `md-renderer.js` | Render a parsed doc object to HTML — TOC, section anchors, back-to-top links. Depends on `marked` (npm). |
 | `fs-scan.js` | Scan directory trees for `.md` files; read files safely; resolve paths |
 
 ### Why a shared library
@@ -337,6 +338,7 @@ test('regression: setSection inserts before Index when Changelog is absent', () 
 | Script | Description | Args |
 |--------|-------------|------|
 | `md-doc.js` | Read, create, and update Markdown documents conforming to documentation convention | See below |
+| `md-to-html.js` | Convert a Markdown document to a standalone HTML file with neutral CSS and generated TOC | `<source.md> <output.html>` |
 
 **md-doc.js commands:**
 
@@ -395,6 +397,16 @@ Rules:
 ---
 
 ## Changelog
+
+### Version 1.9 - md-renderer.js in Shared Library + md-to-html.js in Catalogue
+**Date:** 2026-06-04
+**Reason:** `md-renderer.js` existed in `lib/` but was not documented. New tool `md-to-html.js` added — converts a Markdown document to a standalone print-ready HTML file.
+
+**Changes:**
+- `## Shared Library`: `md-renderer.js` added to module table
+- `## Catalogue`: `md-to-html.js` added
+
+---
 
 ### Version 1.8 - read and dump removed from Catalogue
 **Date:** 2026-05-31

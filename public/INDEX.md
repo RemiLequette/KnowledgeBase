@@ -40,7 +40,7 @@ Match the current task against the triggers below. Load only the files that matc
 | Trigger | Load |
 |---------|------|
 | Reading, writing, copying local files | `conventions/filesystem.md` |
-| Creating or editing a `.md` file | `conventions/documentation.md` |
+| Creating or editing a `.md` file | `conventions/documentation.md`, `conventions/documentation-style.md` |
 | Declaring a document type, auditing content style | `conventions/documentation-style.md` |
 | SQL query, database read/write, schema change | `conventions/sqlite.md` |
 | CommWise layout, CSS, flex, viewport constraints | `conventions/commwise-layout.md` |
@@ -48,6 +48,7 @@ Match the current task against the triggers below. Load only the files that matc
 | CommWise block read/write, assembly, synchronisation | `conventions/commwise-framework.md` |
 | Modular architecture (Core, IService, Assembly, Framework) | `conventions/modular-architecture.md` |
 | Architecture of a time-tracked structured dataset (artifact) | `conventions/artifact.md` |
+| Project uses input channels to import ideas (email, Notion, etc.) | `conventions/idea-inbox.md` |
 | Live DOM debug, JS validation in browser | `conventions/claude-chrome-mcp.md` |
 | Complex analysis, structured reasoning, multi-step problem | `conventions/claude-structured-reasoning.md` |
 | `file://` HTML page with persistent storage | `conventions/indexeddb-file-protocol.md` |
@@ -78,6 +79,7 @@ A taks in a project may require more than one convention.
 | commwise-framework.md | CommWise as a framework — MCP tool, block model, module assembly, PULL/PUSH synchronisation, session lifecycle, editing best practices. | CommWise, MCP, framework, blocks, assembly, synchronisation, pull, push, session |
 | modular-architecture.md | Architecture convention for modular SPAs — Core, IService, Assembly, Framework concepts and project doc structure. | architecture, modular, core, IService, assembly, framework, convention |
 | artifact.md | Generic convention for time-tracked structured datasets — file structure, revision lifecycle, URL modes, local server, revision index, scripts, GitHub Pages. | artifact, structured data, revisions, JSON, lifecycle, scripts, GitHub Pages |
+| idea-inbox.md | Convention for collecting and processing ideas from multiple input channels (Gmail, Notion, etc.) — channel model, status lifecycle, processing rules, on-demand trigger. | idea-inbox, canal, channel, Gmail, Notion, inbox, processing, import |
 | claude-chrome-mcp.md | Use Claude in Chrome MCP for live DOM diagnostics and JS fix validation — eliminates layout guesswork | Chrome, MCP, browser, DOM, debug, javascript, inspect, layout |
 | claude-structured-reasoning.md | 8 core techniques for clearer thinking: thinking tags, step-by-step decomposition, chain-of-thought, roles, structure, adversarial framing, constraints, reference-based | thinking-tags, chain-of-thought, structured-reasoning, prompting, clarity, analysis, constraints |
 | indexeddb-file-protocol.md | IndexedDB replaces localStorage for `file://` HTML pages — Chrome blocks localStorage in file:// context; IndexedDB works reliably. Includes reusable async snippet and migration table. | IndexedDB, localStorage, file-protocol, browser-storage, persistence, patch, HTML |
@@ -113,6 +115,17 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 2.4 - idea-inbox.md + documentation-style au trigger md
+**Date:** 2026-06-04
+**Reason:** Nouvelle convention `idea-inbox.md` créée — pattern générique pour les canaux d'import d'idées. Correction du trigger `Creating or editing a .md file` pour inclure `documentation-style.md`.
+
+**Modifications:**
+- Decision Layer : trigger `Creating or editing a .md file` mis à jour — ajout de `conventions/documentation-style.md`
+- Decision Layer : trigger `Project uses input channels to import ideas` ajouté
+- Table conventions/ : entrée `idea-inbox.md` ajoutée
+
+---
 
 ### Version 2.3 - artifact.md added
 **Date:** 2026-06-04
