@@ -9,9 +9,7 @@ REM   Place a shortcut to this file in your Windows Startup folder.
 REM   (Win+R -> shell:startup)
 
 node "%~dp0local-server.js" ^
-  "C:\Users\RemiLequette\Dropbox" ^
-  "C:\Users\RemiLequette\Google Drive" ^
-  "C:\Users\RemiLequette\OneDrive" ^
+  "C:\Users\RemiLequette\Dropbox\AfrSCM2026_1.70_INVITE-ES_RSE" ^
   "C:\Users\RemiLequette\Development" ^
   --port 3000
 
