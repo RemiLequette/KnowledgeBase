@@ -21,29 +21,30 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 ## Haute priorité
 [up](#table-of-contents)
 
-- [ ] **Bootstrap robustesse** — La convention `documentation.md` + `md-doc-usage.md` est definie dans l'INDEX.md (KB) mais pas dans les fichiers projet (`AssistantIA.md`). Un AI Assistant qui demarre sur un sujet metier charge le projet sans passer par le bootstrap KB et cree des fichiers .md non conformes. Solution : ajouter la regle de chargement directement dans le template `AssistantIA.md` de chaque projet (section "Chargement au debut de chaque session") + regle declencheur sur l'action ("avant toute creation/modification d'un .md, charger documentation.md et md-doc-usage.md si pas deja fait"). Constate sur projet ComiteRSE-AfrSCM session 2026-06-01.
+- [ ] Bootstrap robustesse | Convention `documentation.md` + `md-doc-usage.md` absente du template AssistantIA.md — un AI démarrant sur un sujet métier crée des .md non conformes. Ajouter règle de chargement dans AssistantIA.md + déclencheur sur création/modification .md. Constaté sur ComiteRSE-AfrSCM 2026-06-01.
 
-- [ ] **Scope Rule — acces filesystem vs autorisation** — Un AI Assistant confond "techniquement accessible via MCP filesystem" avec "autorise par la Scope Rule". Le TODO.md de la KB racine est accessible via MCP mais hors perimetre public/ — l'AI Assistant aurait du repondre "non, pas sans autorisation explicite" au lieu de confirmer l'acces. Clarifier la Scope Rule dans l'INDEX pour distinguer acces technique et acces autorise, et preciser le comportement attendu de l'AI Assistant.
+- [ ] Scope Rule — accès vs autorisation | AI confond accès technique MCP avec autorisation Scope Rule. Clarifier dans INDEX : distinguer accès technique et accès autorisé, préciser comportement attendu de l'AI Assistant.
 
 ## Normale
 [up](#table-of-contents)
 
-- [ ] **Add Design document type** — Add `Design document` to the taxonomy in `conventions/documentation-style.md`. Define style, WWH obligations, and examples. Deferred from session 2026-06-03.
-- [ ] Review and update `guides/guide-maintenance.md` — cleanup French, references to Claude.md and old BP numbers
-- [ ] md-doc Index support — inline anchor tags (`<a id="index-term-N">`) currently point nowhere; implement renderer support so index references resolve correctly
-- [ ] md-doc Citations support — implement cross-document citation resolution; consider renaming Citations to References
-- [ ] md-doc Changelog support — add/update Changelog entries via md-doc (new command or extension of update)
-- [ ] Rename `conventions/` folder to `contracts/`
-- [ ] Best practices — vérifier que `guides/best-practices.md` référence la convention `todo.md`
-- [ ] Rename artifact scripts to English — `ouvrir-revision.js` → `open-revision.js`, `cloturer-revision.js` → `close-revision.js`. Update references in `conventions/artifact.md` and all specialization files.
-- [ ] Document GitHub Pages as a publication pattern — create `conventions/github-pages.md` covering the static site publication pattern (embedded variables, injection script, publication conditions). `artifact.md` currently references a project-level `github-pages.md`; the convention should document the generic pattern independently of any specific project.
-- [ ] Document Git workflow for AI Assistants — create `conventions/git.md` covering: commit before large rewrites, commit message format, when to suggest a commit, how an AI Assistant can execute Git operations via the commands MCP. Enables AI Assistants to manage Git directly rather than delegating all commits to the user.
-- [ ] Consider externalizing Changelogs from documents — Changelogs are loaded with every document but rarely needed in context. Explore moving them to separate `<filename>-changelog.md` files or a shared `CHANGELOG.md` per folder. Evaluate token savings vs navigation cost. Consider impact on tooling (md-doc, conformance checks).
+- [ ] Add Design document type | Add Design document to taxonomy in documentation-style.md. Define style, WWH obligations, examples. Deferred 2026-06-03.
+- [ ] Cleanup guide-maintenance.md | Fix French, remove references to Claude.md and old BP numbers.
+- [ ] md-doc Index support | Inline anchor tags currently point nowhere — implement renderer support so index references resolve correctly.
+- [ ] md-doc Citations support | Implement cross-document citation resolution. Consider renaming Citations to References.
+- [ ] md-doc Changelog support | Add/update Changelog entries via md-doc — new command or extension of update.
+- [ ] Rename conventions/ to contracts/
+- [ ] Best practices → todo.md reference | Vérifier que guides/best-practices.md référence la convention todo.md.
+- [ ] Rename artifact scripts to English | ouvrir-revision.js → open-revision.js, cloturer-revision.js → close-revision.js. Update references in artifact.md and specialization files.
+- [ ] Convention github-pages.md | Document static site publication pattern (embedded variables, injection script, publication conditions) independently of any specific project. artifact.md currently references a project-level file.
+- [ ] Convention git.md | Commit before large rewrites, commit message format, when to suggest a commit, Git operations via commands MCP. Enables AI Assistants to manage Git directly.
+- [ ] Externalize Changelogs? | Changelogs rarely needed in context. Explore separate changelog.md files or shared CHANGELOG.md per folder. Evaluate token savings vs navigation cost and tooling impact (md-doc, conformance checks).
 
 ## Basse priorité
 [up](#table-of-contents)
 
-- [ ] **Convention version control / git tagging** — Aucune convention de tagging git dans la KB. Définir : format des tags (semver, date, nom de convention ?), quand tagger (après chaque convention majeure ? après chaque session ?), workflow recommandé. À créer comme convention ou guide.
+- [ ] Convention git tagging | Définir format des tags, quand tagger (après chaque convention majeure ? après chaque session ?), workflow recommandé. À créer comme convention ou guide.
+- [ ] Write a WWH design session guide | Document the method for designing a tool or feature using WWH: how to structure Why/What/How, how to iterate, when to update conventions before coding, how to validate before implementing. Based on the todo-tool design session 2026-06-04.
 
 ## Index
 

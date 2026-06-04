@@ -60,6 +60,7 @@ Match the current task against the triggers below. Load only the files that matc
 | Setting up a new Claude project | `guides/project-setup-process.md` |
 | Auditing a project for conformance | `guides/audit-process.md` |
 | Updating a guide file | `guides/guide-maintenance.md` |
+| Building or setting up the HTML todo list tool | `guides/todo-tool.md`, `conventions/todo-list.md`, `conventions/local-server.md` |
 
 
 ---
@@ -101,6 +102,7 @@ Guides are used to perform specifi taasks
 | best-practices.md | Design principles for Claude project structure | best-practices, structure, instructions, conventions, clarity, context, design-principles |
 | audit-process.md | Process to verify project conformance to best practices. Rules of engagement: session dedication, corrections, guide updates, re-audit separation. Structured findings, proposals, approval workflow. Includes checkpoint + batching workflow. | audit, verification, best-practices, compliance, quality-assurance, process, methodology |
 | guide-maintenance.md | Standards for maintaining all guides: update Table of Contents and Changelog with every modification. Required for all guides (project-setup, best-practices, audit-process). | maintenance, guides, documentation, changelog, discoverability, traceability, standards |
+| todo-tool.md | Guide for the HTML tool that reads and writes TODO.md via the local server — rationale, conceptual model, architecture (bootstrap, transaction model, file access). | todo-tool, HTML, local-server, bootstrap, transaction, synchronization, todo |
 
 ---
 

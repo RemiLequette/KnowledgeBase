@@ -27,17 +27,25 @@ tools, scripts, node, commonjs, modules, lib, automation, cross-project, token-e
 ## Rationale
 [up](#table-des-matieres)
 
-Tools are Node.js scripts that handle mechanical, deterministic tasks (formatting, extraction, indexing, diffing).
-They exist to avoid consuming Claude context tokens on work that does not require reasoning.
+Tools — scripts, HTML pages, or any deterministic artifact — exist for two reasons:
+
+- **Token efficiency** — mechanical tasks consume AI context without requiring reasoning
+- **Reliability** — a deterministic process does not hallucinate, drift, or vary between runs
+
+This principle applies to any tool form, not only Node.js scripts.
 
 **Use a tool when:**
-- The task is mechanical (formatting, extraction, listing, indexing)
+- The task is mechanical (formatting, extraction, filtering, listing, indexing)
 - The output is deterministic — no judgment required
-- The task recurs across multiple projects
+- The task recurs
 
-**Do not use a tool when:**
-- The task requires interpretation or synthesis
+**Use AI when:**
+- The task requires interpretation, synthesis, or judgment
+- Occasional imperfection is acceptable
+
+**Do not use AI when:**
 - The task is one-off and simpler to do inline
+- Reliability and repeatability matter more than flexibility
 
 ---
 
@@ -399,6 +407,15 @@ Rules:
 ---
 
 ## Changelog
+
+### Version 2.1 - Rationale generalized
+**Date:** 2026-06-04
+**Reason:** The tool-vs-AI principle applies to any deterministic artifact (scripts, HTML pages, etc.), not only Node.js scripts. Reliability added as a second explicit argument alongside token efficiency.
+
+**Changes:**
+- `## Rationale`: rewritten — scope generalized beyond Node.js scripts; reliability argument added; Use/Do-not-use rules restructured into three blocks (Use a tool / Use AI / Do not use AI)
+
+---
 
 ### Version 2.0 - local-server.js added
 **Date:** 2026-06-04
