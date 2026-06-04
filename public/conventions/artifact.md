@@ -218,11 +218,14 @@ Endpoints used by every artifact:
 | Endpoint | Usage |
 |----------|-------|
 | `GET /ping` | Server presence check |
-| `GET /list?resource=<artifact>` | List `data-*.json` files in `historique/` |
-| `GET /patch?file=<path>` | Read a `changes-*.json` |
-| `POST /patch?file=<path>` | Auto-save a `changes-*.json` |
+| `GET /dir?path=<absolute-path-to-historique>` | List files in `historique/` |
+| `GET /file?path=<absolute-path>` | Read a `data-*.json` or `changes-*.json` |
+| `POST /file?path=<absolute-path>` | Auto-save a `changes-*.json` |
 
-See the project's `local-server.md` for the full server specification.
+Paths are absolute on the local filesystem.
+Pages derive their base path from `window.location.pathname` — see `conventions/local-server.md [section How projects use the server]`.
+
+See `conventions/local-server.md` for the full server specification.
 
 ## GitHub Pages publication
 [up](#table-of-contents)
@@ -276,6 +279,17 @@ Expected content of a specialization:
 |------|-------------|
 
 ## Changelog
+
+### Version 1.2 - Local server API updated to generic endpoints
+**Date:** 2026-06-04
+**Reason:** Server API refactored — `/patch` and `/list` replaced by generic `/file` and `/dir`.
+Pointer updated to `conventions/local-server.md` (shared KB convention).
+
+**Changes:**
+- `## Local server API contract`: endpoints updated (`/file`, `/dir`), absolute path note added
+- `## Local server API contract`: pointer updated to `conventions/local-server.md`
+
+---
 
 ### Version 1.1 - WWH compliance and local/published clarification
 **Date:** 2026-06-04

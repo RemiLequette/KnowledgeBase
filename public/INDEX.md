@@ -52,6 +52,7 @@ Match the current task against the triggers below. Load only the files that matc
 | Live DOM debug, JS validation in browser | `conventions/claude-chrome-mcp.md` |
 | Complex analysis, structured reasoning, multi-step problem | `conventions/claude-structured-reasoning.md` |
 | `file://` HTML page with persistent storage | `conventions/indexeddb-file-protocol.md` |
+| Setting up or using the local development server | `conventions/local-server.md` |
 | Creating or auditing a GLOSSARY.md | `conventions/glossary.md` |
 | Node.js automation script, cross-project tool | `conventions/tools.md` |
 | Creating or managing a TODO.md | `conventions/todo-list.md` |
@@ -82,6 +83,7 @@ A taks in a project may require more than one convention.
 | idea-inbox.md | Convention for collecting and processing ideas from multiple input channels (Gmail, Notion, etc.) — channel model, status lifecycle, processing rules, on-demand trigger. | idea-inbox, canal, channel, Gmail, Notion, inbox, processing, import |
 | claude-chrome-mcp.md | Use Claude in Chrome MCP for live DOM diagnostics and JS fix validation — eliminates layout guesswork | Chrome, MCP, browser, DOM, debug, javascript, inspect, layout |
 | claude-structured-reasoning.md | 8 core techniques for clearer thinking: thinking tags, step-by-step decomposition, chain-of-thought, roles, structure, adversarial framing, constraints, reference-based | thinking-tags, chain-of-thought, structured-reasoning, prompting, clarity, analysis, constraints |
+| local-server.md | Shared local HTTP server for all projects — allowed roots, API contract (/ping /file /dir), static serving, bootstrap pattern | local-server, HTTP, file-access, static, allowed-roots, multi-project |
 | indexeddb-file-protocol.md | IndexedDB replaces localStorage for `file://` HTML pages — Chrome blocks localStorage in file:// context; IndexedDB works reliably. Includes reusable async snippet and migration table. | IndexedDB, localStorage, file-protocol, browser-storage, persistence, patch, HTML |
 | glossary.md | Convention pour GLOSSARY.md dans chaque projet — domaines, termes, references croisees, chargement selectif par un AI Assistant. Section ## Glossary obligatoire dans PROJECT.md. | glossaire, glossary, terminologie, domaines, definitions, conformite, audit |
 | tools.md | Node.js script-based tools — when to use, structure, standard interface (args, stdout, exit codes), invocation via commands MCP, output rules, catalogue. | tools, scripts, node, automation, token-efficiency, commands-mcp, cross-project |
@@ -115,6 +117,16 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 2.5 - local-server.md added
+**Date:** 2026-06-04
+**Reason:** New convention `local-server.md` created — shared local HTTP server for all projects.
+
+**Modifications:**
+- Decision Layer: trigger `Setting up or using the local development server` added
+- Table conventions/: `local-server.md` entry added
+
+---
 
 ### Version 2.4 - idea-inbox.md + documentation-style au trigger md
 **Date:** 2026-06-04

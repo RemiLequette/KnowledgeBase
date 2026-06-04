@@ -79,6 +79,7 @@ Tools `require` them with a relative path: `const md = require('./lib/md-parser'
 | `md-parser.js` | Parse a Markdown file into a structured doc object; access sections by name |
 | `md-renderer.js` | Render a parsed doc object to HTML — TOC, section anchors, back-to-top links. Depends on `marked` (npm). |
 | `fs-scan.js` | Scan directory trees for `.md` files; read files safely; resolve paths |
+| `server-core.js` | Pure filesystem logic for the local server — safePath, readFile, writeFile, deleteFile, listDir, parseAllowedRoots, parsePort |
 
 ### Why a shared library
 
@@ -339,6 +340,7 @@ test('regression: setSection inserts before Index when Changelog is absent', () 
 |--------|-------------|------|
 | `md-doc.js` | Read, create, and update Markdown documents conforming to documentation convention | See below |
 | `md-to-html.js` | Convert a Markdown document to a standalone HTML file with neutral CSS and generated TOC | `<source.md> <output.html>` |
+| `local-server.js` | Shared local HTTP server — serves static files and exposes `/file`, `/dir`, `/ping` API for all projects | `<root1> [<root2> ...] [--port <port>]` |
 
 **md-doc.js commands:**
 
@@ -397,6 +399,16 @@ Rules:
 ---
 
 ## Changelog
+
+### Version 2.0 - local-server.js added
+**Date:** 2026-06-04
+**Reason:** New shared local development server — generic HTTP server for all projects. Includes `lib/server-core.js` (pure logic) and `local-server.js` (HTTP wrapper).
+
+**Changes:**
+- `## Shared Library`: `server-core.js` added to module table
+- `## Catalogue`: `local-server.js` added with args
+
+---
 
 ### Version 1.9 - md-renderer.js in Shared Library + md-to-html.js in Catalogue
 **Date:** 2026-06-04
