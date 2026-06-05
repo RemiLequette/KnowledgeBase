@@ -2,30 +2,30 @@
 
 ## Quick Start
 
-Convention for script-based tools in the `tools/` folder of the knowledge base.
-Load when creating a new tool, invoking an existing one, auditing tool conformance, or working on the shared library.
-Does not cover project-specific business logic — only tool structure, interface, module design, and invocation patterns.
+Convention for script-based tools — applies both to shared KB tools (`tools/` in the knowledge base) and to project-specific tools (`tools/` in any project).
+Load when creating a new tool anywhere, invoking an existing one, auditing tool conformance, or working on the shared library.
+Does not cover project-specific business logic — only tool structure, interface, module design, invocation patterns, and the full development lifecycle (scope → spec → code → tests → doc → catalogue).
 
 ## Keywords
 tools, scripts, node, commonjs, modules, lib, automation, cross-project, token-efficiency, interface, commands-mcp, output, tests, regression, convention
 
-## Table des matieres
+## Table of Contents
 
 1. [Rationale](#rationale)
 2. [Structure](#structure)
 3. [Shared Library](#shared-library)
 4. [Module Design Rules](#module-design-rules)
 5. [Standard Interface](#standard-interface)
-6. [Invocation](#invocation)
-7. [Output](#output)
-8. [Tests](#tests)
-9. [Catalogue](#catalogue)
-10. [Adding a Tool](#adding-a-tool)
-
----
+6. [Script Self-Documentation](#script-self-documentation)
+7. [Invocation](#invocation)
+8. [Output](#output)
+9. [Tests](#tests)
+10. [Catalogue](#catalogue)
+11. [Adding a Tool](#adding-a-tool)
+12. [Index](#index)
 
 ## Rationale
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 Tools — scripts, HTML pages, or any deterministic artifact — exist for two reasons:
 
@@ -47,10 +47,8 @@ This principle applies to any tool form, not only Node.js scripts.
 - The task is one-off and simpler to do inline
 - Reliability and repeatability matter more than flexibility
 
----
-
 ## Structure
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 ```
 tools/
@@ -72,10 +70,8 @@ tools/
 - Tool name: `kebab-case.js`, action-first (`index-`, `extract-`, `show-`, `diff-`, `audit-`)
 - Library module name: `kebab-case.js`, domain-first (`md-parser`, `fs-scan`)
 
----
-
 ## Shared Library
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 `tools/lib/` contains reusable modules shared across tools.
 Tools `require` them with a relative path: `const md = require('./lib/md-parser')`.
@@ -95,10 +91,8 @@ Tools `require` them with a relative path: `const md = require('./lib/md-parser'
 - Convention changes (e.g. new required section) are fixed in one place
 - Tools are readable without understanding Markdown parsing internals
 
----
-
 ## Module Design Rules
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 These apply to every file in `tools/lib/`.
 
@@ -154,10 +148,8 @@ Use `require` / `module.exports`. No ESM (`import`/`export`) — tools run direc
 module.exports = { parseFile, getSection, getKeywords, isConformant, getIssues };
 ```
 
----
-
 ## Standard Interface
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 Every tool follows this contract:
 
@@ -199,10 +191,55 @@ Error codes:
  */
 ```
 
----
+## Script Self-Documentation
+[up](#table-of-contents)
+
+### WHY — the auto-regenerable script
+
+A script is never a source of truth — it duplicates logic that is already specified in conventions, guides, and specifications. This is intentional and valuable: **a well-documented script is auto-regenerable**.
+
+If the header comments reference exactly the documents used to design the script, and capture the rare information not yet present in those documents, then anyone (or an AI assistant) can reconstruct the script from scratch by reading only those sources. The script becomes a live proof of its own specifications.
+
+Corollary: **when a comment contains information absent from the referenced documents, it signals a documentation debt** — those documents should be updated. The script points to its own gaps.
+
+### Required header block
+
+Every script must open with a header block that includes:
+
+```js
+/**
+ * <script-name>.js
+ *
+ * <One-line description of what it does — purely technical, no business logic.>
+ *
+ * References (documents used to design this script):
+ *   - <path/to/convention-or-spec.md> [section if relevant]
+ *   - ...
+ *
+ * Not yet in references (document debt — update the refs to absorb these):
+ *   - <any rule or constraint captured here because it is absent from the docs above>
+ *
+ * Args: <arg1> <arg2>
+ */
+```
+
+**Rules:**
+- `References` lists every convention, guide, or specification consulted — not the full path if obvious, but enough to find it
+- `Not yet in references` is the debt register — information that lives only here, not in any doc. Every entry is a candidate for a doc update. If empty, write `none`.
+- The one-line description is **purely technical** — it says what the script does mechanically, never why the business needs it
+
+### Separation of concerns — technical vs business
+
+> **A script does not know about business logic.**
+
+A script that copies, transforms, or injects data has no opinion about the meaning of that data. It does not know what a "completed meeting" means, whether a status is valid, or what the publication rules are. Those decisions belong to the operator.
+
+Concretely: **no conditional logic based on data content** (checking a status value, validating a business state, applying a publication rule) belongs in a script. If such logic exists, it is a violation of this principle and should be removed.
+
+This principle must appear explicitly in the script header under `Not yet in references` until it is absorbed into the relevant specification.
 
 ## Invocation
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 Tools are invoked via the `commands` MCP with `node` whitelisted at `safe` level.
 
@@ -219,20 +256,16 @@ commands:execute_command
 - On `ERROR`: read the code to decide whether to correct and retry, or abort
 - Never assume success without reading stdout
 
----
-
 ## Output
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 - All output goes to stdout, after the `OK` status line
 - No output files unless the tool's explicit purpose is to write a file (e.g. `create`, `update`)
 - No hardcoded paths inside scripts — paths always passed as arguments
 - Output format: plain text lines for lists, JSON for structured data
 
----
-
 ## Tests
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 ### Structure
 
@@ -339,10 +372,8 @@ When a bug is fixed, add a test named after the bug:
 test('regression: setSection inserts before Index when Changelog is absent', () => { ... });
 ```
 
----
-
 ## Catalogue
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
 | Script | Description | Args |
 |--------|-------------|------|
@@ -386,27 +417,77 @@ Rules:
 - Position is ignored when the section already exists (update in place, no move)
 - If the reference section (`before:X` / `after:X`) is absent from the document → `ERROR:SECTION_NOT_FOUND`
 
----
-
 ## Adding a Tool
-[up](#table-des-matieres)
+[up](#table-of-contents)
 
-1. Write the script in `tools/`, following the standard interface
-2. Use `lib/md-parser.js` and `lib/fs-scan.js` — do not re-implement parsing or file scanning
-3. Write a priori tests in `tools/tests/<script>.test.js`
-4. Add a row to the Catalogue table above
-5. Update `INDEX.md` if a new keyword category emerges
+### Step 1 — Decide the scope
 
----
+Is this tool useful beyond the current project? → **KB tool** — place in `knowledgebase/tools/`.
+Is this tool specific to one project? → **Project tool** — place in `<project>/tools/`.
+When in doubt, start as a project tool. Promote to KB only when a second project needs it.
+
+Both types follow the same rules below.
+
+### Step 2 — Write the spec first
+
+Before writing any code, document the tool:
+- **Why** it exists — what problem it solves, what triggers its use
+- **What** it does — inputs, outputs, behavior, edge cases
+- **How** it works — data flow, error handling, dependencies
+
+For a **KB tool**: add a spec section in this document or a dedicated `.md` in `tools/`.
+For a **project tool**: add a spec section in the project's `Methode.md` or a dedicated `tools/<name>.md`.
+
+Follow `conventions/documentation.md` and `conventions/documentation-style.md` (type: *process spec*) when writing a doc file.
+After writing or updating any `.md`, run `node tools/md-doc.js update <file>` to regenerate TOC and Index — never write them by hand.
+
+### Step 3 — Write the script
+
+Follow `## Standard Interface` and `## Script Self-Documentation` above.
+Use `lib/md-parser.js` and `lib/fs-scan.js` — do not re-implement parsing or file scanning.
+The script header must reference the spec written in Step 2.
+
+### Step 4 — Write tests first
+
+Write a priori tests in `tools/tests/<script>.test.js` before running the code.
+See `## Tests` for the mandatory TDD workflow.
+
+### Step 5 — Update the catalogue
+
+For a **KB tool**: add a row to `## Catalogue` in this document, then run `node tools/md-doc.js update <this file>`.
+For a **project tool**: add an entry in the project's own tool spec or `Methode.md`, then run `node tools/md-doc.js update <that file>`.
+
+### Step 6 — Update INDEX.md if needed
+
+If a new keyword category emerges, update `knowledgebase/public/INDEX.md`.
 
 ## Index
 
 | Terme | Occurrences |
 |-------|-------------|
 
----
-
 ## Changelog
+
+### Version 2.3 - Adding a Tool lifecycle + KB vs project scope
+**Date:** 2026-06-05
+**Reason:** Three gaps addressed: (1) `Adding a Tool` was a flat 5-step list with no spec phase, no doc phase, and no reference to documentation conventions; (2) the convention implied KB-only scope; (3) `md-doc update` was never mentioned for doc files.
+
+**Changes:**
+- `## Quick Start`: rewritten — scope extended to project tools; lifecycle (scope → spec → code → tests → doc → catalogue) made explicit
+- `## Adding a Tool`: rewritten as 6 structured steps — Step 1 (KB vs project decision), Step 2 (spec first, with WWH, doc conventions, and `md-doc update` rule), Step 3 (script), Step 4 (tests), Step 5 (catalogue update with `md-doc update`), Step 6 (INDEX.md)
+
+
+### Version 2.2 - Script Self-Documentation
+**Date:** 2026-06-05
+**Reason:** Two principles formalized as a new section.
+
+1. **Auto-regenerable script** — a script whose header references all documents used to design it, plus a debt register for information not yet in those documents, can be reconstructed from sources alone. The debt register is a signal to update the referenced docs.
+2. **Technical/business separation** — a script is a mechanical operator (copy, inject, transform). It contains no conditional logic based on data content or business state. Those decisions belong to the operator.
+
+**Changes:**
+- TOC: new entry `Script Self-Documentation` at position 6 (Invocation and following shifted)
+- New section `## Script Self-Documentation` added before `## Invocation`: WHY, required header block format, rules, separation of concerns principle
+
 
 ### Version 2.1 - Rationale generalized
 **Date:** 2026-06-04
@@ -415,7 +496,6 @@ Rules:
 **Changes:**
 - `## Rationale`: rewritten — scope generalized beyond Node.js scripts; reliability argument added; Use/Do-not-use rules restructured into three blocks (Use a tool / Use AI / Do not use AI)
 
----
 
 ### Version 2.0 - local-server.js added
 **Date:** 2026-06-04
@@ -425,7 +505,6 @@ Rules:
 - `## Shared Library`: `server-core.js` added to module table
 - `## Catalogue`: `local-server.js` added with args
 
----
 
 ### Version 1.9 - md-renderer.js in Shared Library + md-to-html.js in Catalogue
 **Date:** 2026-06-04
@@ -435,7 +514,6 @@ Rules:
 - `## Shared Library`: `md-renderer.js` added to module table
 - `## Catalogue`: `md-to-html.js` added
 
----
 
 ### Version 1.8 - read and dump removed from Catalogue
 **Date:** 2026-05-31
@@ -444,7 +522,6 @@ Rules:
 **Changes:**
 - Catalogue: `read` and `dump` rows removed
 
----
 
 ### Version 1.7 - update position control documented
 **Date:** 2026-05-31
@@ -454,7 +531,6 @@ Rules:
 - Catalogue: `update` description updated to mention `__positions`
 - Catalogue: `__positions` block added with format, valid values, and rules
 
----
 
 ### Version 1.6 - delete command added to Catalogue
 **Date:** 2026-05-31
@@ -463,7 +539,6 @@ Rules:
 **Changes:**
 - Catalogue: `delete` command added with args and error codes
 
----
 
 ### Version 1.5 - Convention reference comment
 **Date:** 2026-05-31
