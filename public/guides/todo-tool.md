@@ -19,7 +19,8 @@ todo-tool, HTML, kanban, local-server, bootstrap, transaction, drag-and-drop, ca
 1. [Why](#why)
 2. [What](#what)
 3. [How](#how)
-4. [Index](#index)
+4. [How to install in a project](#how-to-install-in-a-project)
+5. [Index](#index)
 
 ---
 
@@ -351,12 +352,84 @@ State changes also call `reindex()` before `render()`.
 
 ---
 
+## How to install in a project
+[up](#table-of-contents)
+
+This section is written for an AI Assistant performing the installation. Follow the steps in order.
+
+### Step 1 - Register the project folder in the local server
+
+The local server restricts file access to an explicit list of allowed roots.
+The project folder must appear in that list or the tool cannot read or write its files.
+
+File to edit: `<kb>/public/tools/start-server.bat`
+
+Add the absolute path to the project folder as an additional argument:
+
+```bat
+node "%~dp0local-server.js" ^
+  "C:\Users\RemiLequette\...existing roots..." ^
+  "C:\Users\RemiLequette\<project-folder>" ^
+  --port 3000
+```
+
+See `conventions/local-server.md` for the full server model.
+
+### Step 2 - Create TODO.md in the project
+
+Create `TODO.md` at the root of the project folder.
+The file must conform to `conventions/todo-list.md` — required sections: Quick Start, Keywords, priority sections (High priority / Normal / Low priority / Done), Index, Changelog.
+
+### Step 3 - Copy and configure the bootstrap file
+
+The bootstrap file is the entry point opened via `file://`. It must be copied into the project folder and adjusted — it cannot be shared because it contains hardcoded absolute paths specific to the project.
+
+**Copy:**
+```
+<kb>/todo-bootstrap.html  →  <project-folder>/todo-<project>.html
+```
+
+**Edit the two variables at the top of the script block:**
+
+```javascript
+// ── CONFIGURE THIS FOR EACH PROJECT ──────────────────────────────────────
+const TODO_PATH = 'C:/Users/RemiLequette/<project-folder>/TODO.md';
+// ─────────────────────────────────────────────────────────────────────────
+
+const TOOL_ABS  = 'C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/todo-tool.html';
+```
+
+- `TODO_PATH` — absolute path to `TODO.md` in the project folder (forward slashes)
+- `TOOL_ABS` — absolute path to `todo-tool.html` in the KB (forward slashes). This path is fixed — `todo-tool.html` always lives in `<kb>/public/tools/`.
+
+### Step 4 - Open the bootstrap and bookmark the app URL
+
+1. Start `<kb>/public/tools/start-server.bat`
+2. Open `todo-<project>.html` via `file://` in the browser
+3. The bootstrap redirects to `http://localhost:3000/<absolute-path>/todo-tool.html?todo=<encoded-TODO_PATH>`
+4. Bookmark that URL — use it for all future sessions. The bootstrap file is only needed on first open.
+
+---
+
 ## Index
 
 | Term | Occurrences |
 |------|-------------|
 
 ## Changelog
+
+### Version 1.2 - How to install in a project
+**Date:** 2026-06-05
+**Reason:** The guide covered architecture and features in detail but gave no step-by-step installation instructions for a new project. Added a dedicated section written for an AI Assistant, with explicit file paths, exact variable names to edit in the bootstrap, and ordered steps.
+
+**Changes:**
+- Added `## How to install in a project` between `## How` and `## Index`
+- Section structured as 4 ordered steps: register allowed root, create TODO.md, copy and configure bootstrap, bookmark app URL
+- Bootstrap copy source (`<kb>/todo-bootstrap.html`) and the two variables to edit (`TODO_PATH`, `TOOL_ABS`) named explicitly
+- `todo-tool.html` location in KB clarified — shared, never copied
+- Table of Contents updated (entry 4 added, Index renumbered to 5)
+
+---
 
 ### Version 1.1 - Full WWH with feature-level decomposition
 **Date:** 2026-06-04
