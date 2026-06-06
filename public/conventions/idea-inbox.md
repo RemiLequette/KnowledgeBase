@@ -10,6 +10,7 @@ Convention for projects that receive ad hoc ideas or inputs from external channe
 Covers: channel model, status lifecycle, processing rules, and AI Assistant behavior.
 Load when a project uses one or more input channels to import ideas, requests, or tasks for later processing.
 Does not cover how processed ideas are integrated into the project backlog — see the project's own task management convention.
+For cross-project ideas (an idea arising in one project for another), see `conventions/project-registry.md` — that inbox has no status lifecycle; entries are deleted on triage.
 
 ## Keywords
 idea-inbox, canal, channel, Gmail, Notion, statut, status, traitement, processing, inbox, import, idées
@@ -119,6 +120,15 @@ Processed marker: set status to "Traité"
 |------|-------------|
 
 ## Changelog
+
+### Version 1.1 - Cross-project inbox reference added
+**Date:** 2026-06-06
+**Reason:** The cross-project idea inbox (`project-ideas-inbox.md`) follows a different model — no status lifecycle, delete on triage. Added a pointer in Quick Start to avoid confusion.
+
+**Changes:**
+- `## Quick Start`: sentence added pointing to `conventions/project-registry.md` for cross-project ideas
+
+---
 
 ### Version 1.0 - Creation
 **Date:** 2026-06-04

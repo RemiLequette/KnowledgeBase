@@ -134,6 +134,14 @@ Verify that the objective is met. If it is not fully met, that is fine — but s
 - **TODO** — add any new items captured during the session
 - **Changelog** — update relevant files if the session produced lasting changes
 
+### If it is not written it does not exist
+
+A conversation is not a record. Insights, decisions, and workarounds discovered during a session exist only in the chat — and the chat is not the project. When the session closes, anything not written to a file is gone.
+
+This applies to both sides: the human should not rely on the AI retaining anything across sessions, and the AI should never say "I will remember this." There is nothing to remember. There is only what is written.
+
+The reflex: when something worth keeping surfaces — a decision, a finding, a convention exception — write it down before closing. A TODO item, a Changelog entry, a convention update. The form does not matter. The trace does.
+
 ### Post-mortem
 
 Before closing, take a moment to reflect: did the session go well? What could have been done better? A short exchange — a few lines in the chat — is enough. It feeds the next session and improves the practice over time.
@@ -163,6 +171,16 @@ The chat opens with *"let's continue the project"* or *"help me with the guide"*
 ### Context overload
 Too many topics in one session saturates the context window. Early decisions become unreliable. Fix: one objective per session, split if needed.
 
+### Hierarchy of Concern violation (aka HOC)
+
+Two failure modes, same root cause: mixing levels.
+
+The first: burying a structural concern alongside a trivial remark. *"Your architecture choice will make the whole feature impossible to scale — also, you have a typo on line 3."* Both in the same answer, same weight. The typo gets noticed; the architecture issue gets lost.
+
+The second: responding to a high-level question with implementation details. The human asks whether the approach is sound — the AI answers with code. The strategic question goes unanswered.
+
+Fix: address the highest-concern level first, fully, before going lower. If the approach is wrong, say so before reviewing the implementation. If the implementation has a critical flaw, name it before commenting on style.
+
 ### No closure
 The session ends when energy runs out, not when the objective is reached. The WIP is not updated, the memory is lost. Fix: explicit closure, even a brief one.
 
@@ -175,6 +193,16 @@ The session starts without reading the project state — TODO, WIP, relevant fil
 |------|-------------|
 
 ## Changelog
+
+### Version 1.4 - Memory rule and HOC anti-pattern
+**Date:** 2026-06-06
+**Reason:** Two additions pending in W1: memory rule (if it is not written it does not exist) and Hierarchy of Concern anti-pattern (do not mix levels of detail in the same answer).
+
+**Changes:**
+- `### If it is not written it does not exist`: new sub-section added in Phase 3 - Closure, after Update the project state
+- `### Hierarchy of Concern violation (aka HOC)`: new anti-pattern added
+
+---
 
 ### Version 1.3 - Close the chat — rename trigger clarified
 **Date:** 2026-06-06

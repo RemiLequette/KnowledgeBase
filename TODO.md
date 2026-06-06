@@ -27,7 +27,13 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 ## High priority
 [up](#table-of-contents)
 
-- [ ] [WIP] Complete how-to-get-things-done guide | Three additions pending: (1) memory rule — if it's not written it doesn't exist, AI must never say "I will remember"; (2) exchange granularity — think about message density based on stakes; (3) Hierarchy of Concern — general before detail, strategy before tactics. Also: update TODO changelog.
+- [x] [W1] Complete how-to-get-things-done guide | Memory rule + HOC anti-pattern added. Exchange granularity captured as Goldilocks principle (separate TODO).
+
+- [ ] Premature drafting anti-pattern | Drafting final wording before the concept is stable anchors the conversation too early and forces rewrites. Sharper rule: discuss the idea first, draft only when the shape is clear. Refine "Validate before acting" in Phase 1 or add as a new anti-pattern in how-to-get-things-done.md.
+
+- [ ] KB Glossary | A glossary is becoming useful in the KB itself — named principles and acronyms are accumulating (WWH, HOC, Goldilocks, WIP, GTD, backlog/TODO...). Create a GLOSSARY.md at the KB project root following conventions/glossary.md.
+
+- [ ] Goldilocks principle | Recurring pattern in the KB: too little loses value, too much loses quality, the right level is in between. Instances: session length, prompt granularity. Document as a named standalone principle — referenceable from how-to-get-things-done.md and elsewhere.
 
 - [ ] Bootstrap robustesse | Convention `documentation.md` + `md-doc-usage.md` absente du template AssistantIA.md — un AI démarrant sur un sujet métier crée des .md non conformes. Ajouter règle de chargement dans AssistantIA.md + déclencheur sur création/modification .md. Constaté sur ComiteRSE-AfrSCM 2026-06-01.
 
@@ -36,6 +42,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] Convention self-reference in artifacts | An AI reading a project file directly (e.g. `TODO.md`, `GLOSSARY.md`) without going through `INDEX.md` has no signal to load the relevant convention. Explore a lightweight mechanism for files to reference their own governing convention — e.g. a standard comment header, a frontmatter field, or a convention pointer in the file's Quick Start. Constaté sur guideIA 2026-06-05.
 
 - [ ] Guide — working session conduct | Write a guide describing the rules of conduct for a working session: (1) wait for an explicit go before modifying any file — the design conversation may not be finished, and file writes are slow and hard to undo; (2) propose before acting; (3) confirm scope before starting. First rule: never start writing until the user gives a clear validation signal. Constaté sur guideIA 2026-06-05.
+
+- [ ] guide-maintenance.md conformance | Non-compliant: French content, obsolete reference to Claude.md, informal structure. Bring into line with documentation.md before next audit. [effort: S]
 
 ## Normale
 [up](#table-of-contents)
@@ -59,6 +67,9 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 - [ ] Hierarchy of Concern in structured reasoning | Add HOC as a principle in conventions/claude-structured-reasoning.md — two dimensions: (1) gravity: not all errors are equal, grade remarks by actual impact; (2) order: general before detail, strategy before tactics. Never get lost in implementation details before validating the approach. Identified during how-to-get-things-done post-mortem 2026-06-06.
 
+- [ ] [WIP] Separate KB public/ to own repo | Move public/ to a standalone repository, independent from the KB Maintenance project. [effort: L]
+- [ ] INDEX conventions/ table restructured by concept | The table is organized by file — restructure around concepts, making filenames secondary. Decision Layer already maps concepts to files. Non-trivial refactor. [effort: M]
+- [ ] Extend maintenance rules beyond guides | guide-maintenance.md covers guides only. Conventions and tools also need maintenance rules. Consider convention-maintenance.md + tool-maintenance.md, or extend guide-maintenance.md to cover all three. [effort: S]
 - [ ] str_replace vs filesystem:edit_file confusion | Claude systematically attempts str_replace on local files before falling back to filesystem:edit_file. Investigate whether this can be corrected via a convention or INDEX trigger. Reportedly hard-wired. Constaté 2026-06-06.
 
 - [x] Enrich todo-list convention with WIP concept | WIP already exists as a state ([WIP] tag) in the format. Enrich the convention to make it a first-class session concept — the WIP is the bridge between sessions: a session closes by reviewing WIP items, the next session opens by reading them. Add guidance on WIP in the AI Assistant role section.
@@ -84,6 +95,62 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 3.0 - Premature drafting anti-pattern
+**Date:** 2026-06-06
+**Reason:** Post-mortem finding — drafting too early anchors the conversation before the concept is stable.
+
+**Modifications:**
+- High priority: added `Premature drafting anti-pattern`
+
+---
+
+### Version 2.9 - KB Glossary idea
+**Date:** 2026-06-06
+**Reason:** Named principles and acronyms accumulating in the KB — a glossary would help.
+
+**Modifications:**
+- High priority: added `KB Glossary`
+
+---
+
+### Version 2.8 - W1 closed
+**Date:** 2026-06-06
+**Reason:** how-to-get-things-done guide W1 completed — memory rule and HOC added to guide.
+
+**Modifications:**
+- High priority: W1 marked done
+
+---
+
+### Version 2.7 - Goldilocks principle
+**Date:** 2026-06-06
+**Reason:** Goldilocks pattern identified as recurring in the KB (session length, prompt granularity). Captured as a standalone principle to document.
+
+**Modifications:**
+- High priority: added `Goldilocks principle`
+
+---
+
+### Version 2.6 - Inbox triage 2026-06-06
+**Date:** 2026-06-06
+**Reason:** Triage of 3 ideas from project-ideas-inbox.md.
+
+**Modifications:**
+- Normale: added `Separate KB public/ to own repo` [WIP, effort: L]
+- Normale: added `INDEX conventions/ table restructured by concept` [effort: M]
+- Normale: added `Extend maintenance rules beyond guides` [effort: S]
+
+---
+
+### Version 2.5 - guide-maintenance.md conformance
+**Date:** 2026-06-06
+**Reason:** guide-maintenance.md identified as non-compliant during session — flagged for cleanup.
+
+**Modifications:**
+- High priority: added `guide-maintenance.md conformance`
+
+---
 
 ### Version 2.4 - tools.md scope gap
 **Date:** 2026-06-06

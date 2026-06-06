@@ -64,13 +64,14 @@ Match the current task against the triggers below. Load only the files that matc
 | Modular architecture (Core, IService, Assembly, Framework) | `conventions/modular-architecture.md` |
 | Architecture of a time-tracked structured dataset (artifact) | `conventions/artifact.md` |
 | Project uses input channels to import ideas (email, Notion, etc.) | `conventions/idea-inbox.md` |
+| Registering a project, querying project dependencies, posting or triaging cross-project ideas | `conventions/project-registry.md` |
 | Live DOM debug, JS validation in browser | `conventions/claude-chrome-mcp.md` |
 | Complex analysis, structured reasoning, multi-step problem | `conventions/claude-structured-reasoning.md` |
 | `file://` HTML page with persistent storage | `conventions/indexeddb-file-protocol.md` |
 | Setting up or using the local development server | `conventions/local-server.md` |
 | Creating or auditing a GLOSSARY.md | `conventions/glossary.md` |
 | Node.js automation script, cross-project tool | `conventions/tools.md` |
-| Creating or managing a TODO.md | `conventions/todo-list.md` |
+| Creating or managing a TODO.md or backlog | `conventions/todo-list.md` |
 | Setting up or auditing Claude project structure or instructions | `conventions/project-structure.md` |
 | Setting up a new Claude project | `guides/project-setup-process.md` |
 | Auditing a project for conformance | `guides/audit-process.md` |
@@ -97,6 +98,7 @@ Rules and patterns governing how something is done. A convention leaves a trace 
 | modular-architecture.md | Architecture convention for modular SPAs — Core, IService, Assembly, Framework concepts and project doc structure. | architecture, modular, core, IService, assembly, framework, convention |
 | artifact.md | Generic convention for time-tracked structured datasets — file structure, revision lifecycle, URL modes, local server, revision index, scripts, GitHub Pages. | artifact, structured data, revisions, JSON, lifecycle, scripts, GitHub Pages |
 | idea-inbox.md | Convention for collecting and processing ideas from multiple input channels (Gmail, Notion, etc.) — channel model, status lifecycle, processing rules, on-demand trigger. | idea-inbox, canal, channel, Gmail, Notion, inbox, processing, import |
+| project-registry.md | Centralized directory of all projects using the KB (`public/projects.md`) and cross-project idea inbox (`public/project-ideas-inbox.md`) — registration format, inbox posting, triage rules. | project-registry, projects, directory, dependencies, cross-project, idea-inbox, triage |
 | claude-chrome-mcp.md | Use Claude in Chrome MCP for live DOM diagnostics and JS fix validation — eliminates layout guesswork | Chrome, MCP, browser, DOM, debug, javascript, inspect, layout |
 | claude-structured-reasoning.md | 8 core techniques for clearer thinking: thinking tags, step-by-step decomposition, chain-of-thought, roles, structure, adversarial framing, constraints, reference-based | thinking-tags, chain-of-thought, structured-reasoning, prompting, clarity, analysis, constraints |
 | local-server.md | Shared local HTTP server for all projects — allowed roots, API contract (/ping /file /dir), static serving, bootstrap pattern | local-server, HTTP, file-access, static, allowed-roots, multi-project |
@@ -142,6 +144,25 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 3.0 - backlog alias in Decision Layer
+**Date:** 2026-06-06
+**Reason:** "backlog" is a common alias for TODO — adding it to the trigger ensures the convention is loaded when the term is used.
+
+**Modifications:**
+- Decision Layer: `Creating or managing a TODO.md` → `Creating or managing a TODO.md or backlog`
+
+---
+
+### Version 2.9 - project-registry.md added
+**Date:** 2026-06-06
+**Reason:** New convention `project-registry.md` created — centralized project directory and cross-project idea inbox.
+
+**Modifications:**
+- Decision Layer: trigger `Registering a project, querying project dependencies, or posting a cross-project idea` added
+- Table conventions/: `project-registry.md` entry added
+
+---
 
 ### Version 2.8 - tools section, convention-guide distinction, documentation-style alignment
 **Date:** 2026-06-06

@@ -69,6 +69,21 @@ If you **added, removed, or renamed** any section in the guide:
 
 ---
 
+## Rule 3: Update the Decision Layer
+
+Whenever you **add or significantly change** a convention, guide, or tool:
+
+**Add or update the corresponding trigger** in the Decision Layer table of `public/INDEX.md`.
+
+**Why:** The Decision Layer is the entry point for every AI-assisted session. A convention that has no trigger is invisible — it will not be loaded even when relevant.
+
+**What to check:**
+- Does a trigger exist for the new file?
+- Does the trigger wording match the situations where the file should be loaded?
+- Is the trigger specific enough to avoid loading the file unnecessarily?
+
+---
+
 ## Why Both Rules Matter
 
 | Element | Purpose |
