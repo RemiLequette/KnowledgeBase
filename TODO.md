@@ -48,6 +48,9 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 ## Normale
 [up](#table-of-contents)
 
+- [ ] Forge — gitignore logs | Add `*.log` to `.gitignore` in `public/tools/forge/` — `forge.log` must not be committed.
+- [ ] Forge — registry viewer | Build a viewer artifact for the forge registry (roots, types, artifacts) — using forge to read itself via `forge_ls`. HTML tool or React artifact.
+
 - [ ] Convention journal.md | Create a convention for Journal.md files — structure, entry format, when to create, what to capture (decisions, key moments, files modified). Update INDEX.md decision layer trigger and PROJECT.md structure. Based on Journal.md created in KB session 2026-06-05.
 
 - [ ] tools.md Quick Start — extend scope to reference HTML viewers/editors and `guides/editor-tool.md`. Currently limited to scripts only.
@@ -67,6 +70,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 - [ ] Hierarchy of Concern in structured reasoning | Add HOC as a principle in conventions/claude-structured-reasoning.md — two dimensions: (1) gravity: not all errors are equal, grade remarks by actual impact; (2) order: general before detail, strategy before tactics. Never get lost in implementation details before validating the approach. Identified during how-to-get-things-done post-mortem 2026-06-06.
 
+- [ ] [WIP] Forge — unknown read + premiers types | (1) Implémenter `forge_read` sur type `unknown` — retourne le contenu brut du fichier, équivalent `filesystem.read_file`. Objectif : remplacer filesystem en lecture. (2) Enregistrer les premiers types réels : `convention`, `todo-list`, `technical-doc`. Implémenter `forge_register`, `forge_read`, `forge_write` pour support `md`. Voir `conventions/forge.md`. [effort: L]
 - [ ] [WIP] Separate KB public/ to own repo | Move public/ to a standalone repository, independent from the KB Maintenance project. [effort: L]
 - [ ] INDEX conventions/ table restructured by concept | The table is organized by file — restructure around concepts, making filenames secondary. Decision Layer already maps concepts to files. Non-trivial refactor. [effort: M]
 - [ ] Extend maintenance rules beyond guides | guide-maintenance.md covers guides only. Conventions and tools also need maintenance rules. Consider convention-maintenance.md + tool-maintenance.md, or extend guide-maintenance.md to cover all three. [effort: S]
@@ -95,6 +99,18 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 3.1 - Forge session
+**Date:** 2026-06-06
+**Reason:** Session "death to filesystem" — Forge designed, proto implemented, convention written.
+
+**Modifications:**
+- Normale: added `Forge — registry viewer`
+- Normale: added `Forge — gitignore logs`
+- Normale: added `Forge — premiers types` [WIP]
+- INDEX.md and forge.md to be updated (separate step)
+
+---
 
 ### Version 3.0 - Premature drafting anti-pattern
 **Date:** 2026-06-06

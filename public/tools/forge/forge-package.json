@@ -1,0 +1,12 @@
+{
+  "name": "forge",
+  "version": "0.1.0",
+  "description": "Forge — artefact registry and structured access MCP server",
+  "type": "module",
+  "bin": {
+    "forge": "./forge.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

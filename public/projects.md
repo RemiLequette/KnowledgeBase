@@ -30,12 +30,25 @@ projects, directory, registry, dependencies, active, archived
 - **Uses KB conventions:** all
 - **Depends on:** (none)
 
+### GuideIA
+
+- **Tag:** `guide-ia`
+- **Path:** C:\Users\RemiLequette\Development\with-claude\guideIA
+- **Status:** active
+- **Description:** Guide pratique décrivant le fonctionnement interne d'un assistant IA et les bonnes pratiques pour l'utiliser efficacement — rédigé en français, produit via une collaboration humain-IA documentée.
+- **Uses KB conventions:** documentation.md, documentation-style.md, todo-list.md, filesystem.md, tools.md
+- **Depends on:** (none)
+
 ## Index
 
 | Term | Occurrences |
 |------|-------------|
 
 ## Changelog
+
+### Version 1.1 - GuideIA registered
+**Date:** 2026-06-06
+**Reason:** GuideIA project added to the registry.
 
 ### Version 1.0 - Creation
 **Date:** 2026-06-06

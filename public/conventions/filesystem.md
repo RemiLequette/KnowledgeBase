@@ -8,6 +8,7 @@ Convention pour les opérations sur fichiers locaux Windows. Charger pour tout t
 - **Read operations** → use `filesystem` MCP
 - **Write operations** → use `edit-file-lines` MCP
 - **Mechanical file operations** (copy, regex replace) → use `node` via `commands` MCP (zero tokens, no approval required)
+- **Large file generation** → generate in container + `present_files` for download (see section below)
 
 ## Rationale
 Separation of concerns between read and write access.
@@ -31,6 +32,7 @@ fast_write_file, fast_large_write_file, fast_edit_block, fast_edit_multiple_bloc
 | Mechanical edit (regex, fixed value) | `node` inline | ~0 | ~2ms |
 | Localized edit (known line) | `edit-file-lines` | minimal | fast |
 | Intelligent edit (reasoning required) | `filesystem` read + Claude + write | high | slow |
+| Large file generation | container + `present_files` | low | fast |
 
 ### When to use `node` for file operations
 
@@ -66,6 +68,27 @@ args: ["-e", "const fs=require('fs');const s=Date.now();const c=fs.readFileSync(
 `bash_tool` runs in an isolated Linux container — it has **no access**
 to the user's Windows filesystem. Never use it to read, write, or manipulate
 local files. Always use `filesystem` or `edit-file-lines`.
+
+## Generating large files — container + download
+
+For large files (HTML, JS, reports, or any file where writing token cost is significant), prefer generating the file in the container and presenting it for download over writing directly to the Windows filesystem via MCP.
+
+**Rule of thumb:** if the file is small (under ~100 lines), write directly via `edit-file-lines`. Otherwise, generate in `/home/claude/` and call `present_files`.
+
+**Why:** `present_files` costs zero additional tokens — the file is already generated. Writing via `edit-file-lines` on a large file burns tokens on content transmission and verification. The download + manual copy takes seconds and is more reliable.
+
+**Pattern:**
+```bash
+# Generate in container
+bash_tool: cat > /home/claude/output.html << 'EOF'
+...file content...
+EOF
+
+# Present for download
+present_files(["/home/claude/output.html"])
+```
+
+The user downloads the file from the Claude interface and copies it to the target location manually.
 
 ## Copying binary files (PDF, images) to the Windows filesystem
 
@@ -117,7 +140,7 @@ Do not fall back to bash. Instead:
 ---
 
 ## Keywords
-filesystem, MCP, read, write, copy, node, regex, files, conventions
+filesystem, MCP, read, write, copy, node, regex, files, conventions, download, present_files, large-files
 
 ---
 
@@ -129,6 +152,18 @@ filesystem, MCP, read, write, copy, node, regex, files, conventions
 ---
 
 ## Changelog
+
+### Version 1.1 - Large file generation via container + download
+**Date:** 2026-06-06
+**Reason:** Discovered in practice: writing large files via `edit-file-lines` is token-expensive and slow. Generating in the container and using `present_files` for download is faster, cheaper, and more reliable. Rule of thumb: under ~100 lines → write directly; otherwise → container + download.
+
+**Changes:**
+- Rule: added `Large file generation` bullet
+- Optimal strategy table: added `Large file generation` row
+- New section: `## Generating large files — container + download`
+- Keywords: added `download`, `present_files`, `large-files`
+
+---
 
 ### Version 1.0 - Creation
 **Date:** 2026-05-30
