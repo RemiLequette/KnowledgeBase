@@ -61,7 +61,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 - [ ] str_replace vs filesystem:edit_file confusion | Claude systematically attempts str_replace on local files before falling back to filesystem:edit_file. Investigate whether this can be corrected via a convention or INDEX trigger. Reportedly hard-wired. Constaté 2026-06-06.
 
-- [ ] Enrich todo-list convention with WIP concept | WIP already exists as a state ([WIP] tag) in the format. Enrich the convention to make it a first-class session concept — the WIP is the bridge between sessions: a session closes by reviewing WIP items, the next session opens by reading them. Add guidance on WIP in the AI Assistant role section.
+- [x] Enrich todo-list convention with WIP concept | WIP already exists as a state ([WIP] tag) in the format. Enrich the convention to make it a first-class session concept — the WIP is the bridge between sessions: a session closes by reviewing WIP items, the next session opens by reading them. Add guidance on WIP in the AI Assistant role section.
 
 - [ ] Rename conventions/ to contracts/
 - [ ] Best practices → todo.md reference | Vérifier que guides/best-practices.md référence la convention todo.md.

@@ -6,7 +6,7 @@ A practical guide for running effective AI-assisted working sessions.
 
 ## Quick Start
 
-This guide describes how to structure a working session with an AI Assistant to produce a clear, concrete result.
+This guide (aka GTD) describes how to structure a working session with an AI Assistant to produce a clear, concrete result.
 A session maps to a chat — one objective, one log, one closure.
 Applies to any AI-assisted project.
 This guide is a framework, not a procedure — adapt it to your context.
@@ -43,7 +43,7 @@ A session maps exactly to a chat in your AI tool. This gives you three things fo
 - an **end** — the last message before closing
 - a **log** — the full conversation, readable after the fact
 
-The AI tool names the chat automatically from the first message. **The quality of your first message determines the quality of your log.** A vague opening produces a vague title. A focused opening produces a useful archive entry.
+The AI tool names the chat automatically from the first message. **The quality of your first message determines the quality of your log.** A vague opening produces a vague title. A focused opening produces a useful archive entry. You can rename it manually afterwards, but it is always better to be right the first time.
 
 ### One objective, not one hour
 
@@ -56,9 +56,9 @@ There is a structural reason to keep sessions short: the context window degrades
 A session does not happen in a vacuum. It takes place inside a project with its own history, files, and conventions. Two artifacts anchor every session to its project:
 
 - **TODO** — the ordered backlog of what remains to be done
-- **WIP** — items currently in progress, potentially incomplete, to be resumed
+- **WIP** — the set of all items in `[WIP]` state in `TODO.md` (see `conventions/todo-list.md`). Represents what is currently in progress, potentially incomplete, to be resumed.
 
-The WIP is the bridge between sessions. A session closes by updating it. The next session opens by reading it.
+The WIP is the bridge between sessions. A session closes by updating it. The next session may start by exploring it if no idea what to do next, once decided rename the chat ;-).
 
 ## Phase 1 - Scoping
 [up](#table-of-contents)
@@ -68,11 +68,12 @@ Before producing anything, align on what the session is for.
 ### Explore the project context
 
 Start by reading the project state:
+- PROJECT.mdl hopefully it is in the context
 - What is the current WIP? What was left incomplete?
 - What does the TODO say about the target area?
 - What conventions or specs are relevant?
 
-Do not rely on memory. Read the files.
+Do not rely on memory. Read the documentation.
 
 ### Define the objective
 
@@ -86,9 +87,13 @@ Before designing a solution, ask open questions. The AI has broad knowledge from
 
 Example: asking *"What is your view on session duration?"* produced a structural insight (context window degradation) that shaped the session model in this very guide.
 
+Do that before sharing your ideas or you risk steering is answers. Sure he will steer yours, but you are better at objectivity.
+
+Then follow with a healthy debate, give each other feedback, reformulate to check clarity.
+
 ### Validate before acting
 
-The scoping conversation may not be finished. **No file is modified until the human gives an explicit go.** Design in the chat first — write to disk second.
+The scoping conversation may not be finished. **No document is modified until the human gives an explicit go.** Design in the chat first — write to disk second.
 
 ## Phase 2 - Execution
 [up](#table-of-contents)
@@ -129,12 +134,6 @@ Verify that the objective is met. If it is not fully met, that is fine — but s
 - **TODO** — add any new items captured during the session
 - **Changelog** — update relevant files if the session produced lasting changes
 
-### Prepare the next session
-
-The best time to define the next objective is at the end of the current one. Review the WIP and TODO to identify what comes next, then draft the opening message of the next session — concrete and specific enough to become a good chat title. Write it as a WIP entry or a TODO item so the next session opens anchored, not searching.
-
-A good opening message: *"Implement the export feature for artifact.md"* — not *"what's the WIP today?"*.
-
 ### Post-mortem
 
 Before closing, take a moment to reflect: did the session go well? What could have been done better? A short exchange — a few lines in the chat — is enough. It feeds the next session and improves the practice over time.
@@ -143,9 +142,11 @@ Before closing, take a moment to reflect: did the session go well? What could ha
 
 The AI Assistant will suggest closure when the objective is reached. The human decides. Continuing after closure is fine — for loose ends, ideas, or post-mortem notes.
 
-If the first message of the session was a question of orientation (*"what's the WIP?"*, *"let's pick a TODO"*) rather than a scoped objective, the AI Assistant should suggest a replacement chat title based on what was actually accomplished. The human renames the chat manually — the AI cannot do it directly.
+As the AI tool names the chat automatically from the first user message, a concrete and specific first message already produces a good title — do not suggest renaming in that case.
 
-Closing the chat seals the log.
+If the first message was a question of orientation (*"what's the WIP?"*, *"let's pick a TODO"*) rather than a scoped objective, the AI Assistant should suggest a replacement chat title based on what was actually accomplished. The human renames the chat manually — the AI cannot do it directly.
+
+Closing the chat will vot create a closure, the human can come bak to a chat after a few days, the AI will not notice, it has to be triggered by the human, or validated on AI proposal. Note also that conducting multiple chats in parallel may not be the healthiest practise.
 
 ## Anti-patterns
 [up](#table-of-contents)
@@ -157,13 +158,13 @@ The session starts on objective A and gradually shifts to B, then C. No single s
 Files are modified before the design conversation is finished. The result is a half-baked artifact that costs more to undo than to prevent. Fix: design in the chat, write on explicit go.
 
 ### Vague first message
-The chat opens with *"let's continue the project"* or *"help me with the guide"*. The AI names the chat accordingly. The log is useless as an archive. Fix: open with a concrete, specific objective.
+The chat opens with *"let's continue the project"* or *"help me with the guide"*. The AI names the chat accordingly. The log is useless as an archive. Fix: open with a concrete, specific objective, at least state it early.
 
 ### Context overload
 Too many topics in one session saturates the context window. Early decisions become unreliable. Fix: one objective per session, split if needed.
 
 ### No closure
-The session ends when energy runs out, not when the objective is reached. The WIP is not updated. The next session opens blind. Fix: explicit closure, even a brief one.
+The session ends when energy runs out, not when the objective is reached. The WIP is not updated, the memory is lost. Fix: explicit closure, even a brief one.
 
 ### Unanchored session
 The session starts without reading the project state — TODO, WIP, relevant files. The AI works from the conversation alone, disconnected from project history. Fix: always start by reading the project context.
@@ -174,6 +175,24 @@ The session starts without reading the project state — TODO, WIP, relevant fil
 |------|-------------|
 
 ## Changelog
+
+### Version 1.3 - Close the chat — rename trigger clarified
+**Date:** 2026-06-06
+**Reason:** AI was suggesting chat rename even when the first message was already a concrete objective. Rule clarified: a specific first message produces a good title automatically — suggest rename only when the first message was an orientation question.
+
+**Changes:**
+- `### Close the chat`: explicit rule added — do not suggest renaming if first message was a scoped objective
+
+---
+
+### Version 1.2 - WIP definition aligned with todo-list convention
+**Date:** 2026-06-06
+**Reason:** WIP was described as a separate artifact. Clarified: WIP = set of `[WIP]` items in `TODO.md`, with reference to `conventions/todo-list.md`.
+
+**Changes:**
+- `### The project is the frame`: WIP definition updated with reference to convention
+
+---
 
 ### Version 1.1 - Closure enriched
 **Date:** 2026-06-06

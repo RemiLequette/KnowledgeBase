@@ -39,6 +39,7 @@ The todo list is a **lightweight backlog** — it captures ideas and tasks for a
 - **Capture** — add an item at any time during a session
 - **Priority** — high / normal / low
 - **State** — open / in progress / done
+- **WIP** — the set of all `[WIP]` items in `TODO.md`. Represents what is currently in progress across sessions. An item can be created directly in `[WIP]` state without going through `open` first. The WIP is the bridge between sessions: a session closes by reviewing WIP items, the next session opens by reading them.
 - **Effort** — optional sizing tag `[effort: XS/S/M/L/XL]` to help prioritize, plan sessions, and assess delivery capacity
 - **Title and description** — optional short title; description is the main text
 - **Card index** — short stable identifier per card (`[O1]`, `[W1]`, `[D1]`) to reference items unambiguously, especially when talking to an AI Assistant
@@ -168,6 +169,15 @@ Card indexes are preserved.
 |------|-------------|
 
 ## Changelog
+### Version 2.5 - WIP as a first-class session concept
+**Date:** 2026-06-06
+**Reason:** WIP existed only as a format state (`[WIP]` tag). Elevated to a first-class session concept: the set of all `[WIP]` items is the bridge between sessions. An item can be created directly in `[WIP]` state.
+
+**Changes:**
+- Features: `WIP` block added after `State`
+
+---
+
 ### Version 2.4 - Explicit archiving and archived-from tag
 **Date:** 2026-06-04
 **Reason:** Automatic archiving of done items at Save was too implicit. Done items should remain visible until explicitly removed. Trashed items going to archive with their original state allows distinguishing completed work from discarded items.
