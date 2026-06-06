@@ -24,8 +24,10 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 - [ ] Bug md-doc update supprime le TOC | `md-doc update` avec un JSON vide `{}` supprime silencieusement le `## Table of Contents` du fichier cible. Reproduit sur fixture minimale 2026-06-05 — séquence : créer fichier avec TOC → `str_replace` → `md-doc update {}` → TOC absent. Fixture : `tmp/test-md-doc.md`.
 
-## Haute priorité
+## High priority
 [up](#table-of-contents)
+
+- [ ] [WIP] Complete how-to-get-things-done guide | Three additions pending: (1) memory rule — if it's not written it doesn't exist, AI must never say "I will remember"; (2) exchange granularity — think about message density based on stakes; (3) Hierarchy of Concern — general before detail, strategy before tactics. Also: update TODO changelog.
 
 - [ ] Bootstrap robustesse | Convention `documentation.md` + `md-doc-usage.md` absente du template AssistantIA.md — un AI démarrant sur un sujet métier crée des .md non conformes. Ajouter règle de chargement dans AssistantIA.md + déclencheur sur création/modification .md. Constaté sur ComiteRSE-AfrSCM 2026-06-01.
 
@@ -40,6 +42,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 - [ ] Convention journal.md | Create a convention for Journal.md files — structure, entry format, when to create, what to capture (decisions, key moments, files modified). Update INDEX.md decision layer trigger and PROJECT.md structure. Based on Journal.md created in KB session 2026-06-05.
 
+- [ ] tools.md Quick Start — extend scope to reference HTML viewers/editors and `guides/editor-tool.md`. Currently limited to scripts only.
+
 - [ ] Shared library scope — KB vs project | `tools.md` defines the KB vs project rule for scripts but does not cover shared libraries (`lib/`). Clarify: a `lib/` module that is specific to one project belongs in `<project>/tools/lib/`, not in the KB. The KB `tools/lib/` is reserved for modules reusable across projects. Constaté sur guideIA 2026-06-05.
 - [ ] Multilingual document support | `documentation.md` and `md-doc` assume English as the only language. Projects in another language (e.g. French) currently work around this with a language exception declaration but `md-doc` rejects non-English TOC headings (e.g. `## Table des matieres`). Define a proper multilingual support model: language declaration propagation, configurable fixed heading names, or per-language aliases. Constaté sur guideIA 2026-06-05.
 - [ ] Add Design document type | Add Design document to taxonomy in documentation-style.md. Define style, WWH obligations, examples. Deferred 2026-06-03.
@@ -47,6 +51,18 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] md-doc Index support | Inline anchor tags currently point nowhere — implement renderer support so index references resolve correctly.
 - [ ] md-doc Citations support | Implement cross-document citation resolution. Consider renaming Citations to References.
 - [ ] md-doc Changelog support | Add/update Changelog entries via md-doc — new command or extension of update.
+- [ ] Guides as frameworks not constraints | KB guides describe recommended practice, not mandatory procedure. The human decides. The AI suggests, never enforces. Document this principle — potentially in best-practices.md or as a guide preamble convention.
+
+- [ ] AI best practices mirror human best practices | Develop the idea that effective collaboration practices with an AI resemble those with a human collaborator — clear intent, defined scope, explicit feedback, clean closure. Potentially a section in best-practices.md or a standalone guide.
+
+- [ ] Anti-patterns in working sessions | Document recurring anti-patterns in AI-assisted working sessions — scope drift, premature file writes, incomplete context, saturated context window. Natural complement to the working session guide.
+
+- [ ] Hierarchy of Concern in structured reasoning | Add HOC as a principle in conventions/claude-structured-reasoning.md — two dimensions: (1) gravity: not all errors are equal, grade remarks by actual impact; (2) order: general before detail, strategy before tactics. Never get lost in implementation details before validating the approach. Identified during how-to-get-things-done post-mortem 2026-06-06.
+
+- [ ] str_replace vs filesystem:edit_file confusion | Claude systematically attempts str_replace on local files before falling back to filesystem:edit_file. Investigate whether this can be corrected via a convention or INDEX trigger. Reportedly hard-wired. Constaté 2026-06-06.
+
+- [ ] Enrich todo-list convention with WIP concept | WIP already exists as a state ([WIP] tag) in the format. Enrich the convention to make it a first-class session concept — the WIP is the bridge between sessions: a session closes by reviewing WIP items, the next session opens by reading them. Add guidance on WIP in the AI Assistant role section.
+
 - [ ] Rename conventions/ to contracts/
 - [ ] Best practices → todo.md reference | Vérifier que guides/best-practices.md référence la convention todo.md.
 - [ ] Rename artifact scripts to English | ouvrir-revision.js → open-revision.js, cloturer-revision.js → close-revision.js. Update references in artifact.md and specialization files.
@@ -68,6 +84,26 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 2.4 - tools.md scope gap
+**Date:** 2026-06-06
+**Reason:** tools.md Quick Start covers scripts only — viewers/editors not referenced. Identified during INDEX tools/ section work.
+
+**Modifications:**
+- Normale: added `tools.md Quick Start — extend scope to reference HTML viewers/editors`
+
+---
+
+### Version 2.3 - Working session guide — cadrage ideas
+**Date:** 2026-06-06
+**Reason:** Three ideas captured during How to get things done guide scoping session.
+
+**Modifications:**
+- Normale: added `Guides as frameworks not constraints`
+- Normale: added `AI best practices mirror human best practices`
+- Normale: added `Anti-patterns in working sessions`
+
+---
 
 ### Version 2.2 - Critical priority level + md-doc bug
 **Date:** 2026-06-05

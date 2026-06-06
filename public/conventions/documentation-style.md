@@ -101,7 +101,8 @@ Every document must declare its type. The type declaration format is governed by
 
 ### Convention
 
-A document that defines rules and patterns governing how something is done — a tool, a workflow, a format. Can be used by audits to verify that best practices are enforced.
+See `public/INDEX.md [section conventions/]` for the foundational definition.
+A convention leaves a trace in the artifacts — conformance is auditable by examining documents, code, or data directly.
 
 **Examples:** `conventions/documentation.md`, `conventions/filesystem.md`
 
@@ -121,7 +122,8 @@ A document that describes a repeatable process end-to-end: what it accomplishes,
 
 ### Guide
 
-A document that instructs how to perform a specific task, step by step.
+See `public/INDEX.md [section guides/]` for the foundational definition.
+A guide leaves a trace in the process — auditing whether it was followed requires a log.
 
 **Examples:** `guides/audit-process.md`, `guides/project-setup-process.md`
 
@@ -176,6 +178,16 @@ Chronological records: session journals, decision logs, activity traces.
 |---|---|
 
 ## Changelog
+
+### Version 1.2 - Convention and Guide definitions reference INDEX
+**Date:** 2026-06-06
+**Reason:** Foundational definitions of Convention and Guide moved to `public/INDEX.md` as the shared vocabulary for the whole KB. This file now references INDEX rather than re-stating the definitions.
+
+**Changes:**
+- `### Convention`: definition replaced by reference to `public/INDEX.md [section conventions/]`
+- `### Guide`: definition replaced by reference to `public/INDEX.md [section guides/]`
+
+---
 
 ### Version 1.1 - Restructuring and corrections
 **Date:** 2026-06-03

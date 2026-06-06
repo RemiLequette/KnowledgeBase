@@ -2,9 +2,24 @@
 
 ## Quick Start
 
-Entry point to the knowledge base also known as KB.
-It gives a Decision Layer to decide which files to load to perform tasks
-Does not contain the knowledge itself — navigation map only.
+**Why:** Every AI-assisted session needs consistent conventions. This file is the single entry point to the Knowledge Base (KB) — loaded at the start of every session on instruction from the project's AI agent configuration.
+
+**What:** A navigation map. Does not contain knowledge — points to it. Two catalogues: `conventions/` (rules for doing things) and `guides/` (step-by-step processes). A Decision Layer maps the current task to the files to load.
+
+**How:** At session start, read the Session Bootstrap below. During the session, consult the Decision Layer to load only what the task requires.
+
+---
+
+## Session Bootstrap
+
+Steps to follow at the start of every session, in order.
+
+1. Read `public/guides/how-to-get-things-done.md` — session model and working practice.
+2. Read `public/conventions/todo-list.md` — TODO and WIP file structure.
+3. Read `PROJECT.md` at the project root — project context, current objective, WIP.
+4. Apply the Scope Rule below.
+5. Use the Decision Layer to identify and load the conventions relevant to the current task.
+6. Greet the user by name, state the active project, and confirm you are ready.
 
 ---
 
@@ -27,7 +42,7 @@ This includes:
 - Reading files in other projects
 - Inferring context from other projects
 
-**Exception:** The Knowledge Base folder is accessible load what the decision layer instructs.
+**Exception:** The Knowledge Base folder is accessible **read-only** — load only what the decision layer instructs.
 
 WHY: Prevents context pollution, unnecessary file reads, and unintended exposure of unrelated projects.
 
@@ -66,8 +81,8 @@ Match the current task against the triggers below. Load only the files that matc
 ---
 
 ## conventions/
-A convention is a collection of knowledge and rules relevant to a task, for example reading and writing documentation, using a databses, ...
-A taks in a project may require more than one convention.
+
+Rules and patterns governing how something is done. A convention leaves a trace in the artifacts — conformance is auditable by examining documents, code, or data directly. Load only what the current task requires (use the Decision Layer above). A task may require more than one convention.
 
 | File | Summary | Keywords |
 |------|---------|----------|
@@ -94,7 +109,8 @@ A taks in a project may require more than one convention.
 ---
 
 ## guides/
-Guides are used to perform specifi taasks
+
+Step-by-step processes for specific operations. A guide leaves a trace in the process — auditing whether it was followed requires a log. Read when performing the named operation, not at every session.
 
 | File | Summary | Keywords |
 |------|---------|----------|
@@ -102,7 +118,14 @@ Guides are used to perform specifi taasks
 | best-practices.md | Design principles for Claude project structure | best-practices, structure, instructions, conventions, clarity, context, design-principles |
 | audit-process.md | Process to verify project conformance to best practices. Rules of engagement: session dedication, corrections, guide updates, re-audit separation. Structured findings, proposals, approval workflow. Includes checkpoint + batching workflow. | audit, verification, best-practices, compliance, quality-assurance, process, methodology |
 | guide-maintenance.md | Standards for maintaining all guides: update Table of Contents and Changelog with every modification. Required for all guides (project-setup, best-practices, audit-process). | maintenance, guides, documentation, changelog, discoverability, traceability, standards |
+| how-to-get-things-done.md | Practical framework for running effective AI-assisted working sessions — session model (chat = session), three phases (scoping, execution, closure), anti-patterns. | working-session, productivity, scoping, closure, WIP, todo, chat, log |
 | todo-tool.md | Guide for the HTML tool that reads and writes TODO.md via the local server — rationale, conceptual model, architecture (bootstrap, transaction model, file access). | todo-tool, HTML, local-server, bootstrap, transaction, synchronization, todo |
+
+---
+
+## tools/
+
+Deterministic artifacts that execute mechanical tasks without consuming AI reasoning. Two types: **scripts** (see `conventions/tools.md`) and **viewers/editors** (see `guides/editor-tool.md`). A tool leaves a trace in both artifacts (it exists) and execution (it was run, with a result).
 
 ---
 
@@ -119,6 +142,40 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 2.8 - tools section, convention-guide distinction, documentation-style alignment
+**Date:** 2026-06-06
+**Reason:** Multiple improvements in same session: tools/ section added; foundational distinction between conventions and guides formalized; documentation-style.md aligned to reference INDEX as source of truth for Convention and Guide definitions; Session Bootstrap refined (todo-list.md added, circular step removed, greeting added, KB read-only clarified); Quick Start updated to mention three catalogues.
+
+**Modifications:**
+- `## tools/`: new section added after guides/ table
+- `## conventions/`: definition enriched with auditability principle
+- `## guides/`: definition enriched with log/auditability principle
+- `## Quick Start`: What updated to mention tools/ alongside conventions/ and guides/
+- `## Session Bootstrap`: step 2 added (todo-list.md); step 4 removed (circular); step 6 updated to greeting; Scope Rule exception clarified as read-only
+
+---
+
+### Version 2.7 - Quick Start WWH, Session Bootstrap, section intros
+**Date:** 2026-06-06
+**Reason:** INDEX lacked practical guidance on how to use the KB. Quick Start restated with Why-What-How structure. Session Bootstrap section added (was documented in Changelog but absent from file). Section introductions for conventions/ and guides/ rewritten to be actionable.
+
+**Modifications:**
+- `## Quick Start`: rewritten with WWH structure — why this file exists, what it contains, how to use it
+- `## Session Bootstrap`: added — 5-step sequence for session start
+- `## conventions/`: intro rewritten — actionable, references Decision Layer
+- `## guides/`: intro rewritten — actionable, load on demand
+
+---
+
+### Version 2.6 - how-to-get-things-done.md added
+**Date:** 2026-06-06
+**Reason:** New guide `how-to-get-things-done.md` created — practical framework for effective AI-assisted working sessions.
+
+**Modifications:**
+- Table guides/: `how-to-get-things-done.md` entry added
+
+---
 
 ### Version 2.5 - local-server.md added
 **Date:** 2026-06-04
