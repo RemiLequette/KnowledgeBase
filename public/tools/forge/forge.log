@@ -416,3 +416,1505 @@
 2026-06-07T11:47:01.748Z [INFO] Forge MCP server running on stdio
 2026-06-07T11:47:48.989Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/PROJECT.md
 2026-06-07T11:47:48.991Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T11:48:31.525Z [INFO] forge_ls — fal: (none)
+2026-06-07T11:48:35.944Z [INFO] forge_ls — fal: forge://development/
+2026-06-07T11:48:40.143Z [INFO] forge_ls — fal: forge://development/with-claude/
+2026-06-07T11:48:46.465Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/
+2026-06-07T11:48:49.701Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/public/
+2026-06-07T11:49:02.272Z [INFO] forge_describe — fal: forge://development/with-claude/knowledgebase/public/INDEX.css
+2026-06-07T11:49:03.994Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/INDEX.css
+2026-06-07T11:49:03.994Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T11:49:21.047Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/
+2026-06-07T11:49:25.249Z [INFO] forge_read — fal: forge://development/with-claude/PROJECT.css
+2026-06-07T11:49:25.250Z [ERROR] forge_read error: File not found: C:\Users\RemiLequette\Development\with-claude\PROJECT.css
+2026-06-07T11:54:27.756Z [INFO] Config loaded
+2026-06-07T11:54:27.778Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T11:54:27.779Z [INFO] Type handler loaded: md v1.0
+2026-06-07T11:54:27.780Z [INFO] Type handler loaded: js v1.0
+2026-06-07T11:54:27.780Z [INFO] Type handler loaded: json v1.0
+2026-06-07T11:54:27.781Z [INFO] Type handler loaded: css v1.0
+2026-06-07T11:54:27.782Z [INFO] Type handler loaded: html v1.0
+2026-06-07T11:54:27.783Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T11:54:27.786Z [INFO] Root handler loaded: development
+2026-06-07T11:54:27.787Z [INFO] Registries loaded
+2026-06-07T11:54:27.802Z [INFO] Forge MCP server starting — v3.0.0
+2026-06-07T11:54:27.805Z [INFO] Forge MCP server running on stdio
+2026-06-07T11:56:22.460Z [INFO] Config loaded
+2026-06-07T11:56:22.467Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T11:56:22.468Z [INFO] Type handler loaded: md v1.0
+2026-06-07T11:56:22.468Z [INFO] Type handler loaded: js v1.0
+2026-06-07T11:56:22.469Z [INFO] Type handler loaded: json v1.0
+2026-06-07T11:56:22.470Z [INFO] Type handler loaded: css v1.0
+2026-06-07T11:56:22.470Z [INFO] Type handler loaded: html v1.0
+2026-06-07T11:56:22.471Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T11:56:22.475Z [INFO] Root handler loaded: development
+2026-06-07T11:56:22.476Z [INFO] Registries loaded
+2026-06-07T11:56:22.491Z [INFO] Forge MCP server starting — v3.0.0
+2026-06-07T11:56:22.493Z [INFO] Forge MCP server running on stdio
+2026-06-07T11:56:40.936Z [INFO] Config loaded
+2026-06-07T11:56:41.003Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T11:56:41.004Z [INFO] Type handler loaded: md v1.0
+2026-06-07T11:56:41.005Z [INFO] Type handler loaded: js v1.0
+2026-06-07T11:56:41.006Z [INFO] Type handler loaded: json v1.0
+2026-06-07T11:56:41.007Z [INFO] Type handler loaded: css v1.0
+2026-06-07T11:56:41.008Z [INFO] Type handler loaded: html v1.0
+2026-06-07T11:56:41.008Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T11:56:41.012Z [INFO] Root handler loaded: development
+2026-06-07T11:56:41.013Z [INFO] Registries loaded
+2026-06-07T11:56:41.034Z [INFO] Forge MCP server starting — v3.0.0
+2026-06-07T11:56:41.036Z [INFO] Forge MCP server running on stdio
+2026-06-07T11:56:42.730Z [INFO] Config loaded
+2026-06-07T11:56:42.748Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T11:56:42.749Z [INFO] Type handler loaded: md v1.0
+2026-06-07T11:56:42.749Z [INFO] Type handler loaded: js v1.0
+2026-06-07T11:56:42.750Z [INFO] Type handler loaded: json v1.0
+2026-06-07T11:56:42.750Z [INFO] Type handler loaded: css v1.0
+2026-06-07T11:56:42.751Z [INFO] Type handler loaded: html v1.0
+2026-06-07T11:56:42.752Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T11:56:42.761Z [INFO] Root handler loaded: development
+2026-06-07T11:56:42.763Z [INFO] Registries loaded
+2026-06-07T11:56:42.778Z [INFO] Forge MCP server starting — v3.0.0
+2026-06-07T11:56:42.780Z [INFO] Forge MCP server running on stdio
+2026-06-07T12:38:01.811Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.812Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.813Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.813Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.813Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.814Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.815Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.820Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.823Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.823Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.824Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.824Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.824Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.824Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.825Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.825Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.826Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.826Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.826Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.827Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.827Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.827Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.828Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.828Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.836Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.836Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.836Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.837Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.837Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.837Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.838Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.838Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.839Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.839Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.840Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.840Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.840Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.841Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.841Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.842Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.844Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.845Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.846Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.846Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.846Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.847Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.847Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.848Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.849Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.850Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.850Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.850Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.851Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.851Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.851Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.852Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.853Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.853Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.853Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.854Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.854Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.854Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.855Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.855Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.857Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.858Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.858Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.859Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.859Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.859Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.860Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.860Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.863Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.863Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.863Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.864Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.864Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.865Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.865Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.866Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.868Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.868Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.869Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.869Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.869Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.869Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.870Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.870Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.872Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.873Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.873Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.874Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.874Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.874Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.875Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.875Z [INFO] Root handler loaded: test
+2026-06-07T12:38:01.878Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:01.879Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:01.879Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:01.879Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:01.880Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:01.880Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:01.881Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:01.881Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.371Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.372Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.373Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.374Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.375Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.376Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.376Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.382Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.385Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.385Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.386Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.386Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.386Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.387Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.387Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.387Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.388Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.389Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.389Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.390Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.390Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.390Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.390Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.391Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.391Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.392Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.392Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.393Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.393Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.393Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.393Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.394Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.395Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.396Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.396Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.396Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.397Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.397Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.397Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.398Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.399Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.399Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.400Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.400Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.401Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.401Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.401Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.402Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.403Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:02.404Z [ERROR] forge_read error: Call forge_describe(fal) first — RTFM: no read or write before the type is understood.
+2026-06-07T12:38:02.407Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.407Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.408Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.408Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.409Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.409Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.409Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.410Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.410Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:02.413Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:38:02.413Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:02.413Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:02.415Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.416Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.416Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.416Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.417Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.417Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.417Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.417Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.418Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:02.419Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:38:02.419Z [INFO] forge_read — fal: forge://test/other.md
+2026-06-07T12:38:02.420Z [ERROR] forge_read error: File not found: C:\Users\RemiLequette\Development\with-claude\knowledgebase\public\tools\forge\tests\fixtures\other.md
+2026-06-07T12:38:02.793Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.794Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.795Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.796Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.796Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.797Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.797Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.804Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.807Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.807Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.808Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.808Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.808Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.808Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.809Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.809Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.810Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:02.810Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:02.812Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.812Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.812Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.813Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.813Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.813Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.814Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.814Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.815Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:02.815Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:02.817Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.817Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.818Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.818Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.818Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.819Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.819Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.820Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.820Z [INFO] forge_write — fal: forge://test/sample.md, block: "", 1 chars
+2026-06-07T12:38:02.821Z [ERROR] forge_write error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:02.823Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.823Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.824Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.824Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.825Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.825Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.826Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.827Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.827Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:02.831Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.832Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.832Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.832Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.833Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.833Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.834Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.834Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.835Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:02.836Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:38:02.837Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:02.837Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:02.839Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:02.840Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:02.840Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:02.840Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:02.841Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:02.841Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:02.841Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:02.842Z [INFO] Root handler loaded: test
+2026-06-07T12:38:02.842Z [INFO] forge_mkdir — fal: forge://test/sandbox/brand-test-tmp/
+2026-06-07T12:38:02.844Z [INFO] forge_mkdir — done
+2026-06-07T12:38:02.844Z [INFO] forge_rmdir — fal: forge://test/sandbox/brand-test-tmp/
+2026-06-07T12:38:02.845Z [INFO] forge_rmdir — done
+2026-06-07T12:38:03.225Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.227Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.228Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.228Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.229Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.229Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.230Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.236Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.237Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:03.241Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.241Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.241Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.242Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.242Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.242Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.242Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.243Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.243Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:03.245Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.245Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.246Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.246Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.246Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.246Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.247Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.247Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.247Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:03.249Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.249Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.249Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.250Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.250Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.250Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.251Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.251Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.252Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:03.252Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:03.254Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.254Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.255Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.255Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.255Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.256Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.256Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.256Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.257Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:03.258Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:03.258Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:03.263Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.263Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.264Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.264Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.265Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.265Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.266Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.266Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.266Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:03.268Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:38:03.269Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:03.269Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:03.271Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.271Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.272Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.272Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.272Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.273Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.273Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.274Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.274Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:38:03.276Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:38:03.276Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:38:03.277Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:03.296Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.297Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.297Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.297Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.297Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.298Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.298Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.298Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.299Z [INFO] forge_create — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:38:03.300Z [INFO] forge_create — done
+2026-06-07T12:38:03.300Z [INFO] forge_ls — fal: forge://test/sandbox/
+2026-06-07T12:38:03.301Z [INFO] forge_describe — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:38:03.302Z [INFO] forge_write — fal: forge://test/sandbox/int-test.md, block: "", 13 chars
+2026-06-07T12:38:03.302Z [ERROR] forge_write error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:38:03.304Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:38:03.304Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:38:03.305Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:38:03.305Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:38:03.306Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:38:03.306Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:38:03.307Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:38:03.307Z [INFO] Root handler loaded: test
+2026-06-07T12:38:03.308Z [INFO] forge_ls — fal: forge://test/sandbox/
+2026-06-07T12:38:03.309Z [INFO] forge_describe — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:38:03.309Z [INFO] forge_write — fal: forge://test/sandbox/int-test.md, block: "", 1 chars
+2026-06-07T12:38:03.310Z [ERROR] forge_write error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:48:56.070Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:48:56.072Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:48:56.073Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:48:56.073Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:48:56.074Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:48:56.075Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:48:56.075Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:48:56.081Z [INFO] Root handler loaded: test
+2026-06-07T12:49:19.794Z [INFO] forge_ls — fal: (none)
+2026-06-07T12:49:41.256Z [INFO] forge_ls — fal: forge://
+2026-06-07T12:49:41.257Z [ERROR] forge_ls error: Invalid FAL — missing path separator: forge://
+2026-06-07T12:50:18.440Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:50:45.798Z [INFO] forge_ls — fal: forge://test/sandbox
+2026-06-07T12:50:45.800Z [ERROR] forge_ls error: Invalid FAL — artifact name has no type extension: forge://test/sandbox
+2026-06-07T12:50:49.307Z [INFO] forge_ls — fal: forge://test/sandbox/
+2026-06-07T12:51:23.961Z [INFO] forge_read — fal: forge://test/sandbox/README.md
+2026-06-07T12:51:23.962Z [ERROR] forge_read error: Call forge_describe(fal) first — RTFM: no read or write before the type is understood.
+2026-06-07T12:51:59.205Z [INFO] forge_describe — fal: forge://test/sandbox/README.md
+2026-06-07T12:52:16.334Z [INFO] forge_read — fal: forge://test/sandbox/README.md
+2026-06-07T12:52:16.336Z [INFO] forge_read — 77 chars
+2026-06-07T12:53:35.543Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.544Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.545Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.545Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.546Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.547Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.548Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.549Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.552Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.552Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.553Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.553Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.553Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.554Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.554Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.554Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.556Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.556Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.556Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.557Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.557Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.557Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.557Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.558Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.559Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.559Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.559Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.560Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.560Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.560Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.561Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.561Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.562Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.563Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.563Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.563Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.564Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.564Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.564Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.564Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.565Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.566Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.566Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.566Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.566Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.567Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.567Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.567Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.568Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.568Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.568Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.569Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.569Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.569Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.570Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.570Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.571Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.571Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.571Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.572Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.572Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.572Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.572Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.573Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.574Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.574Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.574Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.574Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.575Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.575Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.575Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.576Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.577Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.577Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.577Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.578Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.578Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.578Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.578Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.579Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.580Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.580Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.581Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.581Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.581Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.581Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.582Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.582Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.583Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.583Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.583Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.583Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.584Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.584Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.584Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.584Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.585Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.586Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.586Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.586Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.586Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.587Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.587Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.587Z [INFO] Root handler loaded: test
+2026-06-07T12:53:35.592Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:35.597Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:35.597Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:35.598Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:35.598Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:35.598Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:35.599Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:35.599Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.052Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.052Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.053Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.053Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.053Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.053Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.054Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.055Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.059Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.059Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.059Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.060Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.060Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.060Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.060Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.061Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.062Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.062Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.062Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.063Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.063Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.063Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.064Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.064Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.065Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.065Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.065Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.066Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.066Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.066Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.066Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.067Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.067Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.068Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.068Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.068Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.069Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.069Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.069Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.070Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.071Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.071Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.071Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.072Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.072Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.072Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.072Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.073Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.073Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:36.074Z [ERROR] forge_read error: Call forge_describe(fal) first — RTFM: no read or write before the type is understood.
+2026-06-07T12:53:36.075Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.075Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.075Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.075Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.075Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.076Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.076Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.076Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.076Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:36.079Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:53:36.079Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:36.079Z [INFO] forge_read — 352 chars
+2026-06-07T12:53:36.080Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.080Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.081Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.081Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.081Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.081Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.081Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.082Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.082Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:36.083Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:53:36.083Z [INFO] forge_read — fal: forge://test/other.md
+2026-06-07T12:53:36.083Z [ERROR] forge_read error: File not found: C:\Users\RemiLequette\Development\with-claude\knowledgebase\public\tools\forge\tests\fixtures\other.md
+2026-06-07T12:53:36.561Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.562Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.563Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.563Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.563Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.564Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.564Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.570Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.573Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.573Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.573Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.574Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.574Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.574Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.575Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.575Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.576Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:36.577Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:53:36.578Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.578Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.579Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.579Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.579Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.579Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.580Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.580Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.580Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:36.581Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:53:36.581Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.582Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.582Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.583Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.583Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.583Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.583Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.584Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.584Z [INFO] forge_write — fal: forge://test/sample.md, block: "", 1 chars
+2026-06-07T12:53:36.585Z [ERROR] forge_write error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:53:36.585Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.586Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.586Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.586Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.586Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.587Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.587Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.587Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.588Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:36.591Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.591Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.591Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.592Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.592Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.592Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.592Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.593Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.593Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:36.594Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:53:36.594Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:36.594Z [INFO] forge_read — 352 chars
+2026-06-07T12:53:36.595Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:36.596Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:36.596Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:36.596Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:36.596Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:36.597Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:36.597Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:36.597Z [INFO] Root handler loaded: test
+2026-06-07T12:53:36.598Z [INFO] forge_mkdir — fal: forge://test/sandbox/brand-test-tmp/
+2026-06-07T12:53:36.599Z [INFO] forge_mkdir — done
+2026-06-07T12:53:36.599Z [INFO] forge_rmdir — fal: forge://test/sandbox/brand-test-tmp/
+2026-06-07T12:53:36.600Z [INFO] forge_rmdir — done
+2026-06-07T12:53:37.087Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.089Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.090Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.090Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.092Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.092Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.093Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.094Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.095Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:37.099Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.100Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.100Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.100Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.101Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.101Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.101Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.102Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.102Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:37.104Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.104Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.104Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.105Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.105Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.105Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.105Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.106Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.106Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:37.107Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.108Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.108Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.108Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.108Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.109Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.109Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.109Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.110Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:37.110Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:53:37.111Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.112Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.112Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.113Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.113Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.113Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.113Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.114Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.114Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:37.115Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:37.115Z [ERROR] forge_read error: Call forge_describe(fal) first — RTFM: no read or write before the type is understood.
+2026-06-07T12:53:37.116Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.117Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.117Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.117Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.118Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.118Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.118Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.118Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.119Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:37.119Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:53:37.120Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:37.120Z [INFO] forge_read — 352 chars
+2026-06-07T12:53:37.121Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.121Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.122Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.122Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.122Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.122Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.123Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.123Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.123Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:53:37.124Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:53:37.124Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:53:37.125Z [INFO] forge_read — 352 chars
+2026-06-07T12:53:37.126Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.126Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.127Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.127Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.127Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.127Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.127Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.128Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.128Z [INFO] forge_create — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:53:37.129Z [ERROR] forge_create error: File already exists: C:\Users\RemiLequette\Development\with-claude\knowledgebase\public\tools\forge\tests\fixtures\sandbox\int-test.md
+2026-06-07T12:53:37.131Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:53:37.131Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:53:37.132Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:53:37.132Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:53:37.132Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:53:37.132Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:53:37.133Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:53:37.133Z [INFO] Root handler loaded: test
+2026-06-07T12:53:37.134Z [INFO] forge_ls — fal: forge://test/sandbox/
+2026-06-07T12:53:37.135Z [INFO] forge_describe — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:53:37.135Z [INFO] forge_write — fal: forge://test/sandbox/int-test.md, block: "", 1 chars
+2026-06-07T12:53:37.136Z [INFO] forge_write — done
+2026-06-07T12:55:11.521Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.521Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.522Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.522Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.522Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.523Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.523Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.524Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.526Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.526Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.527Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.527Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.527Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.528Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.528Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.528Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.529Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.530Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.530Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.531Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.531Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.532Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.532Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.532Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.533Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.533Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.534Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.534Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.534Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.535Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.535Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.535Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.536Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.536Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.537Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.537Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.537Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.538Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.538Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.538Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.539Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.539Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.540Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.540Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.540Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.540Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.541Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.541Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.542Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.542Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.542Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.543Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.543Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.543Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.543Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.544Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.544Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.545Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.545Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.545Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.545Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.546Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.546Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.546Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.547Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.548Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.548Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.548Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.548Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.549Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.549Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.549Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.551Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.551Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.551Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.551Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.552Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.552Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.552Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.553Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.554Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.554Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.555Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.555Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.555Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.555Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.556Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.556Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.557Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.557Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.557Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.558Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.558Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.558Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.558Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.558Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.560Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.560Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.560Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.560Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.561Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.561Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.561Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.561Z [INFO] Root handler loaded: test
+2026-06-07T12:55:11.565Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:11.566Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:11.566Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:11.567Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:11.567Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:11.567Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:11.568Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:11.568Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.147Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.149Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.149Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.150Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.151Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.151Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.152Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.157Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.160Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.160Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.161Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.161Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.161Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.161Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.162Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.162Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.164Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.164Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.164Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.165Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.165Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.165Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.166Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.166Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.167Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.167Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.168Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.168Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.168Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.168Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.169Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.169Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.170Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.170Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.171Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.171Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.171Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.172Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.172Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.172Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.173Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.173Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.174Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.174Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.174Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.174Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.175Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.175Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.175Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:12.176Z [ERROR] forge_read error: Call forge_describe(fal) first — RTFM: no read or write before the type is understood.
+2026-06-07T12:55:12.177Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.177Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.178Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.178Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.178Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.178Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.178Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.179Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.179Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:12.182Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:55:12.182Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:12.183Z [INFO] forge_read — 352 chars
+2026-06-07T12:55:12.184Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.184Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.184Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.185Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.185Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.185Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.185Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.186Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.186Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:12.187Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:55:12.187Z [INFO] forge_read — fal: forge://test/other.md
+2026-06-07T12:55:12.188Z [ERROR] forge_read error: File not found: C:\Users\RemiLequette\Development\with-claude\knowledgebase\tests\forge\fixtures\other.md
+2026-06-07T12:55:12.725Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.726Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.726Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.726Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.727Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.727Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.727Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.733Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.737Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.738Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.738Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.739Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.739Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.739Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.740Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.741Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.741Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:12.742Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:55:12.744Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.745Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.745Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.745Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.746Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.746Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.746Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.747Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.747Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:12.748Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:55:12.749Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.749Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.749Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.750Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.750Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.751Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.751Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.751Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.752Z [INFO] forge_write — fal: forge://test/sample.md, block: "", 1 chars
+2026-06-07T12:55:12.753Z [ERROR] forge_write error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:55:12.754Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.754Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.754Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.755Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.755Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.755Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.756Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.756Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.757Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:12.760Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.761Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.761Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.762Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.762Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.762Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.762Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.763Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.763Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:12.764Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:55:12.765Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:12.766Z [INFO] forge_read — 352 chars
+2026-06-07T12:55:12.768Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:12.768Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:12.769Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:12.769Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:12.770Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:12.770Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:12.770Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:12.771Z [INFO] Root handler loaded: test
+2026-06-07T12:55:12.772Z [INFO] forge_mkdir — fal: forge://test/sandbox/brand-test-tmp/
+2026-06-07T12:55:12.773Z [INFO] forge_mkdir — done
+2026-06-07T12:55:12.774Z [INFO] forge_rmdir — fal: forge://test/sandbox/brand-test-tmp/
+2026-06-07T12:55:12.775Z [INFO] forge_rmdir — done
+2026-06-07T12:55:13.291Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.292Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.293Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.293Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.293Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.293Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.294Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.294Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.295Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:13.298Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.298Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.299Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.299Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.300Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.300Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.301Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.301Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.301Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:13.303Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.304Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.304Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.304Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.304Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.305Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.305Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.305Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.305Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:13.307Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.307Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.307Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.308Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.308Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.308Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.309Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.309Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.309Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:13.310Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T12:55:13.311Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.311Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.312Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.312Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.312Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.312Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.313Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.313Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.313Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:13.314Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:13.315Z [ERROR] forge_read error: Call forge_describe(fal) first — RTFM: no read or write before the type is understood.
+2026-06-07T12:55:13.316Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.316Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.316Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.316Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.317Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.317Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.317Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.318Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.318Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:13.319Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:55:13.319Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:13.320Z [INFO] forge_read — 352 chars
+2026-06-07T12:55:13.321Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.321Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.321Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.322Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.322Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.322Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.322Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.323Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.323Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T12:55:13.324Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T12:55:13.324Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T12:55:13.325Z [INFO] forge_read — 352 chars
+2026-06-07T12:55:13.326Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.326Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.326Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.326Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.327Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.327Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.327Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.328Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.328Z [INFO] forge_create — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:55:13.329Z [INFO] forge_create — done
+2026-06-07T12:55:13.329Z [INFO] forge_ls — fal: forge://test/sandbox/
+2026-06-07T12:55:13.331Z [INFO] forge_describe — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:55:13.331Z [INFO] forge_write — fal: forge://test/sandbox/int-test.md, block: "", 13 chars
+2026-06-07T12:55:13.332Z [INFO] forge_write — done
+2026-06-07T12:55:13.333Z [INFO] forge_read — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:55:13.346Z [INFO] forge_read — 13 chars
+2026-06-07T12:55:13.348Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T12:55:13.348Z [INFO] Type handler loaded: md v1.0
+2026-06-07T12:55:13.348Z [INFO] Type handler loaded: js v1.0
+2026-06-07T12:55:13.348Z [INFO] Type handler loaded: json v1.0
+2026-06-07T12:55:13.349Z [INFO] Type handler loaded: css v1.0
+2026-06-07T12:55:13.349Z [INFO] Type handler loaded: html v1.0
+2026-06-07T12:55:13.349Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T12:55:13.349Z [INFO] Root handler loaded: test
+2026-06-07T12:55:13.350Z [INFO] forge_ls — fal: forge://test/sandbox/
+2026-06-07T12:55:13.350Z [INFO] forge_describe — fal: forge://test/sandbox/int-test.md
+2026-06-07T12:55:13.351Z [INFO] forge_write — fal: forge://test/sandbox/int-test.md, block: "", 1 chars
+2026-06-07T12:55:13.351Z [ERROR] forge_write error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T13:01:00.287Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.288Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.289Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.289Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.290Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.290Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.291Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.292Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.294Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.295Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.295Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.295Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.296Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.296Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.297Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.297Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.298Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.299Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.299Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.299Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.300Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.300Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.301Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.301Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.303Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.303Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.303Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.304Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.304Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.304Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.305Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.305Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.306Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.307Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.307Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.308Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.308Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.309Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.309Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.309Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.311Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.312Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.312Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.313Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.314Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.314Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.315Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.315Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.317Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.317Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.317Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.318Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.318Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.318Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.319Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.319Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.320Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.320Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.321Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.321Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.321Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.322Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.322Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.323Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.324Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.324Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.324Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.325Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.325Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.326Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.326Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.326Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.328Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.328Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.329Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.329Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.329Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.330Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.330Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.330Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.332Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.332Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.333Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.333Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.333Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.334Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.334Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.335Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.336Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.336Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.337Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.337Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.337Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.338Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.338Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.338Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.340Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.340Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.341Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.341Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.341Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.342Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.342Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.343Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.347Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.348Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.349Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.349Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.349Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.350Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.351Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.351Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.746Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.747Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.748Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.748Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.749Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.749Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.750Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.755Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.758Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.758Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.759Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.759Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.759Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.760Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.760Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.760Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.761Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.762Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.762Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.763Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.763Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.763Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.764Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.764Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.765Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.765Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.765Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.766Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.766Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.766Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.766Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.767Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.768Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.768Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.768Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.769Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.769Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.769Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.769Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.770Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.770Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.771Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.771Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.771Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.771Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.772Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.772Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.772Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.773Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:00.773Z [ERROR] forge_read error: Call forge_describe(fal) first — RTFM: no read or write before the type is understood.
+2026-06-07T13:01:00.774Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.774Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.775Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.775Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.775Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.775Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.775Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.776Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.776Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:00.778Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T13:01:00.778Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:00.779Z [INFO] forge_read — 352 chars
+2026-06-07T13:01:00.780Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:00.780Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:00.780Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:00.780Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:00.781Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:00.781Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:00.781Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:00.781Z [INFO] Root handler loaded: test
+2026-06-07T13:01:00.781Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:00.782Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T13:01:00.782Z [INFO] forge_read — fal: forge://test/other.md
+2026-06-07T13:01:00.783Z [ERROR] forge_read error: File not found: C:\Users\RemiLequette\Development\with-claude\knowledgebase\tests\forge\fixtures\other.md
+2026-06-07T13:01:01.096Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.098Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.098Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.099Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.099Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.100Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.101Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.106Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.108Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.109Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.109Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.109Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.109Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.109Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.110Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.110Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.111Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:01.112Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T13:01:01.113Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.113Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.113Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.114Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.114Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.114Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.114Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.114Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.115Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:01.115Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T13:01:01.116Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.116Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.117Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.117Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.117Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.118Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.118Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.118Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.119Z [INFO] forge_write — fal: forge://test/sample.md, block: "", 1 chars
+2026-06-07T13:01:01.119Z [ERROR] forge_write error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T13:01:01.120Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.120Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.120Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.121Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.121Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.121Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.122Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.122Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.122Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.125Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.125Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.125Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.125Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.126Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.126Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.126Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.126Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.126Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.127Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T13:01:01.128Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:01.128Z [INFO] forge_read — 352 chars
+2026-06-07T13:01:01.129Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.129Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.130Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.130Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.130Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.130Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.130Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.131Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.131Z [INFO] forge_mkdir — fal: forge://test/sandbox/brand-test-tmp/
+2026-06-07T13:01:01.132Z [INFO] forge_mkdir — done
+2026-06-07T13:01:01.132Z [INFO] forge_rmdir — fal: forge://test/sandbox/brand-test-tmp/
+2026-06-07T13:01:01.133Z [INFO] forge_rmdir — done
+2026-06-07T13:01:01.470Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.471Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.471Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.471Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.472Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.473Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.473Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.475Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.475Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.480Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.481Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.481Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.481Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.481Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.482Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.482Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.482Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.483Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.484Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.485Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.485Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.485Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.485Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.486Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.486Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.486Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.486Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.488Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.488Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.488Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.489Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.489Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.489Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.489Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.489Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.490Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:01.490Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
+2026-06-07T13:01:01.491Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.492Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.492Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.492Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.492Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.493Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.493Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.494Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.494Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.495Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:01.495Z [ERROR] forge_read error: Call forge_describe(fal) first — RTFM: no read or write before the type is understood.
+2026-06-07T13:01:01.496Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.496Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.497Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.497Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.497Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.498Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.498Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.498Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.499Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.500Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T13:01:01.500Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:01.501Z [INFO] forge_read — 352 chars
+2026-06-07T13:01:01.502Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.502Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.502Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.502Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.503Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.503Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.503Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.503Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.504Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.504Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T13:01:01.505Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:01.505Z [INFO] forge_read — 352 chars
+2026-06-07T13:01:01.506Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.507Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.507Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.507Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.507Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.507Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.508Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.508Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.508Z [INFO] forge_ls — fal: forge://test/
+2026-06-07T13:01:01.509Z [INFO] forge_describe — fal: forge://test/sample.md
+2026-06-07T13:01:01.509Z [INFO] forge_read — fal: forge://test/sample.md
+2026-06-07T13:01:01.510Z [INFO] forge_read — 352 chars
+2026-06-07T13:01:01.511Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.511Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.512Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.512Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.513Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.513Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.513Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.514Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.514Z [INFO] forge_create — fal: forge://test/sandbox/int-test.md
+2026-06-07T13:01:01.515Z [INFO] forge_create — done
+2026-06-07T13:01:01.516Z [INFO] forge_ls — fal: forge://test/sandbox/
+2026-06-07T13:01:01.517Z [INFO] forge_describe — fal: forge://test/sandbox/int-test.md
+2026-06-07T13:01:01.517Z [INFO] forge_write — fal: forge://test/sandbox/int-test.md, block: "", 13 chars
+2026-06-07T13:01:01.518Z [INFO] forge_write — done
+2026-06-07T13:01:01.518Z [INFO] forge_read — fal: forge://test/sandbox/int-test.md
+2026-06-07T13:01:01.520Z [INFO] forge_read — 13 chars
+2026-06-07T13:01:01.521Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T13:01:01.521Z [INFO] Type handler loaded: md v1.0
+2026-06-07T13:01:01.521Z [INFO] Type handler loaded: js v1.0
+2026-06-07T13:01:01.522Z [INFO] Type handler loaded: json v1.0
+2026-06-07T13:01:01.522Z [INFO] Type handler loaded: css v1.0
+2026-06-07T13:01:01.525Z [INFO] Type handler loaded: html v1.0
+2026-06-07T13:01:01.525Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T13:01:01.526Z [INFO] Root handler loaded: test
+2026-06-07T13:01:01.526Z [INFO] forge_describe — fal: forge://test/sandbox/int-test.md
+2026-06-07T13:01:01.527Z [INFO] forge_write — fal: forge://test/sandbox/int-test.md, block: "", 1 chars
+2026-06-07T13:01:01.528Z [ERROR] forge_write error: File does not exist: C:\Users\RemiLequette\Development\with-claude\knowledgebase\tests\forge\fixtures\sandbox\int-test.md — call forge_create first

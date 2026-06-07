@@ -1,24 +1,12 @@
-/**
- * mcp-tools.js
- *
- * MCP tool definitions (ListTools) and dispatcher (CallTool) for the Forge server.
- * Receives pre-built typeRegistry, rootRegistry, and config from forge.js.
- * Returns MCP response objects — never throws, wraps all errors in isError responses.
- *
- * References:
- *   - conventions/forge.md v7.0 [section MCP tools]
- *   - conventions/tools.md [section Module Design Rules]
- *
- * Not yet in references: none
- */
+// @forge-type: js-managed
+
+// ====[ imports ]====
 
 import { log } from './logger.js';
 import { parseFAL, toFAL } from './fal.js';
-import { brand, checkBrand, checkRTFM } from './brand.js';
+import { brand } from './brand.js';
 
-// ---------------------------------------------------------------------------
-// Tool definitions
-// ---------------------------------------------------------------------------
+// ====[ tool-definitions ]====
 
 export const TOOL_DEFINITIONS = [
   {
@@ -46,10 +34,10 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'forge_read',
-    description: 'Read an artifact by FAL. Returns the full content of the artifact (block = root block). Requires Brand + RTFM (call forge_ls then forge_describe first).',
+    description: 'Read an artifact or block by FAL. Response includes the FAL and block for context. Requires Brand + RTFM (call forge_ls then forge_describe first).',
     inputSchema: {
       type: 'object',
-      properties: { fal: { type: 'string', description: 'Artifact FAL.' } },
+      properties: { fal: { type: 'string', description: 'Artifact FAL, optionally with #block.' } },
       required: ['fal']
     }
   },
@@ -119,135 +107,163 @@ export const TOOL_DEFINITIONS = [
   }
 ];
 
-// ---------------------------------------------------------------------------
-// Dispatcher
-// ---------------------------------------------------------------------------
+// ====[ dispatch ]====
 
 /**
  * Dispatch a CallTool request.
- * @param {string} name - tool name
- * @param {object} args - tool arguments
- * @param {object} ctx  - { typeRegistry, rootRegistry, config }
- * @returns {Promise<{ content: [{type:'text', text:string}], isError?: boolean }>}
+ * FAL strings are parsed into refs at this boundary — no FAL strings below.
+ * Gates (Brand + RTFM) are enforced by TypeRegistry.read/write.
  */
 export async function dispatch(name, args, ctx) {
   const { typeRegistry, rootRegistry, config } = ctx;
-
   try {
-    if (name === 'forge_ping') {
-      log('INFO', 'forge_ping');
-      return { content: [{ type: 'text', text: 'pong — forge v3.0.0' }] };
-    }
-
-    if (name === 'forge_ls') {
-      const fal = args?.fal;
-      log('INFO', `forge_ls — fal: ${fal || '(none)'}`);
-      if (!fal) {
-        const roots = config.roots.map(r => ({ name: r.name, url: r.url }));
-        return { content: [{ type: 'text', text: JSON.stringify({ roots }, null, 2) }] };
-      }
-      if (!fal.endsWith('/')) throw new Error(`forge_ls requires a folder FAL (ending with /). Got: ${fal}`);
-      const raw = await rootRegistry.list(fal, typeRegistry);
-      const entries = raw.map(e => {
-        const entryFal = e.artifactRef ? toFAL(e.artifactRef) : e.fal;
-        brand(entryFal);
-        return { fal: entryFal, type: e.type };
-      });
-      return { content: [{ type: 'text', text: JSON.stringify({ fal, count: entries.length, entries }, null, 2) }] };
-    }
-
-    if (name === 'forge_describe') {
-      const { fal } = args;
-      log('INFO', `forge_describe — fal: ${fal}`);
-      const ref    = parseFAL(fal);
-      const result = typeRegistry.describe(ref);
-      return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
-    }
-
-    if (name === 'forge_read') {
-      const { fal } = args;
-      log('INFO', `forge_read — fal: ${fal}`);
-      if (!fal || fal.endsWith('/')) throw new Error(`forge_read requires an artifact FAL. Got: ${fal}`);
-      const ref = parseFAL(fal);
-      checkBrand(toFAL(ref));
-      checkRTFM(ref.type, typeRegistry);
-      const { handler } = typeRegistry._entry(ref.type);
-      const urlRef  = typeRegistry.artifactRefToUrlRef(ref);
-      const content = await handler.readBlock(urlRef, ref.block || '', rootRegistry);
-      log('INFO', `forge_read — ${content.length} chars`);
-      return { content: [{ type: 'text', text: content }] };
-    }
-
-    if (name === 'forge_create') {
-      const { fal } = args;
-      log('INFO', `forge_create — fal: ${fal}`);
-      if (!fal || fal.endsWith('/')) throw new Error(`forge_create requires an artifact FAL. Got: ${fal}`);
-      const ref = parseFAL(fal);
-      const { handler } = typeRegistry._entry(ref.type);
-      const urlRef = typeRegistry.artifactRefToUrlRef(ref);
-      await handler.createArtifact(urlRef, rootRegistry);
-      log('INFO', `forge_create — done`);
-      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
-    }
-
-    if (name === 'forge_write') {
-      const { fal, block = '', content } = args;
-      log('INFO', `forge_write — fal: ${fal}, block: "${block}", ${content?.length ?? 0} chars`);
-      if (!fal || fal.endsWith('/')) throw new Error(`forge_write requires an artifact FAL. Got: ${fal}`);
-      if (content === undefined || content === null) throw new Error('forge_write requires content.');
-      const ref = parseFAL(fal);
-      checkBrand(toFAL(ref));
-      checkRTFM(ref.type, typeRegistry);
-      const { handler } = typeRegistry._entry(ref.type);
-      const urlRef = typeRegistry.artifactRefToUrlRef(ref);
-      await handler.writeBlock(urlRef, block, content, rootRegistry);
-      log('INFO', `forge_write — done`);
-      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, block, written: content.length }) }] };
-    }
-
-    if (name === 'forge_mkdir') {
-      const { fal } = args;
-      log('INFO', `forge_mkdir — fal: ${fal}`);
-      if (!fal || !fal.endsWith('/')) throw new Error(`forge_mkdir requires a folder FAL (ending with /). Got: ${fal}`);
-      await rootRegistry.mkdir(fal);
-      brand(fal);
-      log('INFO', `forge_mkdir — done`);
-      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
-    }
-
-    if (name === 'forge_rmdir') {
-      const { fal } = args;
-      log('INFO', `forge_rmdir — fal: ${fal}`);
-      if (!fal || !fal.endsWith('/')) throw new Error(`forge_rmdir requires a folder FAL (ending with /). Got: ${fal}`);
-      await rootRegistry.rmdir(fal);
-      log('INFO', `forge_rmdir — done`);
-      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
-    }
-
-    if (name === 'forge_mvdir') {
-      const { fal, target } = args;
-      log('INFO', `forge_mvdir — fal: ${fal}, target: ${target}`);
-      if (!fal || !fal.endsWith('/')) throw new Error(`forge_mvdir source must end with /. Got: ${fal}`);
-      if (!target || !target.endsWith('/')) throw new Error(`forge_mvdir target must end with /. Got: ${target}`);
-      await rootRegistry.mvdir(fal, target);
-      log('INFO', `forge_mvdir — done`);
-      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, target }) }] };
-    }
-
-    if (name === 'forge_rndir') {
-      const { fal, name: newName } = args;
-      log('INFO', `forge_rndir — fal: ${fal}, name: ${newName}`);
-      if (!fal || !fal.endsWith('/')) throw new Error(`forge_rndir requires a folder FAL. Got: ${fal}`);
-      if (!newName) throw new Error('forge_rndir requires a name.');
-      await rootRegistry.rndir(fal, newName);
-      log('INFO', `forge_rndir — done`);
-      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, name: newName }) }] };
-    }
-
+    if (name === 'forge_ping')     return _ping();
+    if (name === 'forge_ls')       return await _ls(args, config, rootRegistry, typeRegistry);
+    if (name === 'forge_describe') return _describe(args, typeRegistry);
+    if (name === 'forge_read')     return await _read(args, typeRegistry, rootRegistry);
+    if (name === 'forge_create')   return await _create(args, typeRegistry, rootRegistry);
+    if (name === 'forge_write')    return await _write(args, typeRegistry, rootRegistry);
+    if (name === 'forge_mkdir')    return await _mkdir(args, rootRegistry);
+    if (name === 'forge_rmdir')    return await _rmdir(args, rootRegistry);
+    if (name === 'forge_mvdir')    return await _mvdir(args, rootRegistry);
+    if (name === 'forge_rndir')    return await _rndir(args, rootRegistry);
     throw new Error(`Unknown tool: ${name}`);
-
   } catch (err) {
     log('ERROR', `${name} error: ${err.message}`);
     return { content: [{ type: 'text', text: JSON.stringify({ error: err.message }) }], isError: true };
   }
+}
+
+// ====[ tool-ping ]====
+
+function _ping() {
+  log('INFO', 'forge_ping');
+  return { content: [{ type: 'text', text: 'pong — forge v3.0.0' }] };
+}
+
+// ====[ tool-ls ]====
+
+async function _ls(args, config, rootRegistry, typeRegistry) {
+  const { fal } = args;
+  log('INFO', `forge_ls — fal: ${fal || '(none)'}`);
+
+  if (!fal) {
+    const roots = config.roots.map(r => ({ name: r.name, url: r.url }));
+    return { content: [{ type: 'text', text: JSON.stringify({ roots }, null, 2) }] };
+  }
+
+  const ref = parseFAL(fal);
+  if (ref.name) throw new Error(`forge_ls requires a folder FAL (ending with /). Got: ${fal}`);
+
+  const raw     = await rootRegistry.list(ref, typeRegistry);
+  const entries = raw.map(e => {
+    const entryFal = e.artifactRef ? toFAL(e.artifactRef) : e.fal;
+    brand(entryFal);
+    return { fal: entryFal, type: e.type };
+  });
+
+  return { content: [{ type: 'text', text: JSON.stringify({ fal, count: entries.length, entries }, null, 2) }] };
+}
+
+// ====[ tool-describe ]====
+
+function _describe(args, typeRegistry) {
+  const { fal } = args;
+  log('INFO', `forge_describe — fal: ${fal}`);
+  const ref = parseFAL(fal);
+  if (!ref.name) throw new Error(`forge_describe requires an artifact FAL. Got: ${fal}`);
+  const result = typeRegistry.describe(ref);
+  return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+}
+
+// ====[ tool-read ]====
+
+async function _read(args, typeRegistry, rootRegistry) {
+  const { fal } = args;
+  log('INFO', `forge_read — fal: ${fal}`);
+  const ref     = parseFAL(fal);
+  if (!ref.name) throw new Error(`forge_read requires an artifact FAL. Got: ${fal}`);
+  const block   = ref.block || '';
+  const content = await typeRegistry.read(ref, rootRegistry, block);
+  log('INFO', `forge_read — ${content.length} chars`);
+  // O8: prepend FAL + block header so the AI keeps context across multiple reads
+  const header = `[fal: ${fal}${block ? `  block: ${block}` : ''}]\n`;
+  return { content: [{ type: 'text', text: header + content }] };
+}
+
+// ====[ tool-create ]====
+
+async function _create(args, typeRegistry, rootRegistry) {
+  const { fal } = args;
+  log('INFO', `forge_create — fal: ${fal}`);
+  const ref = parseFAL(fal);
+  if (!ref.name) throw new Error(`forge_create requires an artifact FAL. Got: ${fal}`);
+  await typeRegistry.createArtifact(ref, rootRegistry);
+  log('INFO', `forge_create — done`);
+  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
+}
+
+// ====[ tool-write ]====
+
+async function _write(args, typeRegistry, rootRegistry) {
+  const { fal, block = '', content } = args;
+  log('INFO', `forge_write — fal: ${fal}, block: "${block}", ${content?.length ?? 0} chars`);
+  if (content === undefined || content === null) throw new Error('forge_write requires content.');
+  const ref = parseFAL(fal);
+  if (!ref.name) throw new Error(`forge_write requires an artifact FAL. Got: ${fal}`);
+  await typeRegistry.write(ref, rootRegistry, block, content);
+  log('INFO', `forge_write — done`);
+  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, block, written: content.length }) }] };
+}
+
+// ====[ tool-mkdir ]====
+
+async function _mkdir(args, rootRegistry) {
+  const { fal } = args;
+  log('INFO', `forge_mkdir — fal: ${fal}`);
+  const ref = parseFAL(fal);
+  if (ref.name) throw new Error(`forge_mkdir requires a folder FAL (ending with /). Got: ${fal}`);
+  await rootRegistry.mkdir(ref);
+  brand(fal);
+  log('INFO', `forge_mkdir — done`);
+  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
+}
+
+// ====[ tool-rmdir ]====
+
+async function _rmdir(args, rootRegistry) {
+  const { fal } = args;
+  log('INFO', `forge_rmdir — fal: ${fal}`);
+  const ref = parseFAL(fal);
+  if (ref.name) throw new Error(`forge_rmdir requires a folder FAL (ending with /). Got: ${fal}`);
+  await rootRegistry.rmdir(ref);
+  log('INFO', `forge_rmdir — done`);
+  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
+}
+
+// ====[ tool-mvdir ]====
+
+async function _mvdir(args, rootRegistry) {
+  const { fal, target } = args;
+  log('INFO', `forge_mvdir — fal: ${fal}, target: ${target}`);
+  const ref       = parseFAL(fal);
+  const targetRef = parseFAL(target);
+  if (ref.name)       throw new Error(`forge_mvdir source must be a folder FAL. Got: ${fal}`);
+  if (targetRef.name) throw new Error(`forge_mvdir target must be a folder FAL. Got: ${target}`);
+  await rootRegistry.mvdir(ref, targetRef);
+  log('INFO', `forge_mvdir — done`);
+  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, target }) }] };
+}
+
+// ====[ tool-rndir ]====
+
+async function _rndir(args, rootRegistry) {
+  const { fal, name } = args;
+  log('INFO', `forge_rndir — fal: ${fal}, name: ${name}`);
+  if (!name) throw new Error('forge_rndir requires a name.');
+  const ref = parseFAL(fal);
+  if (ref.name) throw new Error(`forge_rndir requires a folder FAL. Got: ${fal}`);
+  await rootRegistry.rndir(ref, name);
+  log('INFO', `forge_rndir — done`);
+  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, name }) }] };
 }

@@ -30,10 +30,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O4] Bootstrap robustesse | Convention `documentation.md` + `md-doc-usage.md` absente du template AssistantIA.md — un AI démarrant sur un sujet métier crée des .md non conformes. Ajouter règle de chargement dans AssistantIA.md + déclencheur sur création/modification .md. Constaté sur ComiteRSE-AfrSCM 2026-06-01.
 - [ ] [O5] Scope Rule — accès vs autorisation | AI confond accès technique MCP avec autorisation Scope Rule. Clarifier dans INDEX : distinguer accès technique et accès autorisé, préciser comportement attendu de l'AI Assistant.
 - [ ] [O6] Convention self-reference in artifacts | An AI reading a project file directly (e.g. `TODO.md`, `GLOSSARY.md`) without going through `INDEX.md` has no signal to load the relevant convention. Explore a lightweight mechanism for files to reference their own governing convention — e.g. a standard comment header, a frontmatter field, or a convention pointer in the file's Quick Start. Constaté sur guideIA 2026-06-05.
-- [ ] [O8] forge_read retourne FAL + bloc | Le résultat de forge_read doit inclure le FAL et le bloc dans la réponse — pas juste le contenu brut. Sinon l'AI perd le fil quand elle charge plusieurs blocs de fichiers différents. Changement simple dans forge.js. [effort: XS]
 - [ ] [O9] specs/ document type | Distinguer conventions opérationnelles (chargées par trigger) et specs descriptives (chargées explicitement). Créer `public/specs/`, migrer `forge.md`. Ajouter type Spec dans `documentation-style.md`. Ajouter section `specs/` dans INDEX.md. Litmus test : une spec n'a rien à auditer. [effort: M]
 - [ ] [O11] guide-maintenance.md conformance | Non-compliant: French content, obsolete reference to Claude.md, informal structure. Bring into line with documentation.md before next audit. [effort: S]
-- [ ] [O23] forge_describe + describe() | Interface `describe()` dans les handlers, outil MCP `forge_describe(fal)`. Retourne structure de blocs + sémantique du type. Nécessaire pour exploiter md-doc. → **Specced in forge.md v7.0 — implement in forge.js** [effort: M]
 - [ ] [O43] forge Brand registry | Session-scoped in-memory set of issued FALs. Brand gate on forge_read/forge_write — rejects FALs not issued by Forge with hint. FALs registered by forge_ls and forge_mkdir. → **Specced in forge.md v7.0 — implement in forge.js** [effort: S]
 
 ## Normal
@@ -45,11 +43,12 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O18] md-doc Citations support | Implement cross-document citation resolution. Consider renaming Citations to References.
 - [ ] [O19] md-doc Changelog support | Add/update Changelog entries via md-doc — new command or extension of update.
 - [ ] [O22] Hierarchy of Concern in structured reasoning | Add HOC as a principle in conventions/claude-structured-reasoning.md — two dimensions: (1) gravity: not all errors are equal, grade remarks by actual impact; (2) order: general before detail, strategy before tactics. Never get lost in implementation details before validating the approach. Identified during how-to-get-things-done post-mortem 2026-06-06.
-- [ ] [O24] md-doc handler | Type handler Forge pour fichiers Markdown structurés. Chaque section devient un bloc nommé. Remplace l'outil md-doc actuel et son protocole JSON. Gain token maximal — tous les fichiers KB. Dépend de : forge_describe implémenté. [effort: L]
+- [ ] [O24] md-doc handler | Type handler Forge pour fichiers Markdown structurés. Chaque section devient un bloc nommé. Remplace l'outil md-doc actuel et son protocole JSON. Gain token maximal — tous les fichiers KB. [effort: L]
 - [ ] [O27] Extend maintenance rules beyond guides | guide-maintenance.md covers guides only. Conventions and tools also need maintenance rules. Consider convention-maintenance.md + tool-maintenance.md, or extend guide-maintenance.md to cover all three. [effort: S]
 - [ ] [O28] Best practices → todo.md reference | Vérifier que guides/best-practices.md référence la convention todo.md.
 - [ ] [O37] Spec forge_write — vérification bloc | Documenter dans forge.md : (1) tout handler doit vérifier l'existence du bloc avant writeBlock et lever une erreur si absent ; (2) un AI Assistant doit appeler listBlocks avant tout forge_write sur un bloc nommé. [effort: S]
 - [ ] [O40] gitignore logs dans project-structure.md | Ajouter dans `conventions/project-structure.md` la règle : tout projet inclut un `.gitignore` avec `*.log`. Auditable en regardant le .gitignore — c'est une convention.
+- [ ] [O44] js-managed handler spec | Spec temporaire dans `tmp/js-managed-type-spec.md` — type handler pour fichiers JS découpés en blocs nommés avec séparateurs `====[ nom ]====` et shebang `// @forge-type: js-managed`. Découpage des fichiers Forge src/ identifié. À promouvoir en spec forge.md + implémenter. [effort: M]
 
 ## Low priority
 
@@ -71,7 +70,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## WIP
 
-- [ ] [WIP] [W1] Forge — ArtifactRef/UrlRef/IRootRegistry + RTFM + Brand implementation | forge.md v7.0 : clean architecture specced — ArtifactRef, UrlRef, IRootRegistry, Brand before RTFM, force removed. forge.js modularised into src/ (logger, type-registry, root-registry, mcp-tools). Prochaines étapes : (1) implémenter forge_describe + RTFM gate, (2) implémenter Brand registry + Brand gate, (3) O8 forge_read retourne FAL+bloc, (4) md-doc handler (O24). [effort: L]
+- [ ] [WIP] [W1] Forge — modularisation + gates + O8 done | forge.md v7.0 specced. src/ modules implémentés (fal, brand, type-registry, root-registry, mcp-tools). parseFAL unifié dossiers+artefacts. Gates Brand+RTFM dans TypeRegistry.read/write. O8 forge_read retourne FAL+header. Tests consolidés dans knowledgebase/tests/forge/ — forge-run.js, CLI, REPL. Prochaines étapes : (1) O43 Brand registry audit contra spec v7.0, (2) O24 md-doc handler, (3) O44 js-managed handler. [effort: L]
 - [ ] [WIP] [W3] Namespace model — spec forge.md v6.0 | Modèle namespace conçu et documenté dans forge.md v6.0. Prochaines étapes : (1) split forge.config.json → roots.json + types.json, (2) implémenter le loader récursif dans forge.js. [effort: M]
 
 ## Done
@@ -91,6 +90,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [x] [D13] forge_create + forge_write existence guard | plain-text.js v1.3 + forge.js v2.4 + forge.md v6.5.
 - [x] [D14] forge.md v7.0 — clean architecture | ArtifactRef, UrlRef, IRootRegistry, Brand before RTFM, force removed. forge.md v7.0 + working-with-forge.md v1.3.
 - [x] [D15] forge.js modularisation | forge.js split into src/logger.js, src/type-registry.js, src/root-registry.js, src/mcp-tools.js. forge.js reduced to entry point + re-exports. All test imports unchanged.
+- [x] [D16] Tests consolidés + O8 forge_read header | Tests migrés dans knowledgebase/tests/forge/. forge-testable.js déprécié. parseFAL unifié. Gates Brand+RTFM dans TypeRegistry. discover filtre par extension. forge-run.js + CLI + REPL. O8 implémenté.
+- [x] [D17] O23 forge_describe | forge_describe implémenté dans mcp-tools.js. TypeRegistry.describe() gère default + described flag. Testé. describe() dans les handlers structurés sera implémenté au moment de chaque handler (O24, O44).
 
 ## Index
 
@@ -99,24 +100,30 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## Changelog
 
-### Version 4.6 - forge.js modularisation done
+### Version 4.8 - O23 fermé
 **Date:** 2026-06-07
-**Reason:** forge.js split into src/ modules. W1 updated (modularisation step done, next steps clarified). D15 added.
+**Reason:** forge_describe entièrement implémenté et testé dans forge + TypeRegistry. describe() dans les handlers structurés est une sous-tâche de O24/O44, pas un item autonome. O23 retiré du backlog. O24 dépendance "forge_describe implémenté" supprimée.
 
 **Modifications:**
-- WIP: W1 updated — modularisation noted as done, next steps reordered
-- Done: D15 added
+- High priority: O23 retiré
+- Normal: O24 — mention dépendance forge_describe supprimée
+- WIP: W1 mis à jour — O23 retiré des prochaines étapes
+- Done: D17 ajouté
+
+---
+
+### Version 4.7 - Tests consolidés + O8 done
+**Date:** 2026-06-07
+
+---
+
+### Version 4.6 - forge.js modularisation done
+**Date:** 2026-06-07
 
 ---
 
 ### Version 4.5 - forge.md v7.0 clean architecture
 **Date:** 2026-06-07
-**Reason:** Design session — ArtifactRef/UrlRef/IRootRegistry model specced. O44 closed (force removed from forge_describe). W1 updated.
-
-**Modifications:**
-- High priority: O44 removed (done); O23 and O43 spec references updated to v7.0
-- WIP: W1 updated — ArtifactRef/UrlRef/IRootRegistry added as first step
-- Done: D14 added
 
 ---
 

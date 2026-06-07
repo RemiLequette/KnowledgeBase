@@ -21,6 +21,9 @@
  *   The MCP server starts only when this file is run directly (not imported).
  *   This allows test files to import TypeRegistry/RootRegistry without starting the server.
  *
+ * testConfig points to knowledgebase/tests/forge/fixtures/ — the single canonical
+ * test fixtures location. public/tools/forge/tests/ is deprecated.
+ *
  * References:
  *   - conventions/forge.md v7.0
  *   - conventions/tools.md
@@ -42,13 +45,16 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ---------------------------------------------------------------------------
 // testConfig — exported for unit tests
+// Fixtures live in knowledgebase/tests/forge/fixtures/ (canonical location).
 // ---------------------------------------------------------------------------
+
+const TESTS_FIXTURES = path.resolve(__dirname, '..', '..', '..', 'tests', 'forge', 'fixtures');
 
 export const testConfig = {
   roots: [
     {
       name: 'test',
-      url: pathToFileURL(path.join(__dirname, 'tests', 'fixtures')).href + '/',
+      url: pathToFileURL(TESTS_FIXTURES).href + '/',
       handler: pathToFileURL(path.join(__dirname, 'handlers', 'file-root.js')).href
     }
   ],

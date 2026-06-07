@@ -1,32 +1,25 @@
-/**
- * type-registry.js
- *
- * TypeRegistry — manages artifact types, type discovery, describe,
- * and artifact read/write/create operations.
- *
- * All public methods work with ArtifactRef objects.
- * Brand and RTFM gates are handled by Forge (brand.js) — not here.
- * described flag is set by describe(), read via isDescribed().
- *
- * References:
- *   - conventions/forge.md v7.0 [sections Key concepts, Type discovery,
- *     Type handlers, Registry / Type registry]
- *   - conventions/tools.md [section Module Design Rules]
- *
- * Not yet in references: none
- */
+// @forge-type: js-managed
+
+// ====[ imports ]====
 
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { log } from './logger.js';
+import { checkBrand, checkRTFM } from './brand.js';
+import { toFAL } from './fal.js';
 
-// ---------------------------------------------------------------------------
-// TypeRegistry
-// ---------------------------------------------------------------------------
+// ====[ class-open ]====
 
 /**
  * Manages artifact types, discovery, describe, and artifact operations.
  * handlers Map: typeName → { handler: module, described: boolean, extension: string }
+ *
+ * Gates (Brand + RTFM) are enforced here on read/write — brand.js provides
+ * the checks, fal.js provides toFAL for FAL reconstruction.
+ *
+ * References:
+ *   - conventions/forge.md v7.0 [sections Key concepts, Type discovery,
+ *     Type handlers, Registry / Type registry]
  */
 export class TypeRegistry {
   constructor() {
@@ -36,10 +29,8 @@ export class TypeRegistry {
     this.discoveryOrder = [];
   }
 
-  /**
-   * Load handlers from the types JSON file.
-   * @param {string} typesUrl - file:// URL of the types JSON
-   */
+// ====[ load ]====
+
   async load(typesUrl) {
     const typesPath = fileURLToPath(typesUrl);
     if (!fs.existsSync(typesPath)) throw new Error(`types file not found: ${typesPath}`);
@@ -51,7 +42,7 @@ export class TypeRegistry {
         this.handlers.set(typeName, {
           handler:   mod,
           described: false,
-          extension: '.' + typeName   // 'md' → '.md', 'js' → '.js', etc.
+          extension: '.' + typeName
         });
         log('INFO', `Type handler loaded: ${typeName} v${entry.version}`);
       } catch (err) {
@@ -69,25 +60,13 @@ export class TypeRegistry {
     log('INFO', `TypeRegistry loaded — ${this.handlers.size} types, order: ${this.discoveryOrder.join(', ')}`);
   }
 
-  // -------------------------------------------------------------------------
-  // ArtifactRef ↔ UrlRef conversion
-  // -------------------------------------------------------------------------
+// ====[ ref-conversion ]====
 
-  /**
-   * Convert an ArtifactRef to a UrlRef using the stored extension for the type.
-   * @param {{ root: string, path: string, name: string, type: string }} ref
-   * @returns {{ root: string, path: string, name: string, extension: string }}
-   */
   artifactRefToUrlRef(ref) {
     const entry = this._entry(ref.type);
     return { root: ref.root, path: ref.path, name: ref.name, extension: entry.extension };
   }
 
-  /**
-   * Convert a UrlRef to an ArtifactRef by matching extension to a handler.
-   * @param {{ root: string, path: string, name: string, extension: string }} urlRef
-   * @returns {{ root: string, path: string, name: string, type: string }}
-   */
   urlRefToArtifactRef(urlRef) {
     const ext = (urlRef.extension || '').toLowerCase();
     for (const [typeName, entry] of this.handlers.entries()) {
@@ -98,9 +77,7 @@ export class TypeRegistry {
     return { root: urlRef.root, path: urlRef.path, name: urlRef.name, type: 'undefined' };
   }
 
-  // -------------------------------------------------------------------------
-  // Internal helpers
-  // -------------------------------------------------------------------------
+// ====[ helpers ]====
 
   _entry(typeName) {
     if (typeName === 'undefined') throw new Error('Operation not supported on undefined artifact type');
@@ -109,53 +86,43 @@ export class TypeRegistry {
     return entry;
   }
 
-  // -------------------------------------------------------------------------
-  // RTFM — described flag (read-only from outside)
-  // -------------------------------------------------------------------------
+// ====[ rtfm ]====
 
-  /**
-   * Return true if forge_describe has been called for this type in the session.
-   * @param {string} typeName
-   * @returns {boolean}
-   */
   isDescribed(typeName) {
     const entry = this.handlers.get(typeName);
     return entry ? entry.described : false;
   }
 
-  // -------------------------------------------------------------------------
-  // Type discovery (called by Forge during forge_ls)
-  // -------------------------------------------------------------------------
+// ====[ discover ]====
 
   /**
    * Discover the type of a UrlRef and return an ArtifactRef.
-   * Does NOT touch the Brand registry — caller (Forge) is responsible for branding.
-   * @param {{ root: string, path: string, name: string, extension: string }} urlRef
-   * @param {object} rootRegistry - available for content inspection
-   * @returns {Promise<{ root: string, path: string, name: string, type: string }>}
+   *
+   * Discovery runs in two phases per handler:
+   *   1. Extension pre-filter — skip handlers whose registered extension
+   *      does not match urlRef.extension. This prevents a generic handler
+   *      (e.g. plain-text claiming .css) from shadowing the correct one (md).
+   *   2. claim(urlRef, rootRegistry) — handler may inspect content (shebang etc.)
+   *
+   * Does NOT touch the Brand registry — caller (mcp-tools) is responsible.
    */
   async discover(urlRef, rootRegistry) {
+    const ext = (urlRef.extension || '').toLowerCase();
     for (const typeName of this.discoveryOrder) {
-      const { handler } = this.handlers.get(typeName);
-      if (handler.claim && handler.claim(urlRef, rootRegistry)) {
+      const entry = this.handlers.get(typeName);
+      // Pre-filter: skip if registered extension does not match
+      if (entry.extension.toLowerCase() !== ext) continue;
+      if (entry.handler.claim && entry.handler.claim(urlRef, rootRegistry)) {
         return { root: urlRef.root, path: urlRef.path, name: urlRef.name, type: typeName };
       }
     }
     return { root: urlRef.root, path: urlRef.path, name: urlRef.name, type: 'undefined' };
   }
 
-  // -------------------------------------------------------------------------
-  // describe — sets described=true for the type
-  // -------------------------------------------------------------------------
+// ====[ describe ]====
 
-  /**
-   * Describe the type of an artifact. Sets described=true for the type.
-   * @param {{ root: string, path: string, name: string, type: string }} ref - ArtifactRef
-   * @returns {{ recognition: string, capabilities: object, usage: string }}
-   */
   describe(ref) {
     const entry = this._entry(ref.type);
-
     let result;
     if (entry.handler.describe) {
       result = entry.handler.describe(this.artifactRefToUrlRef(ref), null);
@@ -166,45 +133,45 @@ export class TypeRegistry {
         usage:        `forge_read(fal) returns the entire file content. forge_write(fal, content) replaces the entire file.`
       };
     }
-
     entry.described = true;
     return result;
   }
 
-  // -------------------------------------------------------------------------
-  // Artifact operations — no gates (gates are Forge's responsibility)
-  // -------------------------------------------------------------------------
+// ====[ read ]====
 
   /**
-   * Read an artifact block.
+   * Read an artifact block. Enforces Brand + RTFM gates.
    * @param {{ root, path, name, type }} ref - ArtifactRef
    * @param {object} rootRegistry
    * @param {string} [block='']
    */
   async read(ref, rootRegistry, block = '') {
+    checkBrand(toFAL(ref));
+    checkRTFM(ref.type, this);
     const { handler } = this._entry(ref.type);
     const urlRef = this.artifactRefToUrlRef(ref);
     return handler.readBlock(urlRef, block, rootRegistry);
   }
 
+// ====[ write ]====
+
   /**
-   * Write an artifact block.
+   * Write an artifact block. Enforces Brand + RTFM gates.
    * @param {{ root, path, name, type }} ref - ArtifactRef
    * @param {object} rootRegistry
    * @param {string} block
    * @param {string} content
    */
   async write(ref, rootRegistry, block, content) {
+    checkBrand(toFAL(ref));
+    checkRTFM(ref.type, this);
     const { handler } = this._entry(ref.type);
     const urlRef = this.artifactRefToUrlRef(ref);
     return handler.writeBlock(urlRef, block, content, rootRegistry);
   }
 
-  /**
-   * Create an artifact.
-   * @param {{ root, path, name, type }} ref - ArtifactRef
-   * @param {object} rootRegistry
-   */
+// ====[ create ]====
+
   async createArtifact(ref, rootRegistry) {
     const { handler } = this._entry(ref.type);
     const urlRef = this.artifactRefToUrlRef(ref);
