@@ -71,7 +71,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## WIP
 
-- [ ] [WIP] [W1] Forge — ArtifactRef/UrlRef/IRootRegistry + RTFM + Brand implementation | forge.md v7.0 : clean architecture specced — ArtifactRef, UrlRef, IRootRegistry, Brand before RTFM, force removed. Prochaines étapes : (1) implémenter ArtifactRef/UrlRef model + IRootRegistry dans forge.js, (2) implémenter forge_describe + RTFM gate, (3) implémenter Brand registry + Brand gate, (4) O8 forge_read retourne FAL+bloc, (5) md-doc handler (O24). [effort: L]
+- [ ] [WIP] [W1] Forge — ArtifactRef/UrlRef/IRootRegistry + RTFM + Brand implementation | forge.md v7.0 : clean architecture specced — ArtifactRef, UrlRef, IRootRegistry, Brand before RTFM, force removed. forge.js modularised into src/ (logger, type-registry, root-registry, mcp-tools). Prochaines étapes : (1) implémenter forge_describe + RTFM gate, (2) implémenter Brand registry + Brand gate, (3) O8 forge_read retourne FAL+bloc, (4) md-doc handler (O24). [effort: L]
 - [ ] [WIP] [W3] Namespace model — spec forge.md v6.0 | Modèle namespace conçu et documenté dans forge.md v6.0. Prochaines étapes : (1) split forge.config.json → roots.json + types.json, (2) implémenter le loader récursif dans forge.js. [effort: M]
 
 ## Done
@@ -90,6 +90,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [x] [D12] Brand principle — spec + glossaire | forge.md v6.4 : Brand principle specced. GLOSSARY.md v1.3 : Brand, Constrain Don't Forbid, Fail Fast Fail Clear, TDD. working-with-forge.md v1.2 : Brand section + pattern filename-without-FAL.
 - [x] [D13] forge_create + forge_write existence guard | plain-text.js v1.3 + forge.js v2.4 + forge.md v6.5.
 - [x] [D14] forge.md v7.0 — clean architecture | ArtifactRef, UrlRef, IRootRegistry, Brand before RTFM, force removed. forge.md v7.0 + working-with-forge.md v1.3.
+- [x] [D15] forge.js modularisation | forge.js split into src/logger.js, src/type-registry.js, src/root-registry.js, src/mcp-tools.js. forge.js reduced to entry point + re-exports. All test imports unchanged.
 
 ## Index
 
@@ -97,6 +98,16 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 4.6 - forge.js modularisation done
+**Date:** 2026-06-07
+**Reason:** forge.js split into src/ modules. W1 updated (modularisation step done, next steps clarified). D15 added.
+
+**Modifications:**
+- WIP: W1 updated — modularisation noted as done, next steps reordered
+- Done: D15 added
+
+---
 
 ### Version 4.5 - forge.md v7.0 clean architecture
 **Date:** 2026-06-07

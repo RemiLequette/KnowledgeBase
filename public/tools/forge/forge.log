@@ -296,3 +296,123 @@
 2026-06-07T11:02:28.047Z [INFO] forge_write — done
 2026-06-07T11:02:48.205Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/forge-brand.test.js, block: "", 5640 chars
 2026-06-07T11:02:48.207Z [INFO] forge_write — done
+2026-06-07T11:04:53.800Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/PROJECT.md
+2026-06-07T11:04:53.801Z [INFO] forge_read — 5201 chars
+2026-06-07T11:04:55.665Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/INDEX.md
+2026-06-07T11:04:55.666Z [INFO] forge_read — 22022 chars
+2026-06-07T11:04:58.690Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/guides/how-to-get-things-done.md
+2026-06-07T11:04:58.691Z [INFO] forge_read — 12485 chars
+2026-06-07T11:05:01.547Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/conventions/todo-list.md
+2026-06-07T11:05:01.549Z [INFO] forge_read — 9502 chars
+2026-06-07T11:05:05.111Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/TODO.md
+2026-06-07T11:05:05.112Z [INFO] forge_read — 12679 chars
+2026-06-07T11:05:07.966Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/conventions/forge.md
+2026-06-07T11:05:07.967Z [INFO] forge_read — 44822 chars
+2026-06-07T11:05:11.350Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge.js
+2026-06-07T11:05:11.352Z [INFO] forge_read — 24760 chars
+2026-06-07T11:05:13.960Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/handlers/file-root.js
+2026-06-07T11:05:13.961Z [INFO] forge_read — 4522 chars
+2026-06-07T11:05:16.316Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js
+2026-06-07T11:05:16.318Z [INFO] forge_read — 5148 chars
+2026-06-07T11:05:19.770Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge/
+2026-06-07T11:05:19.771Z [ERROR] forge_read error: forge_read requires an artifact FAL. Got: forge://development/with-claude/knowledgebase/tests/forge/
+2026-06-07T11:05:24.266Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/forge/
+2026-06-07T11:05:27.688Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge/forge-testable.js
+2026-06-07T11:05:27.689Z [INFO] forge_read — 7789 chars
+2026-06-07T11:05:30.877Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge/forge-brand.test.js
+2026-06-07T11:05:30.877Z [INFO] forge_read — 4227 chars
+2026-06-07T11:05:33.577Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge/forge-rtfm.test.js
+2026-06-07T11:05:33.578Z [INFO] forge_read — 5508 chars
+2026-06-07T11:05:39.836Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/public/tools/forge/
+2026-06-07T11:05:43.254Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge-types.json
+2026-06-07T11:05:43.255Z [INFO] forge_read — 1080 chars
+2026-06-07T11:05:47.043Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/forge/fixtures/
+2026-06-07T11:05:51.536Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge/package.json
+2026-06-07T11:05:51.537Z [INFO] forge_read — 70 chars
+2026-06-07T11:06:18.334Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/
+2026-06-07T11:06:21.543Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/forge-testable.js
+2026-06-07T11:06:21.544Z [INFO] forge_read — 5339 chars
+2026-06-07T11:06:24.888Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/file-root.test.js
+2026-06-07T11:06:24.889Z [INFO] forge_read — 12280 chars
+2026-06-07T11:06:33.314Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/plain-text.test.js
+2026-06-07T11:06:33.315Z [INFO] forge_read — 10091 chars
+2026-06-07T11:06:39.554Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/type-registry.test.js
+2026-06-07T11:06:39.556Z [INFO] forge_read — 11875 chars
+2026-06-07T11:06:48.245Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/forge-brand.test.js
+2026-06-07T11:06:48.247Z [INFO] forge_read — 5640 chars
+2026-06-07T11:06:55.182Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/forge-rtfm.test.js
+2026-06-07T11:06:55.183Z [INFO] forge_read — 5789 chars
+2026-06-07T11:07:04.678Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/integration.test.js
+2026-06-07T11:07:04.680Z [INFO] forge_read — 7906 chars
+2026-06-07T11:08:04.387Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/fixtures/sample.md
+2026-06-07T11:08:04.390Z [INFO] forge_read — 352 chars
+2026-06-07T11:08:06.729Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/fixtures/
+2026-06-07T11:11:58.312Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/public/tools/forge/handlers/file-root.js, block: "", 7563 chars
+2026-06-07T11:11:58.315Z [INFO] forge_write — done
+2026-06-07T11:12:25.751Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js, block: "", 5615 chars
+2026-06-07T11:12:25.753Z [INFO] forge_write — done
+2026-06-07T11:14:28.861Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge.js, block: "", 30806 chars
+2026-06-07T11:14:28.863Z [INFO] forge_write — done
+2026-06-07T11:16:57.497Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge-package.json
+2026-06-07T11:16:57.507Z [INFO] forge_read — 252 chars
+2026-06-07T11:16:59.866Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/package.json
+2026-06-07T11:16:59.867Z [INFO] forge_read — 210 chars
+2026-06-07T11:19:59.868Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge.js, block: "", 29606 chars
+2026-06-07T11:19:59.870Z [INFO] forge_write — done
+2026-06-07T11:21:15.655Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/PROJECT.md
+2026-06-07T11:21:15.656Z [INFO] forge_read — 5201 chars
+2026-06-07T11:21:17.337Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/INDEX.md
+2026-06-07T11:21:17.338Z [INFO] forge_read — 22022 chars
+2026-06-07T11:21:21.720Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/guides/how-to-get-things-done.md
+2026-06-07T11:21:21.721Z [INFO] forge_read — 12485 chars
+2026-06-07T11:21:24.044Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/conventions/todo-list.md
+2026-06-07T11:21:24.046Z [INFO] forge_read — 9502 chars
+2026-06-07T11:21:26.280Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/TODO.md
+2026-06-07T11:21:26.282Z [INFO] forge_read — 12679 chars
+2026-06-07T11:21:31.634Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/conventions/modular-architecture.md
+2026-06-07T11:21:31.663Z [INFO] forge_read — 16989 chars
+2026-06-07T11:21:34.063Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/conventions/tools.md
+2026-06-07T11:21:34.070Z [INFO] forge_read — 24074 chars
+2026-06-07T11:21:37.685Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/conventions/forge.md
+2026-06-07T11:21:37.687Z [INFO] forge_read — 44822 chars
+2026-06-07T11:21:41.169Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge.js
+2026-06-07T11:21:41.171Z [INFO] forge_read — 29606 chars
+2026-06-07T11:22:31.521Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/forge.test.js
+2026-06-07T11:22:31.522Z [ERROR] forge_read error: ENOENT: no such file or directory, open 'C:\Users\RemiLequette\Development\with-claude\knowledgebase\public\tools\forge\tests\forge.test.js'
+2026-06-07T11:23:27.186Z [INFO] forge_create — fal: forge://development/with-claude/knowledgebase/public/tools/forge/src/logger.js
+2026-06-07T11:23:27.188Z [ERROR] forge_create error: ENOENT: no such file or directory, open 'C:\Users\RemiLequette\Development\with-claude\knowledgebase\public\tools\forge\src\logger.js'
+2026-06-07T11:23:30.856Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/public/tools/forge/
+2026-06-07T11:24:02.133Z [INFO] forge_mkdir — fal: forge://development/with-claude/knowledgebase/public/tools/forge/src/
+2026-06-07T11:24:02.135Z [INFO] forge_mkdir — done
+2026-06-07T11:26:27.548Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge.js, block: "", 4002 chars
+2026-06-07T11:26:27.549Z [INFO] forge_write — done
+2026-06-07T11:26:42.742Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge.js
+2026-06-07T11:26:42.743Z [INFO] forge_read — 4002 chars
+2026-06-07T11:28:15.394Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/TODO.md, block: "", 13199 chars
+2026-06-07T11:28:15.397Z [INFO] forge_write — done
+2026-06-07T11:47:00.947Z [INFO] Config loaded
+2026-06-07T11:47:00.955Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T11:47:00.956Z [INFO] Type handler loaded: md v1.0
+2026-06-07T11:47:00.957Z [INFO] Type handler loaded: js v1.0
+2026-06-07T11:47:00.957Z [INFO] Type handler loaded: json v1.0
+2026-06-07T11:47:00.958Z [INFO] Type handler loaded: css v1.0
+2026-06-07T11:47:00.959Z [INFO] Type handler loaded: html v1.0
+2026-06-07T11:47:00.960Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T11:47:00.963Z [INFO] Root handler loaded: development
+2026-06-07T11:47:00.964Z [INFO] Registries loaded
+2026-06-07T11:47:00.999Z [INFO] Forge MCP server starting — v3.0.0
+2026-06-07T11:47:01.002Z [INFO] Forge MCP server running on stdio
+2026-06-07T11:47:01.693Z [INFO] Config loaded
+2026-06-07T11:47:01.710Z [INFO] Type handler loaded: txt v1.0
+2026-06-07T11:47:01.711Z [INFO] Type handler loaded: md v1.0
+2026-06-07T11:47:01.712Z [INFO] Type handler loaded: js v1.0
+2026-06-07T11:47:01.713Z [INFO] Type handler loaded: json v1.0
+2026-06-07T11:47:01.714Z [INFO] Type handler loaded: css v1.0
+2026-06-07T11:47:01.715Z [INFO] Type handler loaded: html v1.0
+2026-06-07T11:47:01.716Z [INFO] TypeRegistry loaded — 6 types, order: css, html, js, json, md, txt
+2026-06-07T11:47:01.729Z [INFO] Root handler loaded: development
+2026-06-07T11:47:01.731Z [INFO] Registries loaded
+2026-06-07T11:47:01.746Z [INFO] Forge MCP server starting — v3.0.0
+2026-06-07T11:47:01.748Z [INFO] Forge MCP server running on stdio
+2026-06-07T11:47:48.989Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/PROJECT.md
+2026-06-07T11:47:48.991Z [ERROR] forge_read error: This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.
