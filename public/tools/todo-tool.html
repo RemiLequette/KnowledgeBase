@@ -471,13 +471,13 @@ async function loadData(){
       const d=JSON.parse(workRaw);
       items=d.items||d; trashed=d.trashed||[];
       snapshot=d.snapshot||{}; dirtyIds=new Set(d.dirtyIds||[]); dirty=true;
-      reindex(); render(); return;
+      applyExistingIndexes(); render(); return;
     }catch{}
   }
   const mdRaw=await readFile(TODO_PATH);
   items=mdRaw?parseTodo(mdRaw):[];
   trashed=[]; dirtyIds=new Set(); dirty=false;
-  reindex(); takeSnapshot(); render();
+  applyExistingIndexes(); takeSnapshot(); render();
 }
 
 function takeSnapshot(){
@@ -526,16 +526,32 @@ function parseTodo(md){
   return result;
 }
 
-// ── REINDEX ───────────────────────────────────────────────────────────────────
-function reindex(){
+// ── APPLY EXISTING INDEXES (load only) ───────────────────────────────────────
+// Preserves indexes exactly as written in the file. Items without an index
+// get a seq after the highest existing one in their column. No renumbering.
+function applyExistingIndexes(){
   STATES.forEach(state=>{
     const si=items.filter(i=>i.state===state);
-    const withIdx=si.filter(i=>i.existingState===state&&i.existingSeq!=null).sort((a,b)=>a.existingSeq-b.existingSeq);
-    const withIdxIds=new Set(withIdx.map(i=>i.id));
-    const rest=si.filter(i=>!withIdxIds.has(i.id));
-    [...withIdx,...rest].forEach((item,n)=>{item.seq=n+1;});
+    let maxSeq=0;
+    si.forEach(item=>{
+      if(item.existingState===state&&item.existingSeq!=null){
+        item.seq=item.existingSeq;
+        if(item.existingSeq>maxSeq)maxSeq=item.existingSeq;
+      }
+    });
+    si.forEach(item=>{
+      if(item.seq==null){item.seq=++maxSeq;}
+    });
   });
   items.forEach(i=>{delete i.existingSeq;delete i.existingState;});
+}
+
+// ── REINDEX (drag-and-drop only) ─────────────────────────────────────────────
+// Renumbers sequentially from 1. Call only after D&D reorder, never on load.
+function reindex(){
+  STATES.forEach(state=>{
+    items.filter(i=>i.state===state).sort((a,b)=>a.seq-b.seq).forEach((item,n)=>{item.seq=n+1;});
+  });
 }
 
 // ── SERIALIZE ─────────────────────────────────────────────────────────────────
@@ -628,7 +644,7 @@ async function doRefresh(){
   await fetch(`${SERVER}/file?path=${encodeURIComponent(WORK_PATH)}`,{method:'DELETE'}).catch(()=>{});
   const mdRaw=await readFile(TODO_PATH);
   items=mdRaw?parseTodo(mdRaw):[]; trashed=[]; dirtyIds=new Set(); dirty=false;
-  reindex(); takeSnapshot(); render();
+  applyExistingIndexes(); takeSnapshot(); render();
 }
 
 // ── RENDER ────────────────────────────────────────────────────────────────────
@@ -786,7 +802,7 @@ function cancelEdit(id){render();}
 // ── STATE ─────────────────────────────────────────────────────────────────────
 function setState(id,state){
   const item=items.find(i=>i.id===id);
-  if(item){item.state=state;markDirty(id);reindex();saveWork();render();}
+  if(item){item.state=state;markDirty(id);saveWork();render();}
 }
 
 // ── ADD ───────────────────────────────────────────────────────────────────────
@@ -818,14 +834,14 @@ function trashItem(id){
   const item=items.find(i=>i.id===id);if(!item)return;
   trashed.push({...item,origState:item.state});
   items=items.filter(i=>i.id!==id);
-  dirtyIds.add(id); reindex(); saveWork(); render();
+  dirtyIds.add(id); saveWork(); render();
 }
 function restoreItem(id){
   const item=trashed.find(i=>i.id===id);if(!item)return;
   trashed=trashed.filter(i=>i.id!==id);
   const maxSeq=Math.max(0,...items.filter(i=>i.state===item.origState).map(i=>i.seq||0));
   items.push({...item,state:item.origState,seq:maxSeq+1});
-  markDirty(id); reindex(); saveWork(); render();
+  markDirty(id); saveWork(); render();
 }
 function forgetItem(id){
   const item=trashed.find(i=>i.id===id);if(!item)return;
@@ -962,7 +978,7 @@ function selectPopover(val){
   const item=items.find(i=>i.id===popoverTarget);
   if(item){if(popoverType==='priority')item.priority=val;else item.effort=val;markDirty(item.id);}
   document.getElementById('popover').classList.remove('open');
-  reindex();saveWork();render();
+  saveWork();render();
 }
 document.addEventListener('click',e=>{if(!document.getElementById('popover').contains(e.target))document.getElementById('popover').classList.remove('open');});
 

@@ -14,8 +14,10 @@ Two static registries govern Forge: the root registry (folder navigation, one ha
 
 Within an artifact, content is accessed via named blocks — never by line number. Block arguments are always full paths from the root block. Block content is always plain text. Order is significant — both in folder listings and in block listings.
 
+Roots and types are organised into **namespaces**. The KB is the default namespace (no prefix). Projects and libraries declare additional namespaces, each with their own roots and types loaded recursively at startup.
+
 ## Keywords
-forge, MCP, artifact, FAL, type, handler, blocks, filesystem, structured-access, URL, roots, registry, claim, type-discovery
+forge, MCP, artifact, FAL, type, handler, blocks, filesystem, structured-access, URL, roots, registry, claim, type-discovery, namespace, multiproject
 
 ## Table of Contents
 
@@ -27,10 +29,11 @@ forge, MCP, artifact, FAL, type, handler, blocks, filesystem, structured-access,
 6. [Type discovery](#type-discovery)
 7. [Type handlers](#type-handlers)
 8. [Registry](#registry)
-9. [Roots and configuration](#roots-and-configuration)
-10. [MCP tools](#mcp-tools)
-11. [Roadmap](#roadmap)
-12. [Index](#index)
+9. [Namespaces](#namespaces)
+10. [Roots and configuration](#roots-and-configuration)
+11. [MCP tools](#mcp-tools)
+12. [Roadmap](#roadmap)
+13. [Index](#index)
 
 ## Why Forge exists
 [up](#table-of-contents)
@@ -56,17 +59,19 @@ Forge addresses all six by replacing raw file access with a structured, typed, c
 ## Key concepts
 [up](#table-of-contents)
 
-**Root** — a named entry point in the hierarchy, defined in the MCP configuration with a name, a base URL, and a root handler. The name is used in absolute FALs. The base URL is the only place a physical path appears.
+**Root** — a named entry point in the hierarchy, defined in a roots registry with a name, a base URL, and a root handler. The name is used in absolute FALs. The base URL is the only place a physical path appears. Roots belonging to a namespace carry the namespace prefix: `commwise:production`.
 
 **Folder** — a node in the hierarchy under a root. A folder FAL wraps a URL identified as a folder by the root handler.
 
 **Artifact** — any non-folder resource managed by Forge. An artifact FAL wraps a URL identified as non-folder by the root handler, then typed by the type registry. An artifact may have a block structure.
 
-**Type** — the semantic kind of an artifact. Determines which handler manages it. Types form a name hierarchy used for discovery ordering — `md-doc-convention` is more specific than `md-doc`, which is more specific than `md`.
+**Type** — the semantic kind of an artifact. Determines which handler manages it. Types form a name hierarchy used for discovery ordering — `md-doc-convention` is more specific than `md-doc`, which is more specific than `md`. Types belonging to a namespace carry the namespace prefix: `commwise:layout`.
 
 **Block** — a named unit of content within an artifact. Always accessed by full path from the root block, never by position or line number. Order among sibling blocks is significant. Block content is always plain text. A block may have both content of its own and child blocks — the content always precedes the children.
 
 **Handler** — a JavaScript module. Root handlers manage folder navigation; type handlers manage artifact and block operations. Forge never calls handlers directly — all access goes through the registries.
+
+**Namespace** — a named scope grouping roots and types belonging to a project or library. The KB is the default namespace (no prefix). All other namespaces are declared in registry files and loaded recursively at startup. A namespace is portable — its registry files can be moved to the KB or another namespace without changing their internal structure.
 
 ## Forge Artifact Locator FAL
 [up](#table-of-contents)
@@ -79,9 +84,9 @@ A FAL is the unique locator of a folder, artifact, or block in Forge. It wraps a
 forge://<root-name>/[<folder>/]*[<artifact-name>.<type-name>[#<block-name>[#<block-name>]*]]
 ```
 
-- `forge://<root-name>/` — mandatory, identifies the root
+- `forge://<root-name>/` — mandatory, identifies the root; namespaced roots use `namespace:name`
 - `[<folder>/]*` — zero or more folder names
-- `<artifact-name>.<type-name>` — artifact name and its type
+- `<artifact-name>.<type-name>` — artifact name and its type; namespaced types use `namespace:name`
 - `[#<block-name>]*` — optional block path, `#`-separated, full path from root block
 
 A FAL ending with `/` and no artifact part is a **folder FAL**.
@@ -91,12 +96,14 @@ Names containing spaces, `/`, `#`, or other ambiguous characters must be quoted 
 **Examples:**
 
 ```
-forge://development/                                                     ← root
-forge://development/big-project/                                         ← folder
-forge://development/big-project/TODO.doc-todolist                        ← artifact
-forge://development/big-project/TODO.doc-todolist#W1                     ← block
-forge://kb/public/TODO.doc-todolist#section:Normale#item:W1              ← nested block
-forge://kb/public/INDEX.doc#section:Session-Bootstrap                    ← nested block
+forge://development/                                                          ← KB root
+forge://development/big-project/                                              ← folder
+forge://development/big-project/TODO.doc-todolist                             ← KB artifact
+forge://development/big-project/TODO.doc-todolist#W1                          ← block
+forge://kb/public/TODO.doc-todolist#section:Normale#item:W1                   ← nested block
+forge://kb/public/INDEX.doc#section:Session-Bootstrap                         ← nested block
+forge://commwise:production/bloc.commwise:layout                              ← namespaced root + type
+forge://commwise:afr:data/rapport.commwise:afr:doc-rse                        ← chained namespace
 ```
 
 ### FAL as a capsule
@@ -110,30 +117,21 @@ Neither piece is stored separately. The FAL is self-contained. This is why artif
 
 ### Root registry
 
-Defined in the MCP configuration. Cannot be changed at runtime.
+Defined in registry files loaded at startup. Cannot be changed at runtime.
 
 Each root entry:
-- `name` — used in FALs
+- `name` — used in FALs (prefixed with namespace at load time)
 - `url` — base URL of the root (the only place a physical path appears)
 - `handler` — URL of the root handler JavaScript module
 
 ### Type registry
 
-Defined in the MCP configuration as a URL pointing to a separate JSON file. Cannot be changed at runtime. Keeping the type registry in a separate file allows it to be shared across projects and maintained independently of each local configuration.
+Defined in registry files loaded at startup. Cannot be changed at runtime.
 
-Each type entry in the registry JSON:
-- `name` — short identifier or dash-separated hierarchy (`md`, `md-doc`, `md-doc-convention`)
+Each type entry:
+- `name` — short identifier or dash-separated hierarchy (`md`, `md-doc`, `md-doc-convention`); prefixed with namespace at load time
 - `version` — handler version, used to detect staleness against the convention it implements
 - `handler` — URL of the type handler JavaScript module
-
-**Type registry JSON example (`types.json`):**
-```json
-{
-  "md":              { "version": "1.0", "handler": "file:///...handlers/md.js" },
-  "md-doc":          { "version": "1.0", "handler": "file:///...handlers/md-doc.js" },
-  "doc-todolist":    { "version": "2.5", "handler": "file:///...handlers/doc-todolist.js" }
-}
-```
 
 ## Blocks
 [up](#table-of-contents)
@@ -213,7 +211,7 @@ When the root handler returns a non-folder URL, Forge passes it to the type regi
 
 The type registry calls `claim(url)` on all registered type handlers. Within a type hierarchy, the registry respects the order from most specific to least specific (`md-doc-convention` before `md-doc` before `md`) and **stops as soon as one handler claims the URL** — more general handlers in the same hierarchy are not called. Hierarchies that are independent of each other are all evaluated.
 
-The hierarchy order is derived from the type names — a type name is split on `-` and longer names (more segments) are more specific. No explicit `extends` declaration is needed.
+The hierarchy order is derived from the type names — a type name is split on `-` and longer names (more segments) are more specific. No explicit `extends` declaration is needed. The namespace prefix is stripped before computing hierarchy order — `commwise:md-doc` is treated as `md-doc` for ordering purposes within its namespace.
 
 Claim logic is entirely the handler's responsibility. A handler may inspect the URL extension, the filename, or the file content (shebang). Examples:
 
@@ -272,7 +270,7 @@ These two functions are the bidirectional mapping between the physical URL and t
 - `urlToFAL("file:///path/TODO.md")` → `"TODO.doc-todolist"`
 - `falToURL("TODO.doc-todolist", "file:///path/")` → `"file:///path/TODO.md"`
 
-The FAL name is the artifact name with its type extension — the stem may differ from the physical filename. The handler is the only place that knows this mapping.
+The FAL name is the artifact name with its type extension — the stem may differ from the physical filename. The handler is the only place that knows this mapping. The handler uses its own local type name (without namespace prefix) — the registry applies the prefix when building the final FAL.
 
 **`listBlocks(url, block="")` contract:**
 
@@ -303,11 +301,13 @@ There are two registries with complementary responsibilities. Both work with URL
 
 ### Type registry
 
-The type registry manages all artifact operations. It is loaded at startup from the types JSON file. It exposes a FAL-only API to Forge — types are hidden inside the registry and encoded in the FAL.
+The type registry manages all artifact operations. It is loaded at startup from registry files (see Namespaces). It exposes a FAL-only API to Forge — types are hidden inside the registry and encoded in the FAL.
 
 **Internal structure:**
 
-At startup, the type registry builds a hashmap: `typeName → handler module`. The type hierarchy order (for `claim()` dispatch) is derived from the type names — names are split on `-` and sorted by descending length (more segments = more specific). No explicit ordering configuration is needed.
+At startup, the type registry builds a hashmap: `typeName → handler module`. Type names in the hashmap carry their full namespace prefix (`commwise:layout`). The type hierarchy order (for `claim()` dispatch) is derived from the local type name (prefix stripped) — names are split on `-` and sorted by descending length (more segments = more specific). No explicit ordering configuration is needed.
+
+**Collision check:** after all namespaces are loaded, if two entries share the same final name in the hashmap → startup error. Forge does not start. This applies to both roots and types.
 
 **API exposed to Forge:**
 
@@ -335,14 +335,15 @@ typeRegistry.deleteBlock(fal, block)
 4. Delegate to handler
 
 **`discover(url)` mechanism:**
-1. Call `claim(url)` on handlers, most specific first (derived from type name length)
+1. Call `claim(url)` on handlers, most specific first (derived from local type name length)
 2. Stop at first claim
-3. Call `handler.urlToFAL(url)` to produce the FAL name
-4. Return the complete FAL
+3. Call `handler.urlToFAL(url)` to produce the local FAL name
+4. Prepend namespace prefix to produce the final type name in the FAL
+5. Return the complete FAL
 
 ### Root registry
 
-The root registry manages folder navigation. It is loaded at startup from the roots array in the config. Each root has exactly one handler — no dispatch needed.
+The root registry manages folder navigation. It is loaded at startup from registry files (see Namespaces). Each root has exactly one handler — no dispatch needed.
 
 Folder FALs are derived directly from URLs by Forge (strip the base URL, prepend `forge://<root>/`) — the root registry does not manage FAL encoding.
 
@@ -390,7 +391,8 @@ sequenceDiagram
             TypeReg->>TypeH: claim(url)
             TypeH-->>TypeReg: true
             TypeReg->>TypeH: urlToFAL(url)
-            TypeH-->>TypeReg: FAL name
+            TypeH-->>TypeReg: local FAL name
+            TypeReg->>TypeReg: prepend namespace prefix
             TypeReg-->>Forge: artifact FAL
         end
     end
@@ -419,13 +421,127 @@ sequenceDiagram
     Forge-->>MCP: content
 ```
 
+## Namespaces
+[up](#table-of-contents)
+
+A namespace groups roots and types belonging to a project or library. The KB is the default namespace — its roots and types carry no prefix. All other namespaces are declared in registry files and loaded recursively at startup.
+
+### Why namespaces
+
+- **Isolation** — a project's types and roots cannot clash with the KB or another project, even if they share the same local names.
+- **Portability** — a namespace registry file is self-contained. It can be promoted to the KB, merged into another namespace, or shared as a standalone library without changing its internal structure.
+- **Composability** — a namespace can declare child namespaces, which declare their own, and so on. The loading algorithm is the same at every level — the recursion is the design.
+
+### Namespace declaration
+
+Namespaces are declared inside roots or types registry files using a `namespaces` array. Each entry specifies a namespace name, and optionally a roots registry file, a types registry file, or both.
+
+**roots.json with namespaces:**
+```json
+{
+  "roots": [
+    { "name": "production", "url": "...", "handler": "..." }
+  ],
+  "namespaces": [
+    {
+      "namespace": "commwise",
+      "roots": "file:///commwise/.../roots.json",
+      "types": "file:///commwise/.../types.json"
+    }
+  ]
+}
+```
+
+**types.json with namespaces:**
+```json
+{
+  "types": [
+    { "name": "layout", "version": "1.0", "handler": "..." }
+  ],
+  "namespaces": [
+    {
+      "namespace": "afr",
+      "types": "file:///afr/.../types.json"
+    }
+  ]
+}
+```
+
+A namespace entry may omit `roots` or `types` if the namespace only contributes one kind. Both fields are optional, but at least one must be present.
+
+### Loading algorithm
+
+Forge loads namespaces recursively at startup. The algorithm is identical at every level — there is no distinction between root-level and child-level loading.
+
+```
+function loadRegistry(file, prefixSoFar):
+  data = readJSON(file)
+
+  for each root in data.roots:
+    finalName = prefixSoFar + root.name          // "" + "development" = "development"
+    rootRegistry.register(finalName, root)        // collision → startup error
+
+  for each type in data.types:
+    finalName = prefixSoFar + type.name          // "commwise:" + "layout" = "commwise:layout"
+    typeRegistry.register(finalName, type)        // collision → startup error
+
+  for each namespace in data.namespaces:
+    childPrefix = prefixSoFar + namespace.name + ":"
+    if namespace.roots:
+      loadRegistry(namespace.roots, childPrefix)
+    if namespace.types:
+      loadRegistry(namespace.types, childPrefix)
+```
+
+**Entry point** — Forge starts from `forge.config.json`:
+```
+loadRegistry(config.roots_file, "")   // KB roots, no prefix
+loadRegistry(config.types_file, "")   // KB types, no prefix
+```
+
+### Prefix rules
+
+- KB (default namespace): no prefix — `md`, `doc-todolist`, `development`
+- Direct namespace: `commwise:layout`, `commwise:production`
+- Chained namespace: `commwise:afr:doc-rse`, `commwise:afr:data` — parent prefix accumulates
+
+### Collision rule
+
+Two roots or two types with the same final name (after prefix) → **startup error**. Forge does not start. The error message identifies both conflicting entries and their source files.
+
+This is enforced at hashmap insertion time — the check is O(1) per entry and costs nothing at runtime.
+
+### FAL examples with namespaces
+
+```
+forge://development/kb/INDEX.md                         ← KB root, KB type (no prefix)
+forge://commwise:production/bloc.commwise:layout        ← commwise root, commwise type
+forge://commwise:afr:data/rapport.commwise:afr:doc-rse  ← chained namespace root and type
+```
+
+### Namespace portability
+
+A namespace registry file has no knowledge of its position in the loading tree. It declares names relative to itself — the prefix is applied externally by the loader. This means:
+
+- A type `layout` in `commwise/types.json` becomes `commwise:layout` when loaded under the `commwise` namespace, and `mylib:commwise:layout` if that namespace is itself nested under `mylib`.
+- Moving a namespace from one parent to another only requires updating the `namespace` declaration in the parent — the child files are unchanged.
+- Promoting a namespace to the KB means removing the namespace wrapper — its types and roots become unprefixed KB entries.
+
 ## Roots and configuration
 [up](#table-of-contents)
 
-Forge is a **single shared process** across all projects. There is no per-project instance. Each project lives under a named root.
+Forge is a **single shared process** across all projects. There is no per-project instance. Each project lives under a named root, in its own namespace if it defines project-specific roots or types.
 
 **Configuration file:** `public/tools/forge/forge.config.json`
 
+```json
+{
+  "roots": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/roots.json",
+  "types": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/types.json"
+}
+```
+
+**KB roots.json** (default namespace, no prefix):
 ```json
 {
   "roots": [
@@ -440,13 +556,28 @@ Forge is a **single shared process** across all projects. There is no per-projec
       "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/file-root.js"
     }
   ],
-  "types": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/types.json"
+  "namespaces": [
+    {
+      "namespace": "commwise",
+      "roots": "file:///C:/Users/RemiLequette/Development/commwise/tools/forge/roots.json",
+      "types": "file:///C:/Users/RemiLequette/Development/commwise/tools/forge/types.json"
+    }
+  ]
 }
 ```
 
-The `types` field points to a separate JSON file containing the type registry. This file is shared across all projects and maintained independently of each local configuration.
+**KB types.json** (default namespace, no prefix):
+```json
+{
+  "types": [
+    { "name": "md",           "version": "1.0", "handler": "file:///...handlers/md.js" },
+    { "name": "md-doc",       "version": "1.0", "handler": "file:///...handlers/md-doc.js" },
+    { "name": "doc-todolist", "version": "2.5", "handler": "file:///...handlers/doc-todolist.js" }
+  ]
+}
+```
 
-Root names are short, lowercase, no spaces. URLs are the only place physical paths appear.
+Root and type names are short, lowercase, no spaces. URLs are the only place physical paths appear.
 
 **Claude Desktop configuration** (`claude_desktop_config.json`):
 ```json
@@ -473,9 +604,11 @@ npm install
 ## MCP tools
 [up](#table-of-contents)
 
-All tools accept FALs. Folder FALs end with `/`. Block paths use `#`. See the FAL section for syntax and quoting rules.
+All tools accept FALs. Folder FALs end with `/`. Block paths use `#`. Namespaced roots and types use `:` as separator. See the FAL section for syntax and quoting rules.
 
 Forge implements each tool by translating the MCP call into one or two registry calls — no additional logic.
+
+**Error handling:** Forge wraps the entire tool dispatcher in a single top-level `try/catch`. Any exception thrown by a registry or handler is caught and returned as `{ error: err.message }` with `isError: true`. Tools and handlers must always throw exceptions on error — never return error objects. A tool may add its own `try/catch` only to enrich the error message with context before re-throwing.
 
 **Implemented:**
 
@@ -516,21 +649,23 @@ Forge implements each tool by translating the MCP call into one or two registry 
 
 | Tool | Arguments | Description |
 |---|---|---|
-| `forge_types_list` | — | List all registered types |
+| `forge_types_list` | — | List all registered types with their namespace |
 | `forge_types_get` | `type` | Get a type definition and handler version |
 | `forge_types_check` | — | Report handlers whose version is behind their convention |
+| `forge_roots_list` | — | List all registered roots with their namespace |
 
 ## Roadmap
 [up](#table-of-contents)
 
 **Near term:**
 - Refactor `forge.js` — introduce type registry and root registry objects; Forge calls only registries
+- Split `forge.config.json` into `roots.json` and `types.json`; implement recursive namespace loader
 - Add `urlToFAL()` and `falToURL()` to all type handlers
 - Register first real types: `md`, `md-doc`, `doc-todolist`
 - Implement artifact CRUD: `forge_create`, `forge_delete`, `forge_move`, `forge_rename`
 - Implement block CRUD: `forge_write`, `forge_append`, `forge_insert`, `forge_delete_block`
 - Implement folder CRUD: `forge_mkdir`, `forge_rmdir`, `forge_mvdir`, `forge_rndir`
-- Registry viewer — HTML tool browsing roots, types, and artifacts via Forge
+- Registry viewer — HTML tool browsing roots, types, namespaces, and artifacts via Forge
 
 **Medium term:**
 - Absorb `local-server` — single process for MCP interface and static HTTP layer
@@ -547,36 +682,56 @@ Forge implements each tool by translating the MCP call into one or two registry 
 
 ## Changelog
 
+### Version 6.1 - Top-level error handler
+**Date:** 2026-06-07
+**Reason:** Error handling model specified — single top-level try/catch in the dispatcher; tools and handlers must throw, never return error objects.
+
+**Modifications:**
+- `## MCP tools`: Error handling paragraph added before the Implemented table
+
+---
+
+### Version 6.0 - Namespace model
+**Date:** 2026-06-07
+**Reason:** Design session — multi-project support via namespaces. Projects and libraries declare their own roots and types in separate registry files, loaded recursively at startup with a cumulative prefix. Collision detection at startup. KB remains the default namespace (no prefix).
+
+**Modifications:**
+- `## Quick Start`: namespace sentence added
+- `## Keywords`: `namespace`, `multiproject` added
+- `## Table of Contents`: entry `## Namespaces` added (section 9); subsequent sections renumbered
+- `## Key concepts`: Root and Type definitions updated — namespace prefix mentioned; Namespace entry added
+- `## Forge Artifact Locator FAL`: FAL syntax updated — namespace prefix noted for root and type names; Examples updated — namespaced and chained FAL examples added; Root registry and Type registry sub-sections updated — registry files replace MCP config as source
+- `## Type discovery`: hierarchy order note added — prefix stripped before computing specificity
+- `## Type handlers`: `urlToFAL`/`falToURL` note updated — handler uses local name, registry applies prefix
+- `## Registry`: Type registry internal structure updated — hashmap uses full prefixed names; collision check added; `discover()` step 4 added — namespace prefix prepended; sequence diagram updated — `local FAL name` + `prepend namespace prefix` step added; `forge_ls` root listing note added — `forge_roots_list` planned
+- `## Namespaces`: new section — why namespaces, declaration format, loading algorithm (recursive pseudocode), prefix rules, collision rule, FAL examples, portability note
+- `## Roots and configuration`: config split into `roots.json` + `types.json`; `forge.config.json` updated; `roots.json` example with `namespaces` array added; `types.json` example updated
+- `## MCP tools`: note updated — `:` as namespace separator mentioned; `forge_roots_list` added to planned registry tools; `forge_types_list` description updated
+- `## Roadmap`: near term updated — split config + recursive loader added as first step
+
+---
+
 ### Version 5.0 - Registry API and sequence diagrams
 **Date:** 2026-06-06
 **Reason:** Design session — registry layer fully specified as the only interface between Forge and handlers. FAL as a capsule encoding type + URL. Type registry and root registry APIs documented. Sequence diagrams added for forge_ls and forge_read. urlToFAL/falToURL added to type handler interface.
-
-**Modifications:**
-- `## Key concepts`: Handler definition updated — Forge never calls handlers directly
-- `## Forge Artifact Locator FAL`: new sub-section `FAL as a capsule` — explains type + URL encoding
-- `## Type discovery`: hierarchy order rule clarified — derived from type name length, no explicit config needed; Phase 2 outcome updated — urlToFAL() called on claim
-- `## Type handlers`: `urlToFAL()` and `falToURL()` added to interface; note added — Forge never calls handlers directly; `urlToFAL`/`falToURL` contract documented
-- `## Registry`: new section — type registry API, root registry API, dispatch mechanism, sequence diagrams (forge_ls with alt isFolder branch, forge_read)
-- `## MCP tools`: note added — Forge translates MCP calls into registry calls, no additional logic; forge_ls description updated
-- `## Roadmap`: near term updated — refactor forge.js with registry objects as first step
 
 ---
 
 ### Version 4.0 - Handler interfaces, block model, config fully specified
 **Date:** 2026-06-06
-**Reason:** Full revision following design review session — block separator unified to `#`, handler URLs in both registries, type registry externalised to a separate JSON file, block model clarified (order significant, content before children, readBlock returns own content only), listBlocks returns one level of full paths, insertBlock signature redesigned (after + firstChild), flat conflict explanation rewritten as two-phase discovery, configuration file updated with complete root and type examples.
+**Reason:** Full revision following design review session.
 
 ---
 
 ### Version 3.0 - Root handler, type handlers, type discovery rewritten
 **Date:** 2026-06-06
-**Reason:** Simplification of the design — handler interfaces fully specified, root handler and type handler separated into distinct sections, type discovery mechanism precisely described, block anonymous `""` introduced, MCP tools reorganised by concern, Roadmap updated.
+**Reason:** Simplification of the design.
 
 ---
 
 ### Version 2.0 - FAL, key concepts, type model, support model
 **Date:** 2026-06-06
-**Reason:** Realignment session — FAL introduced as primary addressing concept, registry of artifacts removed, support model clarified, type inheritance documented, handler identify() introduced, roots named.
+**Reason:** Realignment session.
 
 ---
 
