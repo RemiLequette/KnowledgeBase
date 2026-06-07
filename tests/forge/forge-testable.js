@@ -21,7 +21,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const FORGE_DIR = path.join(__dirname, '..');
+const FORGE_DIR = path.join(__dirname, '..', '..', 'public', 'tools', 'forge');
 const FIXTURES_DIR = path.join(__dirname, 'fixtures');
 
 export const testConfig = {

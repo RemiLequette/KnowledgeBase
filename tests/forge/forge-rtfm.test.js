@@ -107,21 +107,6 @@ await testAsync('forge_describe once unlocks all FALs of the same type', async (
   }
 });
 
-// @convention conventions/forge.md [section Type handlers / describe() — force flag]
-await testAsync('forge_describe with force=true resets the flag — subsequent read throws RTFM', async () => {
-  const { tr } = await makeRegistry();
-  tr.brandRegister(SAMPLE_FAL);
-  tr.describe(SAMPLE_FAL);
-  tr.describe(SAMPLE_FAL, true);
-  try {
-    await tr.read(SAMPLE_FAL, testConfig.roots);
-    assert.fail('Expected RTFM after force re-describe but read succeeded');
-  } catch (e) {
-    assert.strictEqual(e.message, RTFM_MSG,
-      `Expected RTFM after force re-describe, got: ${e.message}`);
-  }
-});
-
 // @convention conventions/forge.md [section Registry / Type registry — described flag]
 await testAsync('described flag starts as false for all types at load', async () => {
   const { tr } = await makeRegistry();

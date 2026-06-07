@@ -35,6 +35,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O11] guide-maintenance.md conformance | Non-compliant: French content, obsolete reference to Claude.md, informal structure. Bring into line with documentation.md before next audit. [effort: S]
 - [ ] [O23] forge_describe + describe() | Interface `describe()` dans les handlers, outil MCP `forge_describe(fal)`. Retourne structure de blocs + sémantique du type. Nécessaire pour exploiter md-doc. → **Specced in forge.md v6.3 — implement in forge.js** [effort: M]
 - [ ] [O43] forge Brand registry | Session-scoped in-memory set of issued FALs. Brand gate on forge_read/forge_write — rejects FALs not issued by Forge with hint. FALs registered by forge_ls and forge_mkdir. → **Specced in forge.md v6.4 — implement in forge.js** [effort: S]
+- [ ] [O44] forge_describe — retirer le paramètre force | `force=true` est de la cuisine interne des handlers dynamiques — ne doit pas être exposé comme paramètre MCP public. Retirer de forge.md, working-with-forge.md, forge-testable.js et forge.js. Identifié par les tests forge-rtfm 2026-06-07. [effort: XS]
 
 ## Normal
 
@@ -96,6 +97,15 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 4.4 - O44 forge_describe force parameter
+**Date:** 2026-06-07
+**Reason:** Test forge-rtfm revealed that force=true on forge_describe is internal handler plumbing, not a public MCP parameter.
+
+**Modifications:**
+- High priority: O44 ajouté
+
+---
 
 ### Version 4.3 - forge_create done
 **Date:** 2026-06-07

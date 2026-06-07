@@ -181,3 +181,54 @@
 2026-06-07T09:36:10.202Z [INFO] forge_read — 42779 chars
 2026-06-07T09:36:13.486Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/public/tools/forge/
 2026-06-07T09:36:16.244Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/public/tools/forge/tests/
+2026-06-07T09:40:41.771Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/forge/
+2026-06-07T09:40:41.773Z [ERROR] forge_ls error: Folder not found: C:\Users\RemiLequette\Development\with-claude\knowledgebase\tests\forge\
+2026-06-07T09:40:45.660Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/
+2026-06-07T09:40:48.296Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/forge-tests/
+2026-06-07T09:40:51.261Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/forge-tests/tests/
+2026-06-07T09:41:25.720Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge-tests/tests/forge-testable.js
+2026-06-07T09:41:25.721Z [INFO] forge_read — 7755 chars
+2026-06-07T09:41:28.156Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge-tests/tests/forge-rtfm.test.js
+2026-06-07T09:41:28.157Z [INFO] forge_read — 6105 chars
+2026-06-07T09:41:29.973Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge-tests/tests/forge-brand.test.js
+2026-06-07T09:41:29.974Z [INFO] forge_read — 4227 chars
+2026-06-07T09:42:26.648Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/forge-tests/tests/fixtures/
+2026-06-07T09:43:22.251Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/
+2026-06-07T09:43:24.113Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/tests/forge/
+2026-06-07T09:45:07.334Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/tests/forge/forge-testable.js, block: "", 7789 chars
+2026-06-07T09:45:07.337Z [INFO] forge_write — done
+2026-06-07T09:45:15.174Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/forge-types.json
+2026-06-07T09:45:15.181Z [INFO] forge_read — 1080 chars
+2026-06-07T09:45:26.686Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge/fixtures/sample.md
+2026-06-07T09:45:26.688Z [INFO] forge_read — 352 chars
+2026-06-07T09:45:58.599Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/tools/forge/package.json
+2026-06-07T09:45:58.601Z [INFO] forge_read — 210 chars
+2026-06-07T09:46:00.402Z [INFO] forge_ls — fal: forge://development/with-claude/knowledgebase/
+2026-06-07T09:46:04.081Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/md-doc.test.js
+2026-06-07T09:46:04.083Z [INFO] forge_read — 6192 chars
+2026-06-07T09:46:30.247Z [INFO] forge_create — fal: forge://development/with-claude/knowledgebase/tests/forge/package.json
+2026-06-07T09:46:30.251Z [INFO] forge_create — done
+2026-06-07T09:46:32.754Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/tests/forge/package.json, block: "", 70 chars
+2026-06-07T09:46:32.756Z [INFO] forge_write — done
+2026-06-07T09:50:22.801Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/tests/forge/forge-rtfm.test.js
+2026-06-07T09:50:22.802Z [INFO] forge_read — 6105 chars
+2026-06-07T09:50:38.328Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/tests/forge/forge-rtfm.test.js, block: "", 5508 chars
+2026-06-07T09:50:38.330Z [INFO] forge_write — done
+2026-06-07T09:50:41.337Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/TODO.md
+2026-06-07T09:50:41.344Z [INFO] forge_read — 12592 chars
+2026-06-07T09:51:49.440Z [INFO] forge_write — fal: forge://development/with-claude/knowledgebase/TODO.md, block: "", 13159 chars
+2026-06-07T09:51:49.443Z [INFO] forge_write — done
+2026-06-07T09:53:23.267Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/PROJECT.md
+2026-06-07T09:53:23.272Z [INFO] forge_read — 5201 chars
+2026-06-07T09:53:25.006Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/INDEX.md
+2026-06-07T09:53:25.013Z [INFO] forge_read — 22022 chars
+2026-06-07T09:53:27.929Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/guides/how-to-get-things-done.md
+2026-06-07T09:53:27.937Z [INFO] forge_read — 12485 chars
+2026-06-07T09:53:30.103Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/conventions/todo-list.md
+2026-06-07T09:53:30.109Z [INFO] forge_read — 9502 chars
+2026-06-07T09:53:33.203Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/TODO.md
+2026-06-07T09:53:33.203Z [INFO] forge_read — 13159 chars
+2026-06-07T09:53:37.770Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/conventions/forge.md
+2026-06-07T09:53:37.776Z [INFO] forge_read — 42779 chars
+2026-06-07T09:53:41.127Z [INFO] forge_read — fal: forge://development/with-claude/knowledgebase/public/guides/working-with-forge.md
+2026-06-07T09:53:41.133Z [INFO] forge_read — 9191 chars
