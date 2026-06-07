@@ -16,12 +16,12 @@
  * The typeName is passed by the TypeRegistry — required because the same
  * module may be registered under several type names.
  *
- * Implements the type handler interface (forge.md v5.1):
+ * Implements the type handler interface (forge.md v6.1):
  *   claim(url, typeName)    -> true if url ends with "." + typeName
  *   urlToFAL(url)           -> filename (original name unchanged)
  *   falToURL(falName, base) -> physical URL (base + falName)
- *   readBlock(url, block)   -> full file content (no block structure)
- *   writeBlock(url, block, content) -> write full file content (block ignored)
+ *   readBlock(url, block)   -> full file content (block must be "")
+ *   writeBlock(url, block, content) -> write full file content (block must be "")
  *   listBlocks, insertBlock, appendBlock, deleteBlock -> not implemented
  *
  * References:
@@ -34,7 +34,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 export const type = 'plain-text';
-export const version = '1.1';
+export const version = '1.2';
 
 // --- Type discovery ---
 
@@ -80,24 +80,26 @@ export function falToURL(falName, baseUrl) {
 
 /**
  * Read the full file content.
- * Block argument is ignored — plain-text has no block structure.
+ * Block argument must be "" — plain-text has no block structure.
  * @param {string} url - file:// URL
- * @param {string} _block - ignored
+ * @param {string} block - must be ""
  * @returns {Promise<string>} file content
  */
-export async function readBlock(url, _block = '') {
+export async function readBlock(url, block = '') {
+  if (block !== '') throw new Error(`plain-text type has no block structure — block must be "" (got "${block}")`);
   const filePath = fileURLToPath(url);
   return fs.readFileSync(filePath, 'utf8');
 }
 
 /**
  * Write the full file content.
- * Block argument is ignored — plain-text has no block structure.
+ * Block argument must be "" — plain-text has no block structure.
  * @param {string} url - file:// URL
- * @param {string} _block - ignored
+ * @param {string} block - must be ""
  * @param {string} content - new file content
  */
-export async function writeBlock(url, _block, content) {
+export async function writeBlock(url, block, content) {
+  if (block !== '') throw new Error(`plain-text type has no block structure — block must be "" (got "${block}")`);
   const filePath = fileURLToPath(url);
   fs.writeFileSync(filePath, content, 'utf8');
 }

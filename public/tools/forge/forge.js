@@ -2,7 +2,7 @@
 /**
  * forge.js
  *
- * Forge MCP server v2.1 — structured, typed access layer for all projects.
+ * Forge MCP server v2.2 — structured, typed access layer for all projects.
  * Replaces direct filesystem access with FAL-addressed typed artifacts.
  *
  * Architecture:
@@ -10,8 +10,13 @@
  *   - RootRegistry   — manages folder navigation per root
  *   Forge never calls handlers directly. All access goes through the registries.
  *
+ * Error handling:
+ *   Single top-level try/catch wraps the entire tool dispatcher.
+ *   Tools and handlers must always throw — never return error objects.
+ *   A tool may add its own try/catch only to enrich the error message before re-throwing.
+ *
  * References:
- *   - conventions/forge.md v5.1
+ *   - conventions/forge.md v6.1
  *   - conventions/tools.md
  */
 
@@ -392,7 +397,7 @@ try {
 // ---------------------------------------------------------------------------
 
 const server = new Server(
-  { name: 'forge', version: '2.1.0' },
+  { name: 'forge', version: '2.2.0' },
   { capabilities: { tools: {} } }
 );
 
@@ -444,93 +449,69 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
 
-  // --- forge_ping ---
-  if (name === 'forge_ping') {
-    log('INFO', 'forge_ping');
-    return { content: [{ type: 'text', text: 'pong — forge v2.1.0' }] };
-  }
-
-  // --- forge_ls ---
-  if (name === 'forge_ls') {
-    const fal = args?.fal;
-    log('INFO', `forge_ls — fal: ${fal || '(none)'}`);
-
-    if (!fal) {
-      const roots = config.roots.map(r => ({ name: r.name, url: r.url }));
-      return { content: [{ type: 'text', text: JSON.stringify({ roots }, null, 2) }] };
+  try {
+    // --- forge_ping ---
+    if (name === 'forge_ping') {
+      log('INFO', 'forge_ping');
+      return { content: [{ type: 'text', text: 'pong — forge v2.2.0' }] };
     }
 
-    if (!fal.endsWith('/')) {
-      return {
-        content: [{ type: 'text', text: JSON.stringify({ error: `forge_ls requires a folder FAL (ending with /). Got: ${fal}` }) }],
-        isError: true
-      };
-    }
+    // --- forge_ls ---
+    if (name === 'forge_ls') {
+      const fal = args?.fal;
+      log('INFO', `forge_ls — fal: ${fal || '(none)'}`);
 
-    try {
+      if (!fal) {
+        const roots = config.roots.map(r => ({ name: r.name, url: r.url }));
+        return { content: [{ type: 'text', text: JSON.stringify({ roots }, null, 2) }] };
+      }
+
+      if (!fal.endsWith('/')) {
+        throw new Error(`forge_ls requires a folder FAL (ending with /). Got: ${fal}`);
+      }
+
       const entries = await rootRegistry.list(fal, typeRegistry);
       return { content: [{ type: 'text', text: JSON.stringify({ fal, count: entries.length, entries }, null, 2) }] };
-    } catch (err) {
-      log('ERROR', `forge_ls error: ${err.message}`);
-      return { content: [{ type: 'text', text: JSON.stringify({ error: err.message }) }], isError: true };
-    }
-  }
-
-  // --- forge_read ---
-  if (name === 'forge_read') {
-    const { fal } = args;
-    log('INFO', `forge_read — fal: ${fal}`);
-
-    if (!fal || fal.endsWith('/')) {
-      return {
-        content: [{ type: 'text', text: JSON.stringify({ error: `forge_read requires an artifact FAL. Got: ${fal}` }) }],
-        isError: true
-      };
     }
 
-    try {
+    // --- forge_read ---
+    if (name === 'forge_read') {
+      const { fal } = args;
+      log('INFO', `forge_read — fal: ${fal}`);
+
+      if (!fal || fal.endsWith('/')) {
+        throw new Error(`forge_read requires an artifact FAL. Got: ${fal}`);
+      }
+
       const content = await typeRegistry.read(fal);
       log('INFO', `forge_read — ${content.length} chars`);
       return { content: [{ type: 'text', text: content }] };
-    } catch (err) {
-      log('ERROR', `forge_read error: ${err.message}`);
-      return { content: [{ type: 'text', text: JSON.stringify({ error: err.message }) }], isError: true };
-    }
-  }
-
-  // --- forge_write ---
-  if (name === 'forge_write') {
-    const { fal, block = '', content } = args;
-    log('INFO', `forge_write — fal: ${fal}, block: "${block}", ${content?.length ?? 0} chars`);
-
-    if (!fal || fal.endsWith('/')) {
-      return {
-        content: [{ type: 'text', text: JSON.stringify({ error: `forge_write requires an artifact FAL. Got: ${fal}` }) }],
-        isError: true
-      };
     }
 
-    if (content === undefined || content === null) {
-      return {
-        content: [{ type: 'text', text: JSON.stringify({ error: 'forge_write requires content.' }) }],
-        isError: true
-      };
-    }
+    // --- forge_write ---
+    if (name === 'forge_write') {
+      const { fal, block = '', content } = args;
+      log('INFO', `forge_write — fal: ${fal}, block: "${block}", ${content?.length ?? 0} chars`);
 
-    try {
+      if (!fal || fal.endsWith('/')) {
+        throw new Error(`forge_write requires an artifact FAL. Got: ${fal}`);
+      }
+
+      if (content === undefined || content === null) {
+        throw new Error('forge_write requires content.');
+      }
+
       await typeRegistry.write(fal, block, content);
       log('INFO', `forge_write — done`);
       return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, block, written: content.length }) }] };
-    } catch (err) {
-      log('ERROR', `forge_write error: ${err.message}`);
-      return { content: [{ type: 'text', text: JSON.stringify({ error: err.message }) }], isError: true };
     }
-  }
 
-  return {
-    content: [{ type: 'text', text: JSON.stringify({ error: `Unknown tool: ${name}` }) }],
-    isError: true
-  };
+    throw new Error(`Unknown tool: ${name}`);
+
+  } catch (err) {
+    log('ERROR', `${name} error: ${err.message}`);
+    return { content: [{ type: 'text', text: JSON.stringify({ error: err.message }) }], isError: true };
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -538,7 +519,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  log('INFO', 'Forge MCP server starting — v2.1.0');
+  log('INFO', 'Forge MCP server starting — v2.2.0');
   const transport = new StdioServerTransport();
   await server.connect(transport);
   log('INFO', 'Forge MCP server running on stdio');

@@ -1,6 +1,9 @@
 {
   "scripts": {
-    "test": "node tests/md-doc.test.js"
+    "test": "node tests/md-doc.test.js",
+    "test:forge:plain-text": "node tests/forge/plain-text.test.js",
+    "test:forge:file-root": "node tests/forge/file-root.test.js",
+    "test:forge": "node tests/forge/plain-text.test.js && node tests/forge/file-root.test.js"
   },
   "dependencies": {
     "marked": "^4.3.0"
