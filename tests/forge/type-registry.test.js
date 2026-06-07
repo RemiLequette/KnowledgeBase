@@ -63,30 +63,17 @@ await testAsync('brandRegistry empty at startup', async () => {
 
 // @convention conventions/forge.md [section Registry / Collision rule]
 await testAsync('load: duplicate type name → throws collision error', async () => {
-  // Build a types JSON with two entries sharing the same name.
-  // The handler URL points to the real structured-text.js so import() succeeds.
   const handlerUrl = pathToFileURL(
     path.resolve(FIXTURES_DIR, '..', '..', '..', 'public', 'tools', 'forge', 'handlers', 'structured-text.js')
   ).href;
-  const collisionTypes = {
-    version: '0.0.0-test',
-    types: {
-      'dup': { version: '1.0', handler: handlerUrl },
-      'dup-sub': { version: '1.0', handler: handlerUrl }  // registers 'dup-sub' first
-    }
-  };
-  // Write to sandbox, then manually inject a second 'dup-sub' after load by
-  // pre-seeding the registry — simulates what a collision JSON would trigger.
-  // Direct approach: pre-seed handlers then call load() on a single-type JSON.
   const singleType = { version: '0.0.0-test', types: { 'dup': { version: '1.0', handler: handlerUrl } } };
   sandboxCreate('collision-types.json', JSON.stringify(singleType));
   const typesUrl = pathToFileURL(path.join(FIXTURES_DIR, 'sandbox', 'collision-types.json')).href;
 
   const typeRegistry = new TypeRegistry();
-  await typeRegistry.load(typesUrl);                    // loads 'dup' — succeeds
-  typeRegistry.handlers.set('dup', { handler: {}, described: false, extension: '.dup' }); // pre-seed duplicate
+  await typeRegistry.load(typesUrl);
+  typeRegistry.handlers.set('dup', { handler: {}, described: false, extension: '.dup' });
 
-  // Second load of same file — 'dup' is already in handlers → must throw
   try {
     await typeRegistry.load(typesUrl);
     assert.fail('Expected collision error');
@@ -153,16 +140,12 @@ await testAsync('discover: js-managed claimed → js not evaluated in same hiera
 // @convention conventions/forge.md [section Type discovery — outcome: >1 claims]
 await testAsync('discover: two independent handlers claim same file → error', async () => {
   const { typeRegistry, rootRegistry } = await makeCtx();
-
-  // Inject a second independent handler that claims all .js files unconditionally.
-  // Placed in its own group (independent hierarchy) so both it and 'js'
-  // can claim the same file — triggering the >1 claims error.
   typeRegistry.handlers.set('js-rival', {
     handler: { claim: async (ref) => (ref.extension || '').toLowerCase() === '.js' },
     described: false,
     extension: '.js'
   });
-  typeRegistry.discoveryGroups.push(['js-rival']); // independent group
+  typeRegistry.discoveryGroups.push(['js-rival']);
 
   try {
     await typeRegistry.discover(SAMPLE_PLAIN_URLREF, rootRegistry);
@@ -273,23 +256,27 @@ await testAsync('createArtifact requires no gates', async () => {
 // -------------------------------------------------------------------------
 // shebang — readBlock strips / writeBlock restores / createArtifact prepends
 // Physical extension for js-managed is .js (entry.extension = "js" in forge-types.json)
+//
+// Note (v3.0): readBlock("") on a type with block grammar returns the anonymous
+// root block content — i.e. the content BEFORE the first separator, not the
+// full file body. To verify that named block content is accessible, use a
+// named block (e.g. "imports").
 // -------------------------------------------------------------------------
 
 await testAsync('readBlock on js-managed strips shebang line', async () => {
   const { typeRegistry, rootRegistry } = await makeCtx();
-  // sample-managed.js is a .js file with shebang — discovered as js-managed
   const ref = artifactRef('sample-managed', 'js-managed');
   const fal = toFAL(ref);
   brand(fal);
   typeRegistry.describe(ref);
-  const content = await typeRegistry.read(ref, rootRegistry);
+  // Read a named block — shebang must not appear, content must be present
+  const content = await typeRegistry.read(ref, rootRegistry, 'imports');
   assert.ok(!content.startsWith('// @forge-type:'), 'shebang should be stripped');
-  assert.ok(content.includes('imports') || content.includes('helpers'), 'body should be present');
+  assert.ok(content.includes('import'), `block body should be present, got: ${content}`);
 });
 
 await testAsync('writeBlock on js-managed restores shebang', async () => {
   const { typeRegistry, rootRegistry } = await makeCtx();
-  // Physical file: sandbox/sandbox-managed.js
   const ref = artifactRef('sandbox-managed', 'js-managed', 'sandbox');
   const fal = toFAL(ref);
   sandboxCreate('sandbox-managed.js', '// @forge-type: js-managed\noriginal');
@@ -304,7 +291,6 @@ await testAsync('writeBlock on js-managed restores shebang', async () => {
 
 await testAsync('createArtifact on js-managed writes shebang as first line', async () => {
   const { typeRegistry, rootRegistry } = await makeCtx();
-  // Physical file: sandbox/new-managed.js
   const ref = artifactRef('new-managed', 'js-managed', 'sandbox');
   sandboxClean('new-managed.js');
   await typeRegistry.createArtifact(ref, rootRegistry);

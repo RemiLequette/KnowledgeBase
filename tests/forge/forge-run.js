@@ -21,6 +21,7 @@ const ALL_TESTS = [
   'forge-fal.test.js',
   'file-root.test.js',
   'plain-text.test.js',
+  'structured-text.test.js',
   'type-registry.test.js',
   'forge-rtfm.test.js',
   'forge-brand.test.js',

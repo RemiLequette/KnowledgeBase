@@ -48,7 +48,9 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O28] Best practices → todo.md reference | Vérifier que guides/best-practices.md référence la convention todo.md.
 - [ ] [O37] Spec forge_write — vérification bloc | Documenter dans forge.md : (1) tout handler doit vérifier l'existence du bloc avant writeBlock et lever une erreur si absent ; (2) un AI Assistant doit appeler listBlocks avant tout forge_write sur un bloc nommé. [effort: S]
 - [ ] [O40] gitignore logs dans project-structure.md | Ajouter dans `conventions/project-structure.md` la règle : tout projet inclut un `.gitignore` avec `*.log`. Auditable en regardant le .gitignore — c'est une convention.
-- [ ] [O44] js-managed handler spec | Spec temporaire dans `tmp/js-managed-type-spec.md` — type handler pour fichiers JS découpés en blocs nommés avec séparateurs `====[ nom ]====` et shebang `// @forge-type: js-managed`. Découpage des fichiers Forge src/ identifié. À promouvoir en spec forge.md + implémenter. [effort: M]
+- [ ] [O47] Convention structured-text.md | Documenter le mécanisme générique structured-text.js : matchName, grammaire blocks.separators, repeat, récursion, template, createArtifact squelette. Inclure les types instanciés dans la KB (js-managed, md-structured, doc-todolist) avec leur descripteur JSON et leur grammaire expliquée. Ajouter trigger dans INDEX.md. [effort: M]
+- [ ] [O48] forge_read batch + sous-arbre | forge_read(fal, blocks=[]) — lire plusieurs blocs en un appel. forge_read(fal, block, depth=∞) — retourner un bloc + tous ses enfants récursivement. Réduit les allers-retours pour les lectures multi-blocs. [effort: M]
+- [ ] [O49] forge_ls récursif avec tailles | forge_ls(fal, depth=N) — arborescence complète jusqu'à profondeur N. Chaque entrée inclut size (caractères ou lignes) pour orienter la lecture sans ouvrir les blocs. [effort: S]
 
 ## Low priority
 
@@ -57,7 +59,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O15] Multilingual document support | `documentation.md` and `md-doc` assume English as the only language. Projects in another language (e.g. French) currently work around this with a language exception declaration but `md-doc` rejects non-English TOC headings. Define a proper multilingual support model. Dépend de md-doc handler. Constaté sur guideIA 2026-06-05.
 - [ ] [O16] Add Design document type | Add Design document to taxonomy in documentation-style.md. Define style, WWH obligations, examples. Deferred 2026-06-03.
 - [ ] [O20] Guides as frameworks not constraints | KB guides describe recommended practice, not mandatory procedure. The human decides. The AI suggests, never enforces. Document this principle — potentially in best-practices.md or as a guide preamble convention.
-- [ ] [O21] AI best practices mirror human best practices | Develop the idea that effective collaboration practices with an AI resemble those with a human collaborator — clear intent, defined scope, explicit feedback, clean closure. Potentially a section in best-practices.md or a standalone guide.
+- [ ] [O21] AI best practices mirror human best practices | Develop the idea that effective collaboration practices with an AI resemble those with a common collaborator — clear intent, defined scope, explicit feedback, clean closure. Potentially a section in best-practices.md or a standalone guide.
 - [ ] [O25] js-clean handler | Type handler pour fichiers JS maîtrisés. Shebang `// @forge-type: js-clean` en première ligne. Blocs par fonction `fn:<name>`, sections `// ---`. Dépend de md-doc handler. [effort: L]
 - [ ] [O26] INDEX conventions/ table restructured by concept | The table is organized by file — restructure around concepts, making filenames secondary. Non-trivial refactor. [effort: M]
 - [ ] [O29] Rename artifact scripts to English | ouvrir-revision.js → open-revision.js, cloturer-revision.js → close-revision.js. Update references in artifact.md.
@@ -72,7 +74,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## WIP
 
-- [ ] [WIP] [W1] Forge — driver générique + discover hierarchy | structured-text.js v2.0 : shebang claim + strip/restore. type-registry.js : discover par groupes hiérarchiques, multi-claim → erreur, entry.extension override. forge-types.json v0.6.0 : js-managed avec shebang + extension. Tests type-registry.test.js enrichis. Prochaines étapes : (1) lancer tests, (2) O44 blocs js-managed, (3) O24 md-doc handler. [effort: L]
+- [ ] [WIP] [W1] structured-text.js v3.0 — grammaire blocs | structured-text.js v3.0 : matchName, grammaire blocks.separators (regex, repeat, récursion, template), listBlocks, readBlock/writeBlock par nom, createArtifact squelette. forge-types.json v0.8.0 : js-managed avec blocks, md-structured, doc-todolist. Tests structured-text.test.js : 34 tests, 134/0 suite complète. Prochaines étapes : (1) O47 convention structured-text.md, (2) O24 md-doc handler. [effort: L]
 - [ ] [WIP] [W3] Namespace model — spec forge.md v6.0 | Modèle namespace conçu et documenté dans forge.md v6.0. Prochaines étapes : (1) split forge.config.json → roots.json + types.json, (2) implémenter le loader récursif dans forge.js. [effort: M]
 
 ## Done
@@ -93,7 +95,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [x] [D14] forge.md v7.0 — clean architecture | ArtifactRef, UrlRef, IRootRegistry, Brand before RTFM, force removed. forge.md v7.0 + working-with-forge.md v1.3.
 - [x] [D15] forge.js modularisation | forge.js split into src/logger.js, src/type-registry.js, src/root-registry.js, src/mcp-tools.js. forge.js reduced to entry point + re-exports. All test imports unchanged.
 - [x] [D16] Tests consolidés + O8 forge_read header | Tests migrés dans knowledgebase/tests/forge/. forge-testable.js déprécié. parseFAL unifié. Gates Brand+RTFM dans TypeRegistry. discover filtre par extension. forge-run.js + CLI + REPL. O8 implémenté.
-- [x] [D17] O23 forge_describe | forge_describe implémenté dans mcp-tools.js. TypeRegistry.describe() gère default + described flag. Testé. describe() dans les handlers structurés sera implémenté au moment de chaque handler (O24, O44).
+- [x] [D17] O23 forge_describe | forge_describe implémenté dans mcp-tools.js. TypeRegistry.describe() gère default + described flag. Testé.
+- [x] [D18] structured-text.js v3.0 — grammaire blocs | matchName, blocks.separators (regex, repeat, récursion, template), listBlocks, readBlock/writeBlock nommés, createArtifact squelette. forge-types.json v0.8.0. O44 couvert par le mécanisme générique.
 
 ## Index
 
@@ -101,6 +104,17 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 5.0 - structured-text.js v3.0 done + nouveaux items
+**Date:** 2026-06-07
+**Reason:** Session grammaire blocs — structured-text.js v3.0 livré, 134 tests passent. O44 couvert par le mécanisme générique (fermé via D18). Nouveaux items O47/O48/O49.
+
+**Modifications:**
+- Normal: O44 retiré (couvert par D18) ; O47 (convention structured-text.md), O48 (forge_read batch+sous-arbre), O49 (forge_ls récursif+tailles) ajoutés
+- WIP: W1 mis à jour — résumé v3.0 + prochaines étapes
+- Done: D18 ajouté
+
+---
 
 ### Version 4.9 - Driver générique enrichi + O45/O46
 **Date:** 2026-06-07
@@ -114,13 +128,6 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ### Version 4.8 - O23 fermé
 **Date:** 2026-06-07
-**Reason:** forge_describe entièrement implémenté et testé dans forge + TypeRegistry. describe() dans les handlers structurés est une sous-tâche de O24/O44, pas un item autonome. O23 retiré du backlog. O24 dépendance "forge_describe implémenté" supprimée.
-
-**Modifications:**
-- High priority: O23 retiré
-- Normal: O24 — mention dépendance forge_describe supprimée
-- WIP: W1 mis à jour — O23 retiré des prochaines étapes
-- Done: D17 ajouté
 
 ---
 

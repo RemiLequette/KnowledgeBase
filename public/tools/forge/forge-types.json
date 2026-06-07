@@ -1,5 +1,5 @@
 {
-  "version": "0.7.0",
+  "version": "0.8.0",
   "types": {
     "txt": {
       "version": "1.0",
@@ -20,7 +20,88 @@
       "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
       "description": "a managed JavaScript source file with named blocks",
       "extension": "js",
-      "shebang": "// @forge-type: js-managed"
+      "shebang": "// @forge-type: js-managed",
+      "blocks": {
+        "separators": [
+          {
+            "type": "regex",
+            "pattern": "^// ====\\[ (.+?) \\]====$",
+            "nameGroup": 1,
+            "repeat": "+"
+          }
+        ]
+      }
+    },
+    "md-structured": {
+      "version": "1.0",
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
+      "description": "a structured Markdown document with named sections",
+      "blocks": {
+        "separators": [
+          {
+            "type": "regex",
+            "pattern": "^## (.+)$",
+            "nameGroup": 1,
+            "name": "Changelog",
+            "repeat": 1,
+            "template": "## {name}",
+            "blocks": {
+              "separators": [
+                {
+                  "type": "regex",
+                  "pattern": "^### (.+)$",
+                  "nameGroup": 1,
+                  "repeat": "*",
+                  "template": "### {name}"
+                }
+              ]
+            }
+          },
+          {
+            "type": "regex",
+            "pattern": "^## (.+)$",
+            "nameGroup": 1,
+            "repeat": "+",
+            "template": "## {name}"
+          }
+        ]
+      }
+    },
+    "doc-todolist": {
+      "version": "1.0",
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
+      "description": "a TODO list document",
+      "matchName": "^TODO$",
+      "blocks": {
+        "separators": [
+          {
+            "type": "regex",
+            "pattern": "^## (.+)$",
+            "nameGroup": 1,
+            "name": "Changelog",
+            "repeat": 1,
+            "template": "## {name}",
+            "blocks": {
+              "separators": [
+                {
+                  "type": "regex",
+                  "pattern": "^### (.+)$",
+                  "nameGroup": 1,
+                  "repeat": "*",
+                  "template": "### {name}"
+                }
+              ]
+            }
+          },
+          {
+            "type": "regex",
+            "pattern": "^## (.+)$",
+            "nameGroup": 1,
+            "repeat": "+",
+            "template": "## {name}"
+          }
+        ]
+      }
     },
     "json": {
       "version": "1.0",
