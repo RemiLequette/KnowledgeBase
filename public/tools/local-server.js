@@ -4,6 +4,17 @@
  * Pure HTTP wrapper over tools/lib/server-core.js.
  * No business logic — reads, writes, deletes, and lists files only.
  *
+ * Also exposes:
+ *   POST /forge        — proxy to the Forge MCP dispatcher
+ *   POST /forge-reload — hot-reload Forge registries from JSON config
+ *
+ * Forge is loaded via dynamic import() at startup (forge.js is ESM).
+ * TypeRegistry and RootRegistry come from forge.js re-exports.
+ * dispatch() is imported directly from src/mcp-tools.js (not re-exported by forge.js).
+ * Hot-reload reconstructs TypeRegistry + RootRegistry from the JSON files.
+ * Handler JS modules are NOT reloaded (ESM cache) — only registry JSON changes
+ * are picked up.
+ *
  * Usage:
  *   node tools/local-server.js <root1> [<root2> ...] [--port <port>]
  *
@@ -84,6 +95,69 @@ function readBody(req) {
 }
 
 // ---------------------------------------------------------------------------
+// Forge proxy
+// TypeRegistry + RootRegistry from forge.js re-exports.
+// dispatch() imported directly from src/mcp-tools.js (not re-exported by forge.js).
+// forgeCtx is replaced on every reload.
+// ---------------------------------------------------------------------------
+
+let forgeCtx        = null;
+let forgeMod        = null; // { TypeRegistry, RootRegistry } from forge.js
+let forgeDispatch   = null; // dispatch() from src/mcp-tools.js
+let forgeConfigPath = null;
+
+async function loadForgeMods() {
+  if (forgeMod && forgeDispatch) return;
+
+  const forgeDir    = path.resolve(__dirname, 'forge');
+  const forgeJsUrl  = 'file:///' + path.join(forgeDir, 'forge.js').replace(/\\/g, '/');
+  const mcpToolsUrl = 'file:///' + path.join(forgeDir, 'src', 'mcp-tools.js').replace(/\\/g, '/');
+
+  const [mod, toolsMod] = await Promise.all([
+    import(forgeJsUrl),
+    import(mcpToolsUrl)
+  ]);
+
+  forgeMod        = mod;               // .TypeRegistry, .RootRegistry
+  forgeDispatch   = toolsMod.dispatch;
+  forgeConfigPath = path.join(forgeDir, 'forge.config.json');
+}
+
+async function reloadForge() {
+  const fs = require('fs');
+
+  await loadForgeMods();
+
+  const { TypeRegistry, RootRegistry } = forgeMod;
+
+  if (!fs.existsSync(forgeConfigPath)) {
+    throw new Error(`forge.config.json not found at ${forgeConfigPath}`);
+  }
+
+  const config       = JSON.parse(fs.readFileSync(forgeConfigPath, 'utf8'));
+  const typeRegistry = new TypeRegistry();
+  const rootRegistry = new RootRegistry();
+
+  await typeRegistry.load(config.types);
+  await rootRegistry.load(config.roots);
+
+  forgeCtx = { typeRegistry, rootRegistry, config, dispatch: forgeDispatch };
+
+  const types = [...typeRegistry.handlers.keys()];
+  const roots = config.roots.map(r => r.name);
+  return { types, roots };
+}
+
+async function initForge() {
+  try {
+    const { types, roots } = await reloadForge();
+    console.log(`[forge] Forge proxy ready — ${roots.length} root(s): ${roots.join(', ')} — ${types.length} type(s): ${types.join(', ')}`);
+  } catch (err) {
+    console.warn('[forge] Could not initialise Forge proxy: ' + err.message);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Router
 // ---------------------------------------------------------------------------
 
@@ -102,6 +176,41 @@ const server = http.createServer(async (req, res) => {
   // GET /ping
   if (method === 'GET' && pathname === '/ping') {
     return send(res, 200, { ok: true });
+  }
+
+  // POST /forge — Forge tool proxy
+  if (method === 'POST' && pathname === '/forge') {
+    if (!forgeCtx) {
+      return send(res, 503, { error: 'Forge proxy not available' });
+    }
+    let body;
+    try {
+      body = JSON.parse(await readBody(req));
+    } catch {
+      return send(res, 400, { error: 'Invalid JSON body' });
+    }
+    const { tool, args: toolArgs = {} } = body;
+    if (!tool) {
+      return send(res, 400, { error: 'Missing field: tool' });
+    }
+    try {
+      const result = await forgeCtx.dispatch(tool, toolArgs, forgeCtx);
+      return send(res, 200, result);
+    } catch (err) {
+      return send(res, 500, { error: err.message });
+    }
+  }
+
+  // POST /forge-reload — hot-reload Forge registries from JSON
+  if (method === 'POST' && pathname === '/forge-reload') {
+    try {
+      const { types, roots } = await reloadForge();
+      console.log(`[forge] Reloaded — ${roots.length} root(s), ${types.length} type(s)`);
+      return send(res, 200, { ok: true, roots, types });
+    } catch (err) {
+      console.warn('[forge] Reload failed: ' + err.message);
+      return send(res, 500, { error: err.message });
+    }
   }
 
   // /file — read, write, delete
@@ -141,7 +250,6 @@ const server = http.createServer(async (req, res) => {
 
   // GET /* — static file serving (absolute path in URL)
   if (method === 'GET') {
-    // Strip leading slash to get the absolute path (e.g. /C:/Users/... -> C:/Users/...)
     const filePath = decodeURIComponent(pathname.replace(/^\//, ''));
     const result   = core.readFile(filePath, allowedRoots);
     return sendResult(res, result, contentTypeFor(filePath));
@@ -154,7 +262,7 @@ const server = http.createServer(async (req, res) => {
 // Start
 // ---------------------------------------------------------------------------
 
-server.listen(PORT, '127.0.0.1', () => {
+server.listen(PORT, '127.0.0.1', async () => {
   console.log('');
   console.log('Local server started on http://localhost:' + PORT);
   console.log('Allowed roots:');
@@ -162,6 +270,8 @@ server.listen(PORT, '127.0.0.1', () => {
   console.log('');
   console.log('Ctrl+C to stop.');
   console.log('');
+
+  await initForge();
 });
 
 server.on('error', err => {

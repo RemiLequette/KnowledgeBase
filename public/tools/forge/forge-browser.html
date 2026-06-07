@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forge Browser</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #1a1d23;
+    --surface:   #22262e;
+    --border:    #2e3340;
+    --accent:    #5b8dee;
+    --accent2:   #3ecf8e;
+    --text:      #cdd5e0;
+    --muted:     #6b7a99;
+    --hover:     #2a2f3d;
+    --selected:  #1e3a5f;
+    --error:     #e05c6b;
+    --folder:    #e0c45c;
+    --file-md:   #5b8dee;
+    --file-js:   #f0c040;
+    --file-json: #3ecf8e;
+    --file-html: #e07a5c;
+    --file-def:  #8899bb;
+    --radius:    6px;
+    --font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    --font-ui:   -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 13px; }
+
+  /* ── Layout ── */
+  #app     { display: flex; flex-direction: column; height: 100vh; }
+  #header  { display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  #main    { display: flex; flex: 1; overflow: hidden; }
+
+  /* Sidebar */
+  #sidebar         { width: 300px; min-width: 180px; max-width: 600px; display: flex; flex-direction: column; border-right: 1px solid var(--border); background: var(--surface); overflow: hidden; flex-shrink: 0; }
+  #sidebar-toolbar { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  #sidebar-toolbar span { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; flex: 1; }
+  #tree            { flex: 1; overflow-y: auto; padding: 4px 0; min-height: 60px; }
+
+  /* Vertical resizer */
+  #v-resizer       { height: 4px; cursor: row-resize; background: var(--border); flex-shrink: 0; transition: background .15s; }
+  #v-resizer:hover, #v-resizer.dragging { background: var(--accent); }
+
+  /* Info panel */
+  #info-panel      { flex-shrink: 0; overflow-y: auto; background: var(--bg); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; min-height: 40px; }
+  #info-fal        { font-family: var(--font-mono); font-size: 11px; color: var(--accent); word-break: break-all; line-height: 1.5; }
+  #info-fal.folder { color: var(--folder); }
+  #info-desc       { font-size: 11px; color: var(--muted); line-height: 1.6; }
+  #info-caps       { display: flex; gap: 5px; flex-wrap: wrap; }
+  .cap-badge       { font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border); color: var(--muted); }
+  .cap-badge.on    { border-color: var(--accent2); color: var(--accent2); }
+  #info-empty      { font-size: 11px; color: var(--border); font-style: italic; }
+
+  /* Horizontal resizer */
+  #resizer { width: 4px; cursor: col-resize; background: var(--border); flex-shrink: 0; transition: background .15s; }
+  #resizer:hover, #resizer.dragging { background: var(--accent); }
+
+  /* Content */
+  #content         { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
+  #content-toolbar { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
+  #content-fal     { font-family: var(--font-mono); font-size: 11px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #content-type-tag { font-size: 11px; background: var(--border); padding: 1px 7px; border-radius: 10px; color: var(--text); flex-shrink: 0; display: none; }
+  #content-body    { flex: 1; overflow-y: auto; }
+
+  /* Header */
+  #logo        { font-weight: 700; font-size: 15px; color: var(--accent); letter-spacing: .5px; white-space: nowrap; }
+  #fal-display { flex: 1; font-family: var(--font-mono); font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #status-dot  { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  #status-dot.ok    { background: var(--accent2); }
+  #status-dot.error { background: var(--error); }
+  #status-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  /* Buttons + custom tooltip */
+  .tb-btn { position: relative; background: none; border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); padding: 2px 8px; font-size: 11px; cursor: pointer; transition: background .15s; white-space: nowrap; }
+  .tb-btn:hover    { background: var(--hover); }
+  .tb-btn.active   { border-color: var(--accent); color: var(--accent); }
+  .tb-btn:disabled { opacity: .45; cursor: default; }
+
+  /* Tooltip — shown via data-tip attribute */
+  .tb-btn[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0d0f14;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px 8px;
+    font-size: 11px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity .15s;
+    z-index: 200;
+  }
+  .tb-btn[data-tip]:hover::after { opacity: 1; }
+
+  /* Tree rows */
+  .tree-row    { display: flex; align-items: center; gap: 4px; padding: 3px 8px 3px 0; cursor: pointer; white-space: nowrap; overflow: hidden; }
+  .tree-row:hover    { background: var(--hover); }
+  .tree-row.selected { background: var(--selected); }
+  .tree-indent { flex-shrink: 0; display: inline-block; }
+  .tree-toggle { width: 14px; flex-shrink: 0; font-size: 9px; color: var(--muted); text-align: center; }
+  .tree-icon   { font-size: 13px; flex-shrink: 0; }
+  .tree-label  { overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
+  .tree-tag    { font-size: 10px; color: var(--muted); margin-left: 4px; flex-shrink: 0; padding: 0 4px; background: var(--border); border-radius: 3px; }
+
+  /* Raw text */
+  #content-pre { margin: 0; padding: 18px 20px; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-word; }
+
+  /* Markdown */
+  #content-md  { padding: 20px 28px; max-width: 820px; line-height: 1.7; }
+  #content-md h1 { font-size: 1.6em; margin: .4em 0 .4em; color: #eaf0ff; border-bottom: 1px solid var(--border); padding-bottom: .3em; }
+  #content-md h2 { font-size: 1.25em; margin: 1.2em 0 .3em; color: #d0daee; border-bottom: 1px solid var(--border); padding-bottom: .2em; }
+  #content-md h3 { font-size: 1.05em; margin: .9em 0 .25em; color: var(--text); }
+  #content-md h4 { font-size: .95em; margin: .8em 0 .2em; color: var(--muted); }
+  #content-md p  { margin: .45em 0; }
+  #content-md ul, #content-md ol { margin: .3em 0 .3em 1.4em; }
+  #content-md li { margin: .15em 0; }
+  #content-md code { font-family: var(--font-mono); font-size: .88em; background: var(--surface); padding: 1px 5px; border-radius: 3px; color: #b8d4ff; }
+  #content-md pre  { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; overflow-x: auto; margin: .7em 0; }
+  #content-md pre code { background: none; padding: 0; color: var(--text); font-size: .9em; }
+  #content-md table { border-collapse: collapse; margin: .7em 0; width: 100%; font-size: .92em; }
+  #content-md th, #content-md td { border: 1px solid var(--border); padding: 4px 10px; text-align: left; }
+  #content-md th { background: var(--surface); color: var(--accent); }
+  #content-md a  { color: var(--accent); text-decoration: none; }
+  #content-md a:hover { text-decoration: underline; }
+  #content-md blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); margin: .5em 0; }
+  #content-md hr { border: none; border-top: 1px solid var(--border); margin: 1em 0; }
+  #content-md strong { color: #e0e8ff; }
+
+  /* Toast */
+  #toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%) translateY(20px);
+           background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+           padding: 7px 16px; font-size: 12px; color: var(--text); opacity: 0;
+           transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; z-index: 100; }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.ok   { border-color: var(--accent2); color: var(--accent2); }
+  #toast.err  { border-color: var(--error);   color: var(--error); }
+
+  /* States */
+  .state-msg { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px; color: var(--muted); font-size: 13px; text-align: center; padding: 20px; }
+  .state-msg .icon { font-size: 2.2em; }
+  .state-msg.err   { color: var(--error); }
+  .spinner { width: 22px; height: 22px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="header">
+    <span id="logo">⬡ Forge Browser</span>
+    <span id="fal-display">—</span>
+    <span id="status-dot"></span>
+    <span id="status-label">connecting…</span>
+  </div>
+
+  <div id="main">
+
+    <div id="sidebar">
+      <div id="sidebar-toolbar">
+        <span>Navigator</span>
+        <button class="tb-btn" id="btn-reload-registry"
+                data-tip="Reload roots &amp; types from forge.config.json — picks up JSON changes without restarting the server">⟳ Reload</button>
+        <button class="tb-btn" id="btn-refresh"
+                data-tip="Reset the tree and re-fetch all roots from Forge">↺ Reset</button>
+        <button class="tb-btn" id="btn-raw"
+                data-tip="Toggle between rendered Markdown and raw source text">Raw</button>
+      </div>
+      <div id="tree"></div>
+      <div id="v-resizer"></div>
+      <div id="info-panel">
+        <div id="info-empty">— no selection —</div>
+      </div>
+    </div>
+
+    <div id="resizer"></div>
+
+    <div id="content">
+      <div id="content-toolbar">
+        <span id="content-fal">—</span>
+        <span id="content-type-tag"></span>
+      </div>
+      <div id="content-body">
+        <div class="state-msg">
+          <span class="icon">⬡</span>
+          <span>Select a file in the navigator</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+const SERVER = 'http://localhost:3000';
+const LS_KEY = 'forge-browser-state';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════════════════════════════════════
+
+const Persist = {
+  load() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY) || 'null') || {}; }
+    catch { return {}; }
+  },
+  save(patch) {
+    try {
+      const cur = this.load();
+      localStorage.setItem(LS_KEY, JSON.stringify({ ...cur, ...patch }));
+    } catch {}
+  },
+  openFolders() {
+    const open = [];
+    for (const [fal, node] of tree.entries()) {
+      if (node.entry?.type === 'folder' && node.open) open.push(fal);
+    }
+    return open;
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FORGE CLIENT
+// ═══════════════════════════════════════════════════════════════════════════
+
+const Forge = {
+  _described: new Set(),
+  _describeCache: new Map(),
+
+  async _call(tool, args = {}) {
+    const res  = await fetch(`${SERVER}/forge`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ tool, args })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const text = data.content?.[0]?.text ?? JSON.stringify(data);
+    let parsed;
+    try { parsed = JSON.parse(text); } catch { parsed = text; }
+    if (data.isError || (parsed && parsed.error)) throw new Error(parsed?.error ?? text);
+    return parsed;
+  },
+
+  async ping()  { return this._call('forge_ping'); },
+  async ls(fal) { return this._call('forge_ls', fal ? { fal } : {}); },
+
+  async describe(fal) {
+    if (this._describeCache.has(fal)) return this._describeCache.get(fal);
+    const r = await this._call('forge_describe', { fal });
+    this._described.add(_typeOf(fal));
+    this._describeCache.set(fal, r);
+    return r;
+  },
+
+  async read(fal) {
+    if (!this._described.has(_typeOf(fal))) await this.describe(fal);
+    const raw = await this._call('forge_read', { fal });
+    return typeof raw === 'string' ? raw : JSON.stringify(raw, null, 2);
+  },
+
+  async reloadRegistry() {
+    const res  = await fetch(`${SERVER}/forge-reload`, { method: 'POST' });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
+    this._described.clear();
+    this._describeCache.clear();
+    return data;
+  }
+};
+
+function _typeOf(fal) {
+  const m = fal.match(/\.([^./#+\s]+)(?:[#/]|$)/);
+  return m ? m[1] : fal;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
+
+let rawMode     = false;
+let selectedFal = null;
+const tree      = new Map();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STATUS + TOAST
+// ═══════════════════════════════════════════════════════════════════════════
+
+function setStatus(state, label) {
+  document.getElementById('status-dot').className     = state;
+  document.getElementById('status-label').textContent = label;
+}
+
+let _toastTimer = null;
+function toast(msg, kind = 'ok', ms = 3000) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = `show ${kind}`;
+  if (_toastTimer) clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { el.className = ''; }, ms);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INFO PANEL
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function updateInfoPanel(fal, type) {
+  const panel = document.getElementById('info-panel');
+  panel.innerHTML = '';
+
+  const falEl = document.createElement('div');
+  falEl.id        = 'info-fal';
+  falEl.className = type === 'folder' ? 'folder' : '';
+  falEl.textContent = fal;
+  panel.appendChild(falEl);
+
+  if (type === 'folder' || type === 'undefined') return;
+
+  let desc;
+  try { desc = await Forge.describe(fal); }
+  catch { return; }
+
+  if (desc.recognition) {
+    const d = document.createElement('div');
+    d.id = 'info-desc'; d.textContent = desc.recognition;
+    panel.appendChild(d);
+  }
+
+  if (desc.capabilities) {
+    const caps = document.createElement('div');
+    caps.id = 'info-caps';
+    const c = desc.capabilities;
+    [['read', c.read], ['write', c.write], ['blocks', c.blocks]].forEach(([name, on]) => {
+      const b = document.createElement('span');
+      b.className = 'cap-badge' + (on ? ' on' : '');
+      b.textContent = name;
+      caps.appendChild(b);
+    });
+    panel.appendChild(caps);
+  }
+
+  if (desc.usage) {
+    const u = document.createElement('div');
+    u.id = 'info-desc';
+    u.style.color    = 'var(--border)';
+    u.style.fontSize = '10px';
+    u.textContent    = desc.usage;
+    panel.appendChild(u);
+  }
+}
+
+function clearInfoPanel() {
+  document.getElementById('info-panel').innerHTML = '<div id="info-empty">— no selection —</div>';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TREE RENDERING
+// ═══════════════════════════════════════════════════════════════════════════
+
+function fileIcon(fal, type) {
+  if (type === 'folder') return '📁';
+  return { md:'📄', js:'📜', json:'🔧', html:'🌐', css:'🎨', txt:'📃' }[_typeOf(fal)] || '📃';
+}
+
+function fileColor(fal, type) {
+  if (type === 'folder') return 'var(--folder)';
+  return { md:'var(--file-md)', js:'var(--file-js)', json:'var(--file-json)', html:'var(--file-html)' }[_typeOf(fal)] || 'var(--file-def)';
+}
+
+function shortName(fal) { return fal.replace(/\/$/, '').split('/').pop() || fal; }
+
+function buildTreeDOM(container, parentKey, depth) {
+  const parent = tree.get(parentKey);
+  if (!parent) return;
+  for (const childFal of parent.children) {
+    const node = tree.get(childFal);
+    if (!node) continue;
+    const { entry } = node;
+    const isFolder  = entry.type === 'folder';
+    const ext       = isFolder ? '' : _typeOf(childFal);
+
+    const row = document.createElement('div');
+    row.className   = 'tree-row' + (childFal === selectedFal ? ' selected' : '');
+    row.dataset.fal = childFal;
+
+    const ind = document.createElement('span');
+    ind.className = 'tree-indent';
+    ind.style.width = (depth * 14 + 6) + 'px';
+    row.appendChild(ind);
+
+    const tog = document.createElement('span');
+    tog.className   = 'tree-toggle';
+    tog.textContent = isFolder ? (node.open ? '▾' : '▸') : '';
+    row.appendChild(tog);
+
+    const ico = document.createElement('span');
+    ico.className   = 'tree-icon';
+    ico.textContent = node.loading ? '⏳' : fileIcon(childFal, entry.type);
+    row.appendChild(ico);
+
+    const lbl = document.createElement('span');
+    lbl.className   = 'tree-label';
+    lbl.textContent = shortName(childFal);
+    lbl.style.color = fileColor(childFal, entry.type);
+    row.appendChild(lbl);
+
+    if (!isFolder && ext && ext !== 'undefined') {
+      const tag = document.createElement('span');
+      tag.className   = 'tree-tag';
+      tag.textContent = ext;
+      row.appendChild(tag);
+    }
+
+    row.addEventListener('click', () => onRowClick(childFal));
+    container.appendChild(row);
+    if (isFolder && node.open) buildTreeDOM(container, childFal, depth + 1);
+  }
+}
+
+function renderTree() {
+  const el = document.getElementById('tree');
+  el.innerHTML = '';
+  buildTreeDOM(el, '__roots__', 0);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TREE LOADING
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function loadRoots() {
+  const data  = await Forge.ls();
+  const roots = data.roots || [];
+  tree.set('__roots__', { children: [] });
+  for (const r of roots) {
+    const fal = `forge://${r.name}/`;
+    tree.set(fal, { entry: { fal, type: 'folder' }, open: false, loaded: false, loading: false, children: [] });
+    tree.get('__roots__').children.push(fal);
+  }
+  renderTree();
+}
+
+async function loadChildren(fal) {
+  const node = tree.get(fal);
+  if (!node) return;
+  node.loading = true; renderTree();
+  try {
+    const data    = await Forge.ls(fal);
+    const entries = data.entries || [];
+    node.children = [];
+    for (const e of entries) {
+      if (!tree.has(e.fal)) tree.set(e.fal, { entry: e, open: false, loaded: false, loading: false, children: [] });
+      node.children.push(e.fal);
+    }
+    node.loaded = true;
+  } finally { node.loading = false; renderTree(); }
+}
+
+async function restoreOpenFolders(openFals) {
+  for (const fal of openFals) {
+    const node = tree.get(fal);
+    if (!node || node.entry.type !== 'folder') continue;
+    node.open = true;
+    if (!node.loaded) await loadChildren(fal);
+  }
+  renderTree();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ROW CLICK
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function onRowClick(fal) {
+  const node = tree.get(fal);
+  if (!node) return;
+  selectedFal = fal;
+  document.getElementById('fal-display').textContent = fal;
+  updateInfoPanel(fal, node.entry.type);
+  if (node.entry.type === 'folder') {
+    node.open = !node.open;
+    if (node.open && !node.loaded) await loadChildren(fal);
+    else renderTree();
+    Persist.save({ openFolders: Persist.openFolders() });
+  } else {
+    renderTree();
+    Persist.save({ selectedFal: fal, openFolders: Persist.openFolders() });
+    await showFile(fal, node.entry.type);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONTENT PANEL
+// ═══════════════════════════════════════════════════════════════════════════
+
+function setContentHeader(fal, type) {
+  document.getElementById('content-fal').textContent = fal;
+  const tag = document.getElementById('content-type-tag');
+  if (type && type !== 'folder' && type !== 'undefined') { tag.textContent = type; tag.style.display = ''; }
+  else tag.style.display = 'none';
+}
+
+function setBody(html) { document.getElementById('content-body').innerHTML = html; }
+function showSpinner()  { setBody('<div class="state-msg"><div class="spinner"></div><span>Loading…</span></div>'); }
+function showMsg(icon, text, cls = '') { setBody(`<div class="state-msg ${cls}"><span class="icon">${icon}</span><span>${text}</span></div>`); }
+
+async function showFile(fal, type) {
+  setContentHeader(fal, type);
+  if (type === 'undefined') { showMsg('🚫', 'Type <em>undefined</em> — no handler for this artifact.'); return; }
+  showSpinner();
+  let raw;
+  try { raw = await Forge.read(fal); }
+  catch (err) { showMsg('⚠', escHtml(err.message), 'err'); return; }
+  const text = raw.replace(/^\[fal:[^\]]*\]\n/, '');
+  const body = document.getElementById('content-body');
+  if (!rawMode && type === 'md') {
+    const div = document.createElement('div');
+    div.id = 'content-md'; div.innerHTML = renderMarkdown(text);
+    body.innerHTML = ''; body.appendChild(div);
+  } else {
+    const pre = document.createElement('pre');
+    pre.id = 'content-pre'; pre.textContent = text;
+    body.innerHTML = ''; body.appendChild(pre);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// MARKDOWN RENDERER
+// ═══════════════════════════════════════════════════════════════════════════
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderMarkdown(src) {
+  const lines = src.split('\n'), out = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (line.match(/^```/)) {
+      const lang = escHtml(line.slice(3).trim()), code = [];
+      i++;
+      while (i < lines.length && !lines[i].match(/^```/)) { code.push(escHtml(lines[i])); i++; }
+      i++;
+      out.push(`<pre><code class="lang-${lang}">${code.join('\n')}</code></pre>`);
+      continue;
+    }
+    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+      const rows = [];
+      while (i < lines.length && lines[i].trim().startsWith('|')) { rows.push(lines[i].trim()); i++; }
+      const data = rows.filter(r => !/^\|[\s|:-]+\|$/.test(r));
+      if (data.length) {
+        const cells = r => r.slice(1,-1).split('|').map(c => inlineMarkdown(c.trim()));
+        const thead = `<thead><tr>${cells(data[0]).map(c=>`<th>${c}</th>`).join('')}</tr></thead>`;
+        const tbody = data.slice(1).map(r=>`<tr>${cells(r).map(c=>`<td>${c}</td>`).join('')}</tr>`).join('');
+        out.push(`<table>${thead}<tbody>${tbody}</tbody></table>`);
+      }
+      continue;
+    }
+    if (/^---+\s*$/.test(line.trim())) { out.push('<hr>'); i++; continue; }
+    const hm = line.match(/^(#{1,6})\s+(.*)/);
+    if (hm) {
+      const n = hm[1].length, id = hm[2].toLowerCase().replace(/\s+/g,'-').replace(/[^\w-]/g,'');
+      out.push(`<h${n} id="${id}">${inlineMarkdown(hm[2])}</h${n}>`); i++; continue;
+    }
+    if (line.startsWith('> ')) {
+      const bq = [];
+      while (i < lines.length && lines[i].startsWith('> ')) { bq.push(lines[i].slice(2)); i++; }
+      out.push(`<blockquote>${bq.map(inlineMarkdown).join('<br>')}</blockquote>`); continue;
+    }
+    if (/^(\s*)[-*]\s/.test(line) || /^\d+\.\s/.test(line)) {
+      const items = [], ord = /^\d+\./.test(line);
+      while (i < lines.length && (/^(\s*)[-*]\s/.test(lines[i]) || /^\d+\.\s/.test(lines[i]))) {
+        const t = lines[i].replace(/^(\s*)[-*]\s+/,'').replace(/^\d+\.\s+/,'');
+        const ck = t.match(/^\[([ x])\]\s+(.*)/i);
+        items.push(ck ? `<li style="list-style:none">${ck[1]==='x'?'✅':'☐'} ${inlineMarkdown(ck[2])}</li>`
+                      : `<li>${inlineMarkdown(t)}</li>`);
+        i++;
+      }
+      out.push(`<${ord?'ol':'ul'}>${items.join('')}</${ord?'ol':'ul'}>`); continue;
+    }
+    if (line.trim() === '') { out.push(''); i++; continue; }
+    out.push(`<p>${inlineMarkdown(line)}</p>`); i++;
+  }
+  return out.join('\n');
+}
+
+function inlineMarkdown(s) {
+  let t = escHtml(s);
+  t = t.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  t = t.replace(/__(.+?)__/g,     '<strong>$1</strong>');
+  t = t.replace(/\*(.+?)\*/g,     '<em>$1</em>');
+  t = t.replace(/_([^_]+)_/g,     '<em>$1</em>');
+  t = t.replace(/`([^`]+)`/g,     '<code>$1</code>');
+  t = t.replace(/~~(.+?)~~/g,     '<del>$1</del>');
+  t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+  return t;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RESIZERS
+// ═══════════════════════════════════════════════════════════════════════════
+
+(function initResizers() {
+  const saved = Persist.load();
+
+  // Horizontal
+  const hResizer = document.getElementById('resizer');
+  const sidebar  = document.getElementById('sidebar');
+  if (saved.sidebarWidth) sidebar.style.width = saved.sidebarWidth + 'px';
+  let hDrag = false, hX0 = 0, hW0 = 0;
+  hResizer.addEventListener('mousedown', e => {
+    hDrag = true; hX0 = e.clientX; hW0 = sidebar.offsetWidth;
+    hResizer.classList.add('dragging');
+    document.body.style.cssText += 'cursor:col-resize;user-select:none';
+  });
+  document.addEventListener('mousemove', e => {
+    if (!hDrag) return;
+    sidebar.style.width = Math.max(180, Math.min(600, hW0 + e.clientX - hX0)) + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!hDrag) return;
+    hDrag = false; hResizer.classList.remove('dragging');
+    document.body.style.cursor = ''; document.body.style.userSelect = '';
+    Persist.save({ sidebarWidth: sidebar.offsetWidth });
+  });
+
+  // Vertical
+  const vResizer  = document.getElementById('v-resizer');
+  const infoPanel = document.getElementById('info-panel');
+  infoPanel.style.height = (saved.infoPanelHeight || 120) + 'px';
+  let vDrag = false, vY0 = 0, vH0 = 0;
+  vResizer.addEventListener('mousedown', e => {
+    vDrag = true; vY0 = e.clientY; vH0 = infoPanel.offsetHeight;
+    vResizer.classList.add('dragging');
+    document.body.style.cssText += 'cursor:row-resize;user-select:none';
+  });
+  document.addEventListener('mousemove', e => {
+    if (!vDrag) return;
+    infoPanel.style.height = Math.max(40, Math.min(400, vH0 - (e.clientY - vY0))) + 'px';
+  });
+  document.addEventListener('mouseup', () => {
+    if (!vDrag) return;
+    vDrag = false; vResizer.classList.remove('dragging');
+    document.body.style.cursor = ''; document.body.style.userSelect = '';
+    Persist.save({ infoPanelHeight: infoPanel.offsetHeight });
+  });
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TOOLBAR BUTTONS
+// ═══════════════════════════════════════════════════════════════════════════
+
+document.getElementById('btn-reload-registry').addEventListener('click', async function () {
+  const btn = this;
+  btn.disabled = true; btn.textContent = '⟳ …';
+  setStatus('', 'reloading registry…');
+  try {
+    const result = await Forge.reloadRegistry();
+    tree.clear(); selectedFal = null;
+    document.getElementById('fal-display').textContent = '—';
+    setContentHeader('—', null);
+    showMsg('⬡', 'Select a file in the navigator');
+    clearInfoPanel();
+    Persist.save({ openFolders: [], selectedFal: null });
+    await loadRoots();
+    setStatus('ok', 'Forge ready');
+    toast(`Registry reloaded — ${result.roots.length} root(s), ${result.types.length} type(s)`, 'ok');
+  } catch (err) {
+    setStatus('error', 'Reload failed');
+    toast(`Reload failed: ${err.message}`, 'err', 5000);
+  } finally {
+    btn.disabled = false; btn.textContent = '⟳ Reload';
+  }
+});
+
+document.getElementById('btn-refresh').addEventListener('click', async () => {
+  tree.clear(); Forge._described.clear(); Forge._describeCache.clear();
+  selectedFal = null;
+  document.getElementById('fal-display').textContent = '—';
+  setContentHeader('—', null);
+  showMsg('⬡', 'Select a file in the navigator');
+  clearInfoPanel();
+  Persist.save({ openFolders: [], selectedFal: null });
+  try {
+    setStatus('', 'refreshing…');
+    await loadRoots();
+    setStatus('ok', 'Forge ready');
+  } catch (err) { setStatus('error', err.message); }
+});
+
+document.getElementById('btn-raw').addEventListener('click', async () => {
+  rawMode = !rawMode;
+  const btn = document.getElementById('btn-raw');
+  btn.textContent = rawMode ? 'Rendered' : 'Raw';
+  btn.setAttribute('data-tip', rawMode
+    ? 'Switch back to rendered Markdown view'
+    : 'Toggle between rendered Markdown and raw source text');
+  btn.classList.toggle('active', rawMode);
+  Persist.save({ rawMode });
+  if (selectedFal) {
+    const node = tree.get(selectedFal);
+    if (node && node.entry.type !== 'folder') await showFile(selectedFal, node.entry.type);
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function boot() {
+  try { await fetch(`${SERVER}/ping`); }
+  catch {
+    setStatus('error', 'Server unreachable');
+    showMsg('⚠', 'Local server not running.<br>Start: <code>node tools/local-server.js &lt;root&gt;</code>', 'err');
+    return;
+  }
+  try { await Forge.ping(); setStatus('ok', 'Forge ready'); }
+  catch (err) {
+    setStatus('error', 'Forge proxy unavailable');
+    showMsg('⚠', `Forge proxy error: ${escHtml(err.message)}`, 'err');
+    return;
+  }
+
+  const saved = Persist.load();
+  if (saved.rawMode) {
+    rawMode = true;
+    const btn = document.getElementById('btn-raw');
+    btn.textContent = 'Rendered';
+    btn.setAttribute('data-tip', 'Switch back to rendered Markdown view');
+    btn.classList.add('active');
+  }
+
+  try {
+    await loadRoots();
+    if (saved.openFolders?.length) await restoreOpenFolders(saved.openFolders);
+    if (saved.selectedFal) {
+      const node = tree.get(saved.selectedFal);
+      if (node && node.entry.type !== 'folder') {
+        selectedFal = saved.selectedFal;
+        document.getElementById('fal-display').textContent = selectedFal;
+        renderTree();
+        updateInfoPanel(selectedFal, node.entry.type);
+        await showFile(selectedFal, node.entry.type);
+      }
+    }
+  } catch (err) {
+    setStatus('error', 'Failed to load roots');
+    showMsg('⚠', escHtml(err.message), 'err');
+  }
+}
+
+boot();
+</script>
+</body>
+</html>

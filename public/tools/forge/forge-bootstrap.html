@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Forge Browser — Bootstrap</title>
+<style>
+  body {
+    font-family: monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background: #1a1d23;
+    color: #cdd5e0;
+  }
+  .msg { font-size: 13px; color: #6b7a99; text-align: center; line-height: 1.8; }
+  .msg a { color: #5b8dee; }
+  .msg strong { color: #cdd5e0; }
+</style>
+</head>
+<body>
+<div class="msg" id="msg">Checking server…</div>
+<script>
+  const SERVER   = 'http://localhost:3000';
+  const BROWSER  = 'C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/forge-browser.html';
+  const APP_URL  = `${SERVER}/${BROWSER}`;
+
+  fetch(`${SERVER}/ping`)
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok) window.location.href = APP_URL;
+      else throw new Error();
+    })
+    .catch(() => {
+      document.getElementById('msg').innerHTML =
+        'Start <strong>start-server.bat</strong> before opening this file.' +
+        '<br><br>Once running, <a href="' + APP_URL + '">click here</a> or reload.';
+    });
+</script>
+</body>
+</html>
