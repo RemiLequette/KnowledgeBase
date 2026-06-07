@@ -13,40 +13,53 @@
  * init(entry) returns a handler object with a closure on the type configuration.
  * One handler object per type name — no shared mutable state.
  *
- * v1.0 — plain-text behaviour only (no block structure yet).
+ * v2.0 — shebang claim strategy + shebang strip/restore on read/write/create.
  *
  * Configuration via init(entry):
- *   entry.name        — type name, used to derive the claimed extension
+ *   entry.name        — type name
  *   entry.description — optional human-readable description for forge_describe
+ *   entry.shebang     — optional shebang string (e.g. "// @forge-type: js-managed")
+ *                       If present: claim = extension match AND first line === shebang
+ *                       If absent:  claim = extension match only (sync)
  *
- * Claim strategy: extension-only — matches urlRef.extension === '.' + typeName.
- * No file content inspection in this version.
+ * Shebang contract:
+ *   readBlock("")      — returns content WITHOUT the shebang line
+ *   writeBlock("", c)  — prepends shebang + newline before writing
+ *   createArtifact     — creates file with shebang + newline as initial content
+ *                        (create via rootRegistry.create, then write shebang via rootRegistry.write)
  *
  * References:
- *   - conventions/forge.md v7.1 [section Type handlers]
+ *   - conventions/forge.md v7.2 [section Type handlers]
  *   - tmp/driver-design-notes.md
+ *   - tmp/js-managed-type-spec.md
  */
 
 export const type    = 'structured-text';
-export const version = '1.0';
+export const version = '2.0';
 
 /**
  * Factory — called once per type name at startup by the type registry.
- * Returns a handler object with its own closure on typeName/extension/description.
+ * Returns a handler object with its own closure on typeName/extension/shebang/description.
  *
- * @param {{ name: string, version: string, handler: string, description?: string }} entry
+ * @param {{ name: string, version: string, handler: string, description?: string, shebang?: string }} entry
  * @returns {object} handler
  */
 export async function init(entry) {
   const typeName    = entry.name;
-  const extension   = '.' + entry.name;
+  const extension   = '.' + (entry.extension || entry.name);
   const description = entry.description || '';
+  const shebang     = entry.shebang || null;
 
   // ---- claim ----
 
-  function claim(urlRef) {
+  async function claim(urlRef, rootRegistry) {
     const ext = (urlRef.extension || '').toLowerCase();
-    return ext === extension.toLowerCase();
+    if (ext !== extension.toLowerCase()) return false;
+    if (!shebang) return true;
+    // shebang strategy — read first line
+    const content   = await rootRegistry.read(urlRef);
+    const firstLine = content.split('\n')[0];
+    return firstLine === shebang;
   }
 
   // ---- describe ----
@@ -68,7 +81,11 @@ export async function init(entry) {
     if (block !== '') {
       throw new Error(`${typeName}: no block structure — block must be "" (got "${block}")`);
     }
-    return rootRegistry.read(urlRef);
+    const content = await rootRegistry.read(urlRef);
+    if (!shebang) return content;
+    // Strip shebang line (first line) from returned content
+    const nl = content.indexOf('\n');
+    return nl === -1 ? '' : content.slice(nl + 1);
   }
 
   // ---- write-block ----
@@ -77,7 +94,8 @@ export async function init(entry) {
     if (block !== '') {
       throw new Error(`${typeName}: no block structure — block must be "" (got "${block}")`);
     }
-    return rootRegistry.write(urlRef, content);
+    const toWrite = shebang ? shebang + '\n' + content : content;
+    return rootRegistry.write(urlRef, toWrite);
   }
 
   // ---- list-blocks ----
@@ -107,7 +125,10 @@ export async function init(entry) {
   // ---- create-artifact ----
 
   async function createArtifact(urlRef, rootRegistry) {
-    return rootRegistry.create(urlRef);
+    await rootRegistry.create(urlRef);           // creates empty file
+    if (shebang) {
+      await rootRegistry.write(urlRef, shebang + '\n'); // write shebang as initial content
+    }
   }
 
   // ---- delete-artifact ----

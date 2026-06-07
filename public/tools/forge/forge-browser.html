@@ -470,6 +470,10 @@ async function loadChildren(fal) {
       node.children.push(e.fal);
     }
     node.loaded = true;
+  } catch (err) {
+    node.open = false;
+    showMsg('⚠', escHtml(err.message), 'err');
+    toast(err.message, 'err', 6000);
   } finally { node.loading = false; renderTree(); }
 }
 
@@ -478,7 +482,10 @@ async function restoreOpenFolders(openFals) {
     const node = tree.get(fal);
     if (!node || node.entry.type !== 'folder') continue;
     node.open = true;
-    if (!node.loaded) await loadChildren(fal);
+    if (!node.loaded) {
+      try { await loadChildren(fal); }
+      catch { node.open = false; }
+    }
   }
   renderTree();
 }
@@ -495,8 +502,10 @@ async function onRowClick(fal) {
   updateInfoPanel(fal, node.entry.type);
   if (node.entry.type === 'folder') {
     node.open = !node.open;
-    if (node.open && !node.loaded) await loadChildren(fal);
-    else renderTree();
+    if (node.open && !node.loaded) {
+      try { await loadChildren(fal); }
+      catch (err) { node.open = false; renderTree(); return; }
+    } else { renderTree(); }
     Persist.save({ openFolders: Persist.openFolders() });
   } else {
     renderTree();

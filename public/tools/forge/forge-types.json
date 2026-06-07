@@ -1,5 +1,5 @@
 {
-  "version": "0.5.0",
+  "version": "0.7.0",
   "types": {
     "txt": {
       "version": "1.0",
@@ -14,6 +14,13 @@
       "version": "1.0",
       "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
       "description": "a JavaScript source file"
+    },
+    "js-managed": {
+      "version": "1.0",
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
+      "description": "a managed JavaScript source file with named blocks",
+      "extension": "js",
+      "shebang": "// @forge-type: js-managed"
     },
     "json": {
       "version": "1.0",

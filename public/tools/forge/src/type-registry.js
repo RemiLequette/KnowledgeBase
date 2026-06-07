@@ -14,6 +14,10 @@ import { toFAL } from './fal.js';
  * Manages artifact types, discovery, describe, and artifact operations.
  * handlers Map: typeName → { handler: object, described: boolean, extension: string }
  *
+ * The physical file extension stored per handler entry is derived from:
+ *   entry.extension (if present in forge-types.json) — allows js-managed to map to .js
+ *   '.' + typeName  (default fallback)
+ *
  * Gates (Brand + RTFM) are enforced here on read/write — brand.js provides
  * the checks, fal.js provides toFAL for FAL reconstruction.
  *
@@ -30,8 +34,8 @@ export class TypeRegistry {
   constructor() {
     /** @type {Map<string, { handler: object, described: boolean, extension: string }>} */
     this.handlers = new Map();
-    /** @type {string[]} type names sorted by specificity (descending segment count) */
-    this.discoveryOrder = [];
+    /** @type {string[][]} type names grouped by hierarchy, each group sorted most-specific first */
+    this.discoveryGroups = [];
   }
 
 // ====[ load ]====
@@ -42,29 +46,26 @@ export class TypeRegistry {
     const registry = JSON.parse(fs.readFileSync(typesPath, 'utf8'));
 
     for (const [typeName, entry] of Object.entries(registry.types)) {
+      // @convention conventions/forge.md [section Registry / Collision rule]
+      if (this.handlers.has(typeName)) {
+        throw new Error(`Type name collision: '${typeName}' is already registered`);
+      }
       try {
-        const mod     = await import(entry.handler);
-        const result  = mod.init ? await mod.init({ name: typeName, ...entry }) : undefined;
-        const handler = (result && typeof result === 'object') ? result : mod;
-        this.handlers.set(typeName, {
-          handler,
-          described: false,
-          extension: '.' + typeName
-        });
-        log('INFO', `Type handler loaded: ${typeName} v${entry.version}`);
+        const mod       = await import(entry.handler);
+        const result    = mod.init ? await mod.init({ name: typeName, ...entry }) : undefined;
+        const handler   = (result && typeof result === 'object') ? result : mod;
+        // Physical file extension: explicit entry.extension takes precedence over typeName
+        const extension = entry.extension ? '.' + entry.extension : '.' + typeName;
+        this.handlers.set(typeName, { handler, described: false, extension });
+        log('INFO', `Type handler loaded: ${typeName} v${entry.version} (ext: ${extension})`);
       } catch (err) {
         log('ERROR', `Failed to load handler for type '${typeName}': ${err.message}`);
       }
     }
 
-    this.discoveryOrder = [...this.handlers.keys()].sort((a, b) => {
-      const segA = a.split('-').length;
-      const segB = b.split('-').length;
-      if (segB !== segA) return segB - segA;
-      return a.localeCompare(b);
-    });
+    this.discoveryGroups = _buildDiscoveryGroups([...this.handlers.keys()]);
 
-    log('INFO', `TypeRegistry loaded — ${this.handlers.size} types, order: ${this.discoveryOrder.join(', ')}`);
+    log('INFO', `TypeRegistry loaded — ${this.handlers.size} types, groups: ${this.discoveryGroups.map(g => '[' + g.join(',') + ']').join(' ')}`);
   }
 
 // ====[ ref-conversion ]====
@@ -105,26 +106,38 @@ export class TypeRegistry {
   /**
    * Discover the type of a UrlRef and return an ArtifactRef.
    *
-   * Discovery runs in two phases per handler:
-   *   1. Extension pre-filter — skip handlers whose registered extension
-   *      does not match urlRef.extension. This prevents a generic handler
-   *      (e.g. plain-text claiming .css) from shadowing the correct one (md).
-   *   2. claim(urlRef, rootRegistry) — handler may inspect content (shebang etc.)
-   *      claim() may be async — always awaited.
+   * Discovery runs per hierarchy group:
+   *   - Within a hierarchy (e.g. js-managed, js): stop at first claim.
+   *     More specific handlers are evaluated first (more segments = more specific).
+   *   - Between independent hierarchies: all groups are evaluated.
+   *   - More than one group claims the same UrlRef → error.
+   *
+   * claim() may be async — always awaited.
    *
    * Does NOT touch the Brand registry — caller (mcp-tools) is responsible.
+   *
+   * @convention conventions/forge.md [section Type discovery]
    */
   async discover(urlRef, rootRegistry) {
-    const ext = (urlRef.extension || '').toLowerCase();
-    for (const typeName of this.discoveryOrder) {
-      const entry = this.handlers.get(typeName);
-      // Pre-filter: skip if registered extension does not match
-      if (entry.extension.toLowerCase() !== ext) continue;
-      if (entry.handler.claim && await entry.handler.claim(urlRef, rootRegistry)) {
-        return { root: urlRef.root, path: urlRef.path, name: urlRef.name, type: typeName };
+    const claimed = [];
+
+    for (const group of this.discoveryGroups) {
+      for (const typeName of group) {
+        const entry = this.handlers.get(typeName);
+        if (entry.handler.claim && await entry.handler.claim(urlRef, rootRegistry)) {
+          claimed.push(typeName);
+          break; // stop within this hierarchy
+        }
       }
     }
-    return { root: urlRef.root, path: urlRef.path, name: urlRef.name, type: 'undefined' };
+
+    if (claimed.length === 0) {
+      return { root: urlRef.root, path: urlRef.path, name: urlRef.name, type: 'undefined' };
+    }
+    if (claimed.length > 1) {
+      throw new Error(`Multiple independent handlers claimed "${urlRef.name}${urlRef.extension}": ${claimed.join(', ')}`);
+    }
+    return { root: urlRef.root, path: urlRef.path, name: urlRef.name, type: claimed[0] };
   }
 
 // ====[ describe ]====
@@ -185,4 +198,44 @@ export class TypeRegistry {
     const urlRef = this.artifactRefToUrlRef(ref);
     return handler.createArtifact(urlRef, rootRegistry);
   }
+}
+
+// ====[ discovery-groups ]====
+
+/**
+ * Build discovery groups from a list of type names.
+ *
+ * Types sharing a common prefix form a hierarchy (e.g. "js" and "js-managed").
+ * A type B is in the hierarchy of type A if B starts with A + "-".
+ * Within a group, types are sorted most-specific first (descending segment count).
+ * Groups are independent hierarchies — all evaluated during discovery.
+ *
+ * @param {string[]} typeNames
+ * @returns {string[][]} array of groups, each group sorted most-specific first
+ */
+function _buildDiscoveryGroups(typeNames) {
+  function rootOf(name) {
+    const segments = name.split('-');
+    for (let i = 1; i < segments.length; i++) {
+      const prefix = segments.slice(0, i).join('-');
+      if (typeNames.includes(prefix)) return prefix;
+    }
+    return name;
+  }
+
+  const groups = new Map();
+  for (const name of typeNames) {
+    const root = rootOf(name);
+    if (!groups.has(root)) groups.set(root, []);
+    groups.get(root).push(name);
+  }
+
+  for (const group of groups.values()) {
+    group.sort((a, b) => {
+      const diff = b.split('-').length - a.split('-').length;
+      return diff !== 0 ? diff : a.localeCompare(b);
+    });
+  }
+
+  return [...groups.values()];
 }

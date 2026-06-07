@@ -67,10 +67,12 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O33] Write a WWH design session guide | Document the method for designing a tool or feature using WWH: how to structure Why/What/How, how to iterate, when to update conventions before coding. Based on the todo-tool design session 2026-06-04.
 - [ ] [O41] Forge — registry viewer | Build a viewer artifact for the forge registry (roots, types, artifacts) — using forge to read itself via `forge_ls`. HTML tool or React artifact.
 - [ ] [O42] Separate KB public/ to own repo | Move public/ to a standalone repository, independent from the KB Maintenance project. [effort: L]
+- [ ] [O45] Forge editor — rename forge-browser.html | Rename `forge-browser.html` to `forge-editor.html` to reflect its expanded role. [effort: XS]
+- [ ] [O46] Forge editor — add forge_create | Add artifact creation (forge_create) to the Forge editor tool. [effort: S]
 
 ## WIP
 
-- [ ] [WIP] [W1] Forge — modularisation + gates + O8 done | forge.md v7.0 specced. src/ modules implémentés (fal, brand, type-registry, root-registry, mcp-tools). parseFAL unifié dossiers+artefacts. Gates Brand+RTFM dans TypeRegistry.read/write. O8 forge_read retourne FAL+header. Tests consolidés dans knowledgebase/tests/forge/ — forge-run.js, CLI, REPL. Prochaines étapes : (1) O43 Brand registry audit contra spec v7.0, (2) O24 md-doc handler, (3) O44 js-managed handler. [effort: L]
+- [ ] [WIP] [W1] Forge — driver générique + discover hierarchy | structured-text.js v2.0 : shebang claim + strip/restore. type-registry.js : discover par groupes hiérarchiques, multi-claim → erreur, entry.extension override. forge-types.json v0.6.0 : js-managed avec shebang + extension. Tests type-registry.test.js enrichis. Prochaines étapes : (1) lancer tests, (2) O44 blocs js-managed, (3) O24 md-doc handler. [effort: L]
 - [ ] [WIP] [W3] Namespace model — spec forge.md v6.0 | Modèle namespace conçu et documenté dans forge.md v6.0. Prochaines étapes : (1) split forge.config.json → roots.json + types.json, (2) implémenter le loader récursif dans forge.js. [effort: M]
 
 ## Done
@@ -99,6 +101,16 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 4.9 - Driver générique enrichi + O45/O46
+**Date:** 2026-06-07
+**Reason:** Session enrichissement structured-text.js — shebang claim, strip/restore, discover hierarchy.
+
+**Modifications:**
+- Low priority: O45 (rename forge-browser → forge-editor) + O46 (forge_create dans l'éditeur) ajoutés
+- WIP: W1 mis à jour — résumé session + prochaines étapes
+
+---
 
 ### Version 4.8 - O23 fermé
 **Date:** 2026-06-07
