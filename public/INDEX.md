@@ -82,6 +82,7 @@ Use Forge to read all KB documents — `forge_read(fal)`.
 | Auditing a project for conformance | `guides/audit-process.md` |
 | Updating a guide file | `guides/guide-maintenance.md` |
 | Building or setting up the HTML todo list tool | `guides/todo-tool.md`, `conventions/todo-list.md`, `conventions/local-server.md` |
+| Using Forge to read or write artifacts, first session with Forge | `guides/working-with-forge.md` |
 
 
 ---
@@ -112,6 +113,7 @@ Rules and patterns governing how something is done. A convention leaves a trace 
 | tools.md | Node.js script-based tools — when to use, structure, standard interface (args, stdout, exit codes), invocation via commands MCP, output rules, catalogue. | tools, scripts, node, automation, token-efficiency, commands-mcp, cross-project |
 | todo-list.md | Lightweight backlog for any project — format, states, archiving, AI Assistant role. Two files: TODO.md (active) + TODO-archive.md (done). | todo, backlog, tasks, priority, archiving, session |
 | project-structure.md | Canonical structure for any Claude project — folder layout, mandatory files, Claude project instructions template, bootstrap chain. | project-structure, claude-project, instructions, template, bootstrap, scaffold |
+| forge.md | Internal spec for the Forge MCP server — architecture, FAL syntax, type handlers, registry, namespaces. | forge, MCP, FAL, handler, registry, namespace, RTFM, internal-spec |
 
 ---
 
@@ -127,6 +129,7 @@ Step-by-step processes for specific operations. A guide leaves a trace in the pr
 | guide-maintenance.md | Standards for maintaining all guides: update Table of Contents and Changelog with every modification. Required for all guides (project-setup, best-practices, audit-process). | maintenance, guides, documentation, changelog, discoverability, traceability, standards |
 | how-to-get-things-done.md | Practical framework for running effective AI-assisted working sessions — session model (chat = session), three phases (scoping, execution, closure), anti-patterns. | working-session, productivity, scoping, closure, WIP, todo, chat, log |
 | todo-tool.md | Guide for the HTML tool that reads and writes TODO.md via the local server — rationale, conceptual model, architecture (bootstrap, transaction model, file access). | todo-tool, HTML, local-server, bootstrap, transaction, synchronization, todo |
+| working-with-forge.md | Operational guide for AI Assistants using Forge — FAL concept, RTFM workflow (describe before read/write), tool reference, common patterns. | forge, FAL, RTFM, forge_describe, forge_read, forge_write, AI-assistant, session |
 
 ---
 
@@ -149,6 +152,26 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 3.3 - Streisand Effect applied to forge.md entry
+**Date:** 2026-06-07
+**Reason:** forge.md summary contained "For developers maintaining Forge, not for AI Assistants using it" — Streisand Effect. Removed the second sentence.
+
+**Modifications:**
+- Table conventions/: `forge.md` summary — second sentence removed
+
+---
+
+### Version 3.2 - working-with-forge.md + forge.md clarified
+**Date:** 2026-06-07
+**Reason:** New guide `working-with-forge.md` created — operational entry point for AI Assistants using Forge. Trigger added to Decision Layer. forge.md entry in conventions/ updated to clarify it is an internal spec, not for AI Assistants.
+
+**Modifications:**
+- Decision Layer: trigger `Using Forge to read or write artifacts, first session with Forge` added
+- Table conventions/: `forge.md` entry updated — summary clarified as internal spec
+- Table guides/: `working-with-forge.md` entry added
+
+---
 
 ### Version 3.1 - Decision Layer litmus test + Forge vocabulary
 **Date:** 2026-07-07
@@ -365,5 +388,4 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 
 **Contenu initial :**
 - Table conventions/ avec keywords
-- Table workflows/ avec keywords
 - Table guides/ avec keywords

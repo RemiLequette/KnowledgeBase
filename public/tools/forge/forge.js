@@ -2,7 +2,7 @@
 /**
  * forge.js
  *
- * Forge MCP server v2.2 — structured, typed access layer for all projects.
+ * Forge MCP server v2.4 — structured, typed access layer for all projects.
  * Replaces direct filesystem access with FAL-addressed typed artifacts.
  *
  * Architecture:
@@ -355,24 +355,32 @@ class RootRegistry {
 
   async mkdir(fal) {
     const { rootName, url } = this._falToUrl(fal);
-    return this.handlers.get(rootName).mkdir(url);
+    const handler = this.handlers.get(rootName);
+    if (!handler) throw new Error(`No root handler for: ${rootName}`);
+    return handler.mkdir(url);
   }
 
   async rmdir(fal) {
     const { rootName, url } = this._falToUrl(fal);
-    return this.handlers.get(rootName).rmdir(url);
+    const handler = this.handlers.get(rootName);
+    if (!handler) throw new Error(`No root handler for: ${rootName}`);
+    return handler.rmdir(url);
   }
 
   async mvdir(fal, targetFal) {
     const { rootName, url } = this._falToUrl(fal);
     const { rootName: targetRoot, url: targetUrl } = this._falToUrl(targetFal);
     if (rootName !== targetRoot) throw new Error('Cannot move folder across roots');
-    return this.handlers.get(rootName).move(url, targetUrl);
+    const handler = this.handlers.get(rootName);
+    if (!handler) throw new Error(`No root handler for: ${rootName}`);
+    return handler.move(url, targetUrl);
   }
 
   async rndir(fal, name) {
     const { rootName, url } = this._falToUrl(fal);
-    return this.handlers.get(rootName).rename(url, name);
+    const handler = this.handlers.get(rootName);
+    if (!handler) throw new Error(`No root handler for: ${rootName}`);
+    return handler.rename(url, name);
   }
 }
 
@@ -397,7 +405,7 @@ try {
 // ---------------------------------------------------------------------------
 
 const server = new Server(
-  { name: 'forge', version: '2.2.0' },
+  { name: 'forge', version: '2.4.0' },
   { capabilities: { tools: {} } }
 );
 
@@ -431,8 +439,19 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
       }
     },
     {
+      name: 'forge_create',
+      description: 'Create a new empty artifact. Error if the artifact already exists. Use forge_write after creation to set the initial content.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          fal: { type: 'string', description: 'Artifact FAL (forge://<root>/<path/to/file>.<type>).' }
+        },
+        required: ['fal']
+      }
+    },
+    {
       name: 'forge_write',
-      description: 'Write content to an artifact by FAL. For plain-text types (md, js, json, html, css, txt), writes the full file content. For structured types, writes to the specified block. FAL format: forge://<root-name>/<path/to/file>.<type>.',
+      description: 'Write content to an existing artifact by FAL. For plain-text types (md, js, json, html, css, txt), writes the full file content. For structured types, writes to the specified block. Error if the artifact does not exist — use forge_create first. FAL format: forge://<root-name>/<path/to/file>.<type>.',
       inputSchema: {
         type: 'object',
         properties: {
@@ -441,6 +460,52 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           content: { type: 'string', description: 'Content to write.' }
         },
         required: ['fal', 'content']
+      }
+    },
+    {
+      name: 'forge_mkdir',
+      description: 'Create a folder. Error if it already exists.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          fal: { type: 'string', description: 'Folder FAL to create (must end with /).' }
+        },
+        required: ['fal']
+      }
+    },
+    {
+      name: 'forge_rmdir',
+      description: 'Delete a folder. Error if not empty.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          fal: { type: 'string', description: 'Folder FAL to delete (must end with /).' }
+        },
+        required: ['fal']
+      }
+    },
+    {
+      name: 'forge_mvdir',
+      description: 'Move a folder within the same root. Error if the target already exists.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          fal:    { type: 'string', description: 'Source folder FAL (must end with /).' },
+          target: { type: 'string', description: 'Destination folder FAL (must end with /).' }
+        },
+        required: ['fal', 'target']
+      }
+    },
+    {
+      name: 'forge_rndir',
+      description: 'Rename a folder in place. Error if the target name already exists in the same parent.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          fal:  { type: 'string', description: 'Folder FAL to rename (must end with /).' },
+          name: { type: 'string', description: 'New folder name (no slashes).' }
+        },
+        required: ['fal', 'name']
       }
     }
   ]
@@ -453,7 +518,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     // --- forge_ping ---
     if (name === 'forge_ping') {
       log('INFO', 'forge_ping');
-      return { content: [{ type: 'text', text: 'pong — forge v2.2.0' }] };
+      return { content: [{ type: 'text', text: 'pong — forge v2.4.0' }] };
     }
 
     // --- forge_ls ---
@@ -488,6 +553,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return { content: [{ type: 'text', text: content }] };
     }
 
+    // --- forge_create ---
+    if (name === 'forge_create') {
+      const { fal } = args;
+      log('INFO', `forge_create — fal: ${fal}`);
+
+      if (!fal || fal.endsWith('/')) {
+        throw new Error(`forge_create requires an artifact FAL. Got: ${fal}`);
+      }
+
+      await typeRegistry.createArtifact(fal);
+      log('INFO', `forge_create — done`);
+      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
+    }
+
     // --- forge_write ---
     if (name === 'forge_write') {
       const { fal, block = '', content } = args;
@@ -506,6 +585,68 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, block, written: content.length }) }] };
     }
 
+    // --- forge_mkdir ---
+    if (name === 'forge_mkdir') {
+      const { fal } = args;
+      log('INFO', `forge_mkdir — fal: ${fal}`);
+
+      if (!fal || !fal.endsWith('/')) {
+        throw new Error(`forge_mkdir requires a folder FAL (ending with /). Got: ${fal}`);
+      }
+
+      await rootRegistry.mkdir(fal);
+      log('INFO', `forge_mkdir — done`);
+      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
+    }
+
+    // --- forge_rmdir ---
+    if (name === 'forge_rmdir') {
+      const { fal } = args;
+      log('INFO', `forge_rmdir — fal: ${fal}`);
+
+      if (!fal || !fal.endsWith('/')) {
+        throw new Error(`forge_rmdir requires a folder FAL (ending with /). Got: ${fal}`);
+      }
+
+      await rootRegistry.rmdir(fal);
+      log('INFO', `forge_rmdir — done`);
+      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
+    }
+
+    // --- forge_mvdir ---
+    if (name === 'forge_mvdir') {
+      const { fal, target } = args;
+      log('INFO', `forge_mvdir — fal: ${fal}, target: ${target}`);
+
+      if (!fal || !fal.endsWith('/')) {
+        throw new Error(`forge_mvdir requires a source folder FAL (ending with /). Got: ${fal}`);
+      }
+      if (!target || !target.endsWith('/')) {
+        throw new Error(`forge_mvdir requires a target folder FAL (ending with /). Got: ${target}`);
+      }
+
+      await rootRegistry.mvdir(fal, target);
+      log('INFO', `forge_mvdir — done`);
+      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, target }) }] };
+    }
+
+    // --- forge_rndir ---
+    if (name === 'forge_rndir') {
+      const { fal, name: newName } = args;
+      log('INFO', `forge_rndir — fal: ${fal}, name: ${newName}`);
+
+      if (!fal || !fal.endsWith('/')) {
+        throw new Error(`forge_rndir requires a folder FAL (ending with /). Got: ${fal}`);
+      }
+      if (!newName) {
+        throw new Error('forge_rndir requires a name.');
+      }
+
+      await rootRegistry.rndir(fal, newName);
+      log('INFO', `forge_rndir — done`);
+      return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, name: newName }) }] };
+    }
+
     throw new Error(`Unknown tool: ${name}`);
 
   } catch (err) {
@@ -519,7 +660,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  log('INFO', 'Forge MCP server starting — v2.2.0');
+  log('INFO', 'Forge MCP server starting — v2.4.0');
   const transport = new StdioServerTransport();
   await server.connect(transport);
   log('INFO', 'Forge MCP server running on stdio');

@@ -20,8 +20,9 @@
  *   claim(url, typeName)    -> true if url ends with "." + typeName
  *   urlToFAL(url)           -> filename (original name unchanged)
  *   falToURL(falName, base) -> physical URL (base + falName)
+ *   createArtifact(url)     -> create empty file; error if already exists
  *   readBlock(url, block)   -> full file content (block must be "")
- *   writeBlock(url, block, content) -> write full file content (block must be "")
+ *   writeBlock(url, block, content) -> overwrite full file content (block must be ""; error if file absent)
  *   listBlocks, insertBlock, appendBlock, deleteBlock -> not implemented
  *
  * References:
@@ -34,7 +35,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 export const type = 'plain-text';
-export const version = '1.2';
+export const version = '1.3';
 
 // --- Type discovery ---
 
@@ -94,6 +95,7 @@ export async function readBlock(url, block = '') {
 /**
  * Write the full file content.
  * Block argument must be "" — plain-text has no block structure.
+ * Requires the file to already exist — use forge_create first.
  * @param {string} url - file:// URL
  * @param {string} block - must be ""
  * @param {string} content - new file content
@@ -101,6 +103,9 @@ export async function readBlock(url, block = '') {
 export async function writeBlock(url, block, content) {
   if (block !== '') throw new Error(`plain-text type has no block structure — block must be "" (got "${block}")`);
   const filePath = fileURLToPath(url);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`File does not exist: ${filePath} — call forge_create first`);
+  }
   fs.writeFileSync(filePath, content, 'utf8');
 }
 
@@ -122,8 +127,17 @@ export async function deleteBlock(_url, _block) {
 
 // --- Artifact CRUD ---
 
-export async function createArtifact(_url) {
-  throw new Error('plain-text type: createArtifact not implemented');
+/**
+ * Create a new empty file.
+ * Error if the file already exists.
+ * @param {string} url - file:// URL
+ */
+export async function createArtifact(url) {
+  const filePath = fileURLToPath(url);
+  if (fs.existsSync(filePath)) {
+    throw new Error(`File already exists: ${filePath}`);
+  }
+  fs.writeFileSync(filePath, '', 'utf8');
 }
 
 export async function deleteArtifact(_url) {

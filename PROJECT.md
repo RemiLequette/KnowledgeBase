@@ -28,6 +28,8 @@ public/
 - **GLOSSARY.md** — project terminology
 - **TODO.md** — active backlog
 - **howto/** — practical guides for humans
+- **tests/** — test suites for KB tools (private, not part of the public KB)
+  - **tests/forge/** — RTFM and Brand gate tests for the Forge MCP server
 - **tmp/** — temporary working files (not committed)
 
 
@@ -87,6 +89,15 @@ project, knowledge-base, conventions, workflows, guides, structure, audit, metad
 ---
 
 ## Changelog
+
+### Version 1.6 - tests/ documented
+**Date:** 2026-06-07
+**Reason:** tests/ folder existed but was absent from the project structure.
+
+**Modifications:**
+- Structure / Project files: `tests/` added with `forge/` sub-entry
+
+---
 
 ### Version 1.5 - Restructuration public/
 **Date:** 2026-05-31

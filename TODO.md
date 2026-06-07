@@ -24,22 +24,20 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 ## Critical
 
 - [ ] [O39] Bug md-doc update supprime le TOC | `md-doc update` avec un JSON vide `{}` supprime silencieusement le `## Table of Contents` du fichier cible. Reproduit sur fixture minimale 2026-06-05 — séquence : créer fichier avec TOC → `str_replace` → `md-doc update {}` → TOC absent. Fixture : `tmp/test-md-doc.md`.
-- [ ] [O42] forge — folder CRUD | Implémenter `forge_mkdir`, `forge_rmdir`, `forge_mvdir`, `forge_rndir` dans forge.js + les opérations correspondantes dans file-root.js. Spec : forge.md § MCP tools (Planned — folders) + § Root handler. Priorité : sans forge_mkdir, toute création de dossier contourne Forge et viole la convention filesystem. [effort: M]
 
 ## High priority
 
 - [ ] [O4] Bootstrap robustesse | Convention `documentation.md` + `md-doc-usage.md` absente du template AssistantIA.md — un AI démarrant sur un sujet métier crée des .md non conformes. Ajouter règle de chargement dans AssistantIA.md + déclencheur sur création/modification .md. Constaté sur ComiteRSE-AfrSCM 2026-06-01.
 - [ ] [O5] Scope Rule — accès vs autorisation | AI confond accès technique MCP avec autorisation Scope Rule. Clarifier dans INDEX : distinguer accès technique et accès autorisé, préciser comportement attendu de l'AI Assistant.
 - [ ] [O6] Convention self-reference in artifacts | An AI reading a project file directly (e.g. `TODO.md`, `GLOSSARY.md`) without going through `INDEX.md` has no signal to load the relevant convention. Explore a lightweight mechanism for files to reference their own governing convention — e.g. a standard comment header, a frontmatter field, or a convention pointer in the file's Quick Start. Constaté sur guideIA 2026-06-05.
-- [ ] [O7] Type instruction model | How a type handler communicates to the AI how to work with it — structure, semantics, usage rules. Four layers: discovery, structure (forge_describe), type semantics, expected behaviour. Without this, md-doc handler is unexploitable — the AI will keep reading full files instead of targeting blocks. Design before coding md-doc. [effort: M]
 - [ ] [O8] forge_read retourne FAL + bloc | Le résultat de forge_read doit inclure le FAL et le bloc dans la réponse — pas juste le contenu brut. Sinon l'AI perd le fil quand elle charge plusieurs blocs de fichiers différents. Changement simple dans forge.js. [effort: XS]
 - [ ] [O9] specs/ document type | Distinguer conventions opérationnelles (chargées par trigger) et specs descriptives (chargées explicitement). Créer `public/specs/`, migrer `forge.md`. Ajouter type Spec dans `documentation-style.md`. Ajouter section `specs/` dans INDEX.md. Litmus test : une spec n'a rien à auditer. [effort: M]
 - [ ] [O11] guide-maintenance.md conformance | Non-compliant: French content, obsolete reference to Claude.md, informal structure. Bring into line with documentation.md before next audit. [effort: S]
-- [ ] [O23] forge_describe + describe() | Interface `describe()` dans les handlers, outil MCP `forge_describe(fal)`. Retourne structure de blocs + sémantique du type. Nécessaire pour exploiter md-doc. Dépend de : Type instruction model. [effort: M]
+- [ ] [O23] forge_describe + describe() | Interface `describe()` dans les handlers, outil MCP `forge_describe(fal)`. Retourne structure de blocs + sémantique du type. Nécessaire pour exploiter md-doc. → **Specced in forge.md v6.3 — implement in forge.js** [effort: M]
+- [ ] [O43] forge Brand registry | Session-scoped in-memory set of issued FALs. Brand gate on forge_read/forge_write — rejects FALs not issued by Forge with hint. FALs registered by forge_ls and forge_mkdir. → **Specced in forge.md v6.4 — implement in forge.js** [effort: S]
 
 ## Normal
 
-- [ ] [O2] KB Glossary | A glossary is becoming useful in the KB itself — named principles and acronyms are accumulating (WWH, HOC, Goldilocks, WIP, GTD, backlog/TODO...). Create a GLOSSARY.md at the KB project root following conventions/glossary.md.
 - [ ] [O12] Convention journal.md | Create a convention for Journal.md files — structure, entry format, when to create, what to capture (decisions, key moments, files modified). Update INDEX.md decision layer trigger and PROJECT.md structure. Based on Journal.md created in KB session 2026-06-05.
 - [ ] [O13] tools.md Quick Start — extend scope to reference HTML viewers/editors and `guides/editor-tool.md`. Currently limited to scripts only.
 - [ ] [O14] Shared library scope — KB vs project | `tools.md` defines the KB vs project rule for scripts but does not cover shared libraries (`lib/`). Clarify: a `lib/` module that is specific to one project belongs in `<project>/tools/lib/`, not in the KB. The KB `tools/lib/` is reserved for modules reusable across projects. Constaté sur guideIA 2026-06-05.
@@ -47,10 +45,9 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O18] md-doc Citations support | Implement cross-document citation resolution. Consider renaming Citations to References.
 - [ ] [O19] md-doc Changelog support | Add/update Changelog entries via md-doc — new command or extension of update.
 - [ ] [O22] Hierarchy of Concern in structured reasoning | Add HOC as a principle in conventions/claude-structured-reasoning.md — two dimensions: (1) gravity: not all errors are equal, grade remarks by actual impact; (2) order: general before detail, strategy before tactics. Never get lost in implementation details before validating the approach. Identified during how-to-get-things-done post-mortem 2026-06-06.
-- [ ] [O24] md-doc handler | Type handler Forge pour fichiers Markdown structurés. Chaque section devient un bloc nommé. Remplace l'outil md-doc actuel et son protocole JSON. Gain token maximal — tous les fichiers KB. Dépend de : Type instruction model, forge_describe. [effort: L]
+- [ ] [O24] md-doc handler | Type handler Forge pour fichiers Markdown structurés. Chaque section devient un bloc nommé. Remplace l'outil md-doc actuel et son protocole JSON. Gain token maximal — tous les fichiers KB. Dépend de : forge_describe implémenté. [effort: L]
 - [ ] [O27] Extend maintenance rules beyond guides | guide-maintenance.md covers guides only. Conventions and tools also need maintenance rules. Consider convention-maintenance.md + tool-maintenance.md, or extend guide-maintenance.md to cover all three. [effort: S]
 - [ ] [O28] Best practices → todo.md reference | Vérifier que guides/best-practices.md référence la convention todo.md.
-- [ ] [O35] using-forge.md guide + trigger INDEX | Guide opérationnel pour utiliser Forge en session : forge_describe avant forge_read, forge_read avec bloc nommé, FAL syntax. Ajouter trigger dans Decision Layer et entrée dans table guides/. Dépend de forge_describe [O23]. [effort: S]
 - [ ] [O37] Spec forge_write — vérification bloc | Documenter dans forge.md : (1) tout handler doit vérifier l'existence du bloc avant writeBlock et lever une erreur si absent ; (2) un AI Assistant doit appeler listBlocks avant tout forge_write sur un bloc nommé. [effort: S]
 - [ ] [O40] gitignore logs dans project-structure.md | Ajouter dans `conventions/project-structure.md` la règle : tout projet inclut un `.gitignore` avec `*.log`. Auditable en regardant le .gitignore — c'est une convention.
 
@@ -70,23 +67,28 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O32] Externalize Changelogs? | Changelogs rarely needed in context. Explore separate changelog.md files or shared CHANGELOG.md per folder. Evaluate token savings vs navigation cost and tooling impact (md-doc, conformance checks). md-doc pourrait automatiser la migration.
 - [ ] [O33] Write a WWH design session guide | Document the method for designing a tool or feature using WWH: how to structure Why/What/How, how to iterate, when to update conventions before coding. Based on the todo-tool design session 2026-06-04.
 - [ ] [O41] Forge — registry viewer | Build a viewer artifact for the forge registry (roots, types, artifacts) — using forge to read itself via `forge_ls`. HTML tool or React artifact.
+- [ ] [O42] Separate KB public/ to own repo | Move public/ to a standalone repository, independent from the KB Maintenance project. [effort: L]
 
 ## WIP
 
-- [ ] [WIP] [W1] Forge — sécurisation + forge_write | forge.js v2.2 : top-level error handler (O38 done). plain-text.js v1.2 : erreur si block !== '' (O10 done). Prochaines étapes : (1) Type instruction model (O7), (2) forge_read retourne FAL+bloc (O8), (3) forge_describe + describe() (O23), (4) md-doc handler (O24), (5) js-clean handler (O25). [effort: L]
-- [ ] [WIP] [W2] Separate KB public/ to own repo | Move public/ to a standalone repository, independent from the KB Maintenance project. [effort: L]
+- [ ] [WIP] [W1] Forge — RTFM + Brand + forge_create implementation | forge.md v6.5 : forge_create implemented, forge_write requires existing file. plain-text.js v1.3 : writeBlock guards existsSync, createArtifact implemented. forge.js v2.4 : forge_create tool added. Prochaines étapes : (1) implémenter forge_describe + RTFM gate dans forge.js, (2) implémenter Brand registry + Brand gate dans forge.js, (3) O8 forge_read retourne FAL+bloc, (4) md-doc handler (O24). [effort: L]
 - [ ] [WIP] [W3] Namespace model — spec forge.md v6.0 | Modèle namespace conçu et documenté dans forge.md v6.0. Prochaines étapes : (1) split forge.config.json → roots.json + types.json, (2) implémenter le loader récursif dans forge.js. [effort: M]
 
 ## Done
 
-- [x] [D1] Complete how-to-get-things-done guide | Memory rule + HOC anti-pattern added. Exchange granularity captured as Goldilocks principle (separate TODO).
-- [x] [D2] Enrich todo-list convention with WIP concept | WIP already exists as a state ([WIP] tag) in the format. Enrich the convention to make it a first-class session concept.
-- [x] [D3] Guide — working session conduct | Covered by how-to-get-things-done.md — phases, anti-patterns, conduct rules all included.
+- [x] [D1] Complete how-to-get-things-done guide | Memory rule + HOC anti-pattern added.
+- [x] [D2] Enrich todo-list convention with WIP concept | WIP elevated to first-class session concept.
+- [x] [D3] Guide — working session conduct | Covered by how-to-get-things-done.md.
 - [x] [D4] Anti-patterns in working sessions | Integrated in how-to-get-things-done.md.
-- [x] [D5] Forge — gitignore logs KB | `*.log` added to KB .gitignore. Convention rule to add in project-structure.md tracked as O40.
-- [x] [D6] INDEX Decision Layer litmus test + Forge vocabulary | Section renamed to "What to read", litmus test convention/guide added, forge_read mentioned.
-- [x] [D7] Bug forge_write bloc ignoré — plain-text.js | writeBlock lève une erreur si block !== ''. plain-text.js v1.2. [effort: XS]
-- [x] [D8] forge.js — top-level error handler | Wrapper try/catch unique autour du dispatcher MCP. Try/catch individuels retirés, remplacés par throw. forge.js v2.2. [effort: XS]
+- [x] [D5] Forge — gitignore logs KB | `*.log` added to KB .gitignore.
+- [x] [D6] INDEX Decision Layer litmus test + Forge vocabulary | Done.
+- [x] [D7] Bug forge_write bloc ignoré — plain-text.js | plain-text.js v1.2.
+- [x] [D8] forge.js — top-level error handler | forge.js v2.2.
+- [x] [D9] forge — folder CRUD | forge_mkdir, forge_rmdir, forge_mvdir, forge_rndir implémentés.
+- [x] [D10] RTFM principle — spec + guide | forge.md v6.3 + working-with-forge.md v1.0 + INDEX.md v3.2.
+- [x] [D11] Streisand Effect — glossaire + nettoyage docs | GLOSSARY.md v1.1-1.2 + working-with-forge.md v1.1 + INDEX.md v3.3.
+- [x] [D12] Brand principle — spec + glossaire | forge.md v6.4 : Brand principle specced. GLOSSARY.md v1.3 : Brand, Constrain Don't Forbid, Fail Fast Fail Clear, TDD. working-with-forge.md v1.2 : Brand section + pattern filename-without-FAL.
+- [x] [D13] forge_create + forge_write existence guard | plain-text.js v1.3 + forge.js v2.4 + forge.md v6.5.
 
 ## Index
 
@@ -95,36 +97,34 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## Changelog
 
-### Version 3.8 - forge folder CRUD critical
+### Version 4.3 - forge_create done
 **Date:** 2026-06-07
-**Reason:** Sans forge_mkdir, toute création de dossier contourne Forge — constaté en session.
+**Reason:** forge_create implemented + forge_write existence guard. plain-text.js v1.3, forge.js v2.4, forge.md v6.5.
 
 **Modifications:**
-- Critical: added O42 `forge — folder CRUD` [effort: M]
+- Done: D13 ajouté
+- WIP: W1 mis à jour — forge_create done, étapes restantes inchangées
 
 ---
 
-### Version 3.7 - O10 + O38 done, doublons corrigés
+### Version 4.2 - Brand principle done, W1 updated
 **Date:** 2026-06-07
-**Reason:** Session sécurisation forge — deux bugs résolus. Correction des doublons d'index O10 et O11.
+**Reason:** Brand principle specced (TDD) — forge.md v6.4, GLOSSARY.md v1.3, working-with-forge.md v1.2. O43 ouvert pour l'implémentation. W1 mis à jour.
+
+**Modifications:**
+- High priority: O43 ajouté — forge Brand registry implementation
+- WIP: W1 mis à jour — Brand ajouté aux prochaines étapes
+- Done: D12 ajouté
 
 ---
 
-### Version 3.6 - Top-level error handler
+### Version 4.1 - Streisand Effect done
 **Date:** 2026-06-07
-**Reason:** Error handling model spécifié dans forge.md — ajout du TODO d'implémentation.
 
 ---
 
-### Version 3.5 - Namespace model + forge_write bug
+### Version 4.0 - RTFM principle done, W1 updated
 **Date:** 2026-06-07
-**Reason:** Session design namespace + protection blocs.
-
----
-
-### Version 3.4 - Triage + nouveaux items
-**Date:** 2026-06-07
-**Reason:** Backlog triage — doublons supprimés, items faits archivés, basse priorité séparée, deux nouveaux items ajoutés.
 
 ---
 

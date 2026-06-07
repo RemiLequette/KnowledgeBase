@@ -17,7 +17,7 @@ Within an artifact, content is accessed via named blocks — never by line numbe
 Roots and types are organised into **namespaces**. The KB is the default namespace (no prefix). Projects and libraries declare additional namespaces, each with their own roots and types loaded recursively at startup.
 
 ## Keywords
-forge, MCP, artifact, FAL, type, handler, blocks, filesystem, structured-access, URL, roots, registry, claim, type-discovery, namespace, multiproject
+forge, MCP, artifact, FAL, type, handler, blocks, filesystem, structured-access, URL, roots, registry, claim, type-discovery, namespace, multiproject, RTFM, describe, brand
 
 ## Table of Contents
 
@@ -97,13 +97,13 @@ Names containing spaces, `/`, `#`, or other ambiguous characters must be quoted 
 
 ```
 forge://development/                                                          ← KB root
-forge://development/big-project/                                              ← folder
-forge://development/big-project/TODO.doc-todolist                             ← KB artifact
-forge://development/big-project/TODO.doc-todolist#W1                          ← block
-forge://kb/public/TODO.doc-todolist#section:Normale#item:W1                   ← nested block
-forge://kb/public/INDEX.doc#section:Session-Bootstrap                         ← nested block
-forge://commwise:production/bloc.commwise:layout                              ← namespaced root + type
-forge://commwise:afr:data/rapport.commwise:afr:doc-rse                        ← chained namespace
+forge://development/big-project/                                             ← folder
+forge://development/big-project/TODO.doc-todolist                            ← KB artifact
+forge://development/big-project/TODO.doc-todolist#W1                         ← block
+forge://kb/public/TODO.doc-todolist#section:Normale#item:W1                  ← nested block
+forge://kb/public/INDEX.doc#section:Session-Bootstrap                        ← nested block
+forge://commwise:production/bloc.commwise:layout                             ← namespaced root + type
+forge://commwise:afr:data/rapport.commwise:afr:doc-rse                       ← chained namespace
 ```
 
 ### FAL as a capsule
@@ -114,6 +114,18 @@ An artifact FAL encodes two pieces of information that the type registry needs:
 - **URL** — reconstructed by the handler via `falToURL()` — the physical resource location
 
 Neither piece is stored separately. The FAL is self-contained. This is why artifact FALs must carry the real type name — without it, the type registry cannot dispatch to the correct handler.
+
+### Brand principle
+
+A FAL is only valid if it was issued by Forge — never constructed manually. Forge maintains a Brand registry of all FALs it has emitted (via `forge_ls`, `forge_mkdir`, or any discovery operation). A FAL presented to `forge_read` or `forge_write` that is not in the Brand registry is rejected with a hint:
+
+```
+"This FAL was not issued by Forge — call forge_ls to obtain a valid FAL."
+```
+
+This is an application of **Constrain, Don't Forbid** and **Fail Fast, Fail Clear**: the constraint is mechanical (not a rule), and the error message contains its own correction. A manually constructed FAL — even syntactically correct — may carry the wrong type extension, silently routing the operation to the wrong handler and corrupting the artifact structure.
+
+The Brand registry is session-scoped and in-memory. It is populated at startup by `forge_ls` on the root, and updated by every subsequent `forge_ls`, `forge_mkdir`, and type discovery operation.
 
 ### Root registry
 
@@ -244,8 +256,11 @@ export async function claim(url)                         // return true if this 
 export async function urlToFAL(url)                      // url physique → artifact FAL name (stem.type)
 export async function falToURL(falName, baseUrl)         // artifact FAL name → url physique
 
+// Type description — RTFM principle (optional — Registry provides default if absent)
+export async function describe(url)                      // return { recognition, capabilities, usage }
+
 // Artifact CRUD
-export async function createArtifact(url)
+export async function createArtifact(url)                // create new artifact; error if already exists
 export async function deleteArtifact(url)
 export async function moveArtifact(url, targetUrl)       // within the same root only
 export async function renameArtifact(url, name)
@@ -253,7 +268,7 @@ export async function renameArtifact(url, name)
 // Block operations — block arguments are always full paths from the root block ""
 export async function listBlocks(url, block="")          // list one level of children under block
 export async function readBlock(url, block)              // read the block's own content (not its children)
-export async function writeBlock(url, block, content)    // replace the block's own content
+export async function writeBlock(url, block, content)    // replace the block's own content; error if artifact absent
 export async function insertBlock(url, name, after, firstChild=false)
                                                          // insert a new named block
                                                          // firstChild=true: insert as first child of after
@@ -263,6 +278,11 @@ export async function appendBlock(url, block, content)   // append text to a blo
 export async function deleteBlock(url, block)            // delete a block and its children
 ```
 
+**`createArtifact` / `writeBlock` contract:**
+
+- `createArtifact(url)` — creates the artifact. Throws if it already exists. Use `forge_create` before any `forge_write`.
+- `writeBlock(url, block, content)` — writes content to an existing artifact. Throws if the artifact does not exist: *"File does not exist: … — call forge_create first"*. This prevents `forge_write` from silently creating files.
+
 **`urlToFAL(url)` and `falToURL(falName, baseUrl)`:**
 
 These two functions are the bidirectional mapping between the physical URL and the FAL name. They are called by the type registry — never by Forge directly.
@@ -271,6 +291,25 @@ These two functions are the bidirectional mapping between the physical URL and t
 - `falToURL("TODO.doc-todolist", "file:///path/")` → `"file:///path/TODO.md"`
 
 The FAL name is the artifact name with its type extension — the stem may differ from the physical filename. The handler is the only place that knows this mapping. The handler uses its own local type name (without namespace prefix) — the registry applies the prefix when building the final FAL.
+
+**`describe(url)` — Template Method pattern:**
+
+`describe()` is optional. The type registry provides a default implementation (Template Method pattern — the registry is the abstract base, handlers are concrete subclasses). A handler overrides `describe()` only when it has richer semantics to expose than the default.
+
+Return format:
+```js
+{
+  recognition: "A FAL ending with .<type> is ...",  // always starts with this sentence
+  capabilities: { read: true, write: true, blocks: false },
+  usage: "forge_read(fal) ... forge_write(fal, content) ..."
+}
+```
+
+**`recognition` rule:** the first sentence always starts with *"A FAL ending with `.<type>` …"*. This is the self-referential anchor — an AI reading this description can match it against any FAL it encounters, without any external knowledge of the type system.
+
+**Static vs dynamic:** `describe()` may be static (plain-text — always the same regardless of the artifact) or dynamic (future md-doc — reads the artifact's actual section structure and lists real block names). Dynamic handlers receive `url` and may read the file.
+
+**`force` flag:** `forge_describe(fal, force=true)` resets the `described` flag for the type in the current session, forcing the AI to call `forge_describe` again before the next read or write. Useful when a dynamic handler needs to re-expose the updated structure of a specific artifact.
 
 **`listBlocks(url, block="")` contract:**
 
@@ -289,6 +328,8 @@ Returns an ordered list of full block paths (direct children of `block` only —
 
 **Exceptions:**
 - Any block operation on a non-existent block → error.
+- `writeBlock` on a non-existent artifact → error (use `forge_create` first).
+- `createArtifact` on an already-existing artifact → error.
 - `deleteArtifact` on an `undefined` artifact → error.
 - `moveArtifact` across roots → error.
 
@@ -305,7 +346,7 @@ The type registry manages all artifact operations. It is loaded at startup from 
 
 **Internal structure:**
 
-At startup, the type registry builds a hashmap: `typeName → handler module`. Type names in the hashmap carry their full namespace prefix (`commwise:layout`). The type hierarchy order (for `claim()` dispatch) is derived from the local type name (prefix stripped) — names are split on `-` and sorted by descending length (more segments = more specific). No explicit ordering configuration is needed.
+At startup, the type registry builds a hashmap: `typeName → { handler, described }`. Type names in the hashmap carry their full namespace prefix (`commwise:layout`). The `described` flag is `false` at startup and set to `true` by `typeRegistry.describe()` — it tracks whether the AI has called `forge_describe` for this type in the current session. The type hierarchy order (for `claim()` dispatch) is derived from the local type name (prefix stripped) — names are split on `-` and sorted by descending length (more segments = more specific). No explicit ordering configuration is needed.
 
 **Collision check:** after all namespaces are loaded, if two entries share the same final name in the hashmap → startup error. Forge does not start. This applies to both roots and types.
 
@@ -315,7 +356,13 @@ At startup, the type registry builds a hashmap: `typeName → handler module`. T
 // Discovery — url physique → FAL (called by Forge during forge_ls)
 typeRegistry.discover(url)                          → fal
 
+// Type description — RTFM principle
+typeRegistry.describe(fal, force?)                  → { recognition, capabilities, usage }
+                                                    // sets described=true for the type (or resets if force=true)
+
 // Artifact operations — all take a FAL, dispatch to handler via type extraction + falToURL()
+// All throw if described=false for the type — RTFM gate
+// All throw if FAL not in Brand registry — Brand gate
 typeRegistry.read(fal, block?)                      → content
 typeRegistry.write(fal, block, content)
 typeRegistry.listBlocks(fal, block?)                → string[]
@@ -328,18 +375,34 @@ typeRegistry.appendBlock(fal, block, content)
 typeRegistry.deleteBlock(fal, block)
 ```
 
+**RTFM gate:** `read()` and `write()` (and all block operations) check `described` before dispatching. If `false`, they throw: `"Call forge_describe(fal) first — RTFM: no read or write before the type is understood."`
+
+**Brand gate:** `read()` and `write()` (and all block operations) check the Brand registry before dispatching. If the FAL is not registered, they throw: `"This FAL was not issued by Forge — call forge_ls to obtain a valid FAL."` The Brand gate is checked after the RTFM gate.
+
+**Default `describe()` implementation (Template Method):** if the handler does not export `describe`, the registry generates a default description from the type name:
+```js
+{
+  recognition: `A FAL ending with .${typeName} is a plain-text file — full file access only, no named blocks.`,
+  capabilities: { read: true, write: true, blocks: false },
+  usage: `forge_read(fal) returns the entire file content. forge_write(fal, content) replaces the entire file.`
+}
+```
+
 **Dispatch mechanism** (same for all artifact operations):
 1. Extract type from FAL extension (after last `.`)
 2. Look up handler in hashmap — O(1)
-3. Call `handler.falToURL(falName, baseUrl)` to recover the physical URL
-4. Delegate to handler
+3. Check `described` flag — throw if `false` (RTFM gate)
+4. Check Brand registry — throw if FAL not registered (Brand gate)
+5. Call `handler.falToURL(falName, baseUrl)` to recover the physical URL
+6. Delegate to handler
 
 **`discover(url)` mechanism:**
 1. Call `claim(url)` on handlers, most specific first (derived from local type name length)
 2. Stop at first claim
 3. Call `handler.urlToFAL(url)` to produce the local FAL name
 4. Prepend namespace prefix to produce the final type name in the FAL
-5. Return the complete FAL
+5. Register the resulting FAL in the Brand registry
+6. Return the complete FAL
 
 ### Root registry
 
@@ -362,6 +425,8 @@ rootRegistry.rndir(url, name)
 Forge translates between folder FALs and URLs before calling the root registry:
 - FAL → URL: strip `forge://<root>/`, prepend root base URL
 - URL → FAL: strip root base URL, prepend `forge://<root>/`
+
+Folder FALs are also registered in the Brand registry when emitted by `forge_ls` or `forge_mkdir`.
 
 ### Sequence diagrams
 
@@ -386,6 +451,7 @@ sequenceDiagram
     loop each entry
         alt isFolder = true
             Forge->>Forge: url → folder FAL
+            Forge->>Forge: register folder FAL in Brand registry
         else isFolder = false
             Forge->>TypeReg: discover(url)
             TypeReg->>TypeH: claim(url)
@@ -393,6 +459,7 @@ sequenceDiagram
             TypeReg->>TypeH: urlToFAL(url)
             TypeH-->>TypeReg: local FAL name
             TypeReg->>TypeReg: prepend namespace prefix
+            TypeReg->>TypeReg: register artifact FAL in Brand registry
             TypeReg-->>Forge: artifact FAL
         end
     end
@@ -400,7 +467,7 @@ sequenceDiagram
     Forge-->>MCP: [folder FALs..., artifact FALs...]
 ```
 
-**`forge_read` — artifact read:**
+**`forge_read` — artifact read (with RTFM + Brand gates):**
 
 ```mermaid
 sequenceDiagram
@@ -413,12 +480,48 @@ sequenceDiagram
     Forge->>TypeReg: read(fal, block?)
     TypeReg->>TypeReg: extract type from FAL extension
     TypeReg->>TypeReg: lookup handler in hashmap
-    TypeReg->>TypeH: falToURL(falName, baseUrl)
-    TypeH-->>TypeReg: url
-    TypeReg->>TypeH: readBlock(url, block)
-    TypeH-->>TypeReg: content
-    TypeReg-->>Forge: content
-    Forge-->>MCP: content
+    TypeReg->>TypeReg: check described flag (RTFM gate)
+    alt described = false
+        TypeReg-->>Forge: throw "Call forge_describe(fal) first"
+        Forge-->>MCP: error
+    else described = true
+        TypeReg->>TypeReg: check Brand registry (Brand gate)
+        alt FAL not in Brand registry
+            TypeReg-->>Forge: throw "This FAL was not issued by Forge — call forge_ls"
+            Forge-->>MCP: error
+        else FAL is branded
+            TypeReg->>TypeH: falToURL(falName, baseUrl)
+            TypeH-->>TypeReg: url
+            TypeReg->>TypeH: readBlock(url, block)
+            TypeH-->>TypeReg: content
+            TypeReg-->>Forge: content
+            Forge-->>MCP: content
+        end
+    end
+```
+
+**`forge_describe` — type description:**
+
+```mermaid
+sequenceDiagram
+    participant MCP
+    participant Forge
+    participant TypeReg as Type Registry
+    participant TypeH as Type Handler
+
+    MCP->>Forge: forge_describe(fal, force?)
+    Forge->>TypeReg: describe(fal, force?)
+    TypeReg->>TypeReg: extract type from FAL extension
+    TypeReg->>TypeReg: lookup handler in hashmap
+    alt handler.describe exists
+        TypeReg->>TypeH: describe(url)
+        TypeH-->>TypeReg: { recognition, capabilities, usage }
+    else no describe on handler
+        TypeReg->>TypeReg: generate default description
+    end
+    TypeReg->>TypeReg: set described=true (or reset if force=true)
+    TypeReg-->>Forge: { recognition, capabilities, usage }
+    Forge-->>MCP: description
 ```
 
 ## Namespaces
@@ -610,19 +713,29 @@ Forge implements each tool by translating the MCP call into one or two registry 
 
 **Error handling:** Forge wraps the entire tool dispatcher in a single top-level `try/catch`. Any exception thrown by a registry or handler is caught and returned as `{ error: err.message }` with `isError: true`. Tools and handlers must always throw exceptions on error — never return error objects. A tool may add its own `try/catch` only to enrich the error message with context before re-throwing.
 
+**RTFM principle:** `forge_read` and `forge_write` (and all block operations) require a prior `forge_describe` call for the artifact's type in the current session. Without `forge_describe`, read and write throw `"Call forge_describe(fal) first"`.
+
+**Brand principle:** `forge_read` and `forge_write` (and all block operations) require the FAL to have been issued by Forge. A manually constructed FAL is rejected with `"This FAL was not issued by Forge — call forge_ls to obtain a valid FAL."` The Brand gate is checked after the RTFM gate. `forge_ls` is always free — it is the tool that issues branded FALs.
+
 **Implemented:**
 
 | Tool | Arguments | Description |
 |---|---|---|
 | `forge_ping` | — | Connectivity check — returns `pong` and server version |
-| `forge_ls` | `fal?` | List one level. No arg: list roots. Folder FAL: list folders and artifacts with their FALs. |
-| `forge_read` | `fal, block?` | Read a block's own content. Defaults to `""` — full managed content of the artifact. |
+| `forge_ls` | `fal?` | List one level. No arg: list roots. Folder FAL: list folders and artifacts with their FALs. Always free — no describe or brand required. Issues branded FALs. |
+| `forge_describe` | `fal, force?` | Describe the type of an artifact — returns `{ recognition, capabilities, usage }`. Sets `described=true` for the type in the session. `force=true` resets the flag. |
+| `forge_read` | `fal, block?` | Read a block's own content. Defaults to `""` — full managed content. Requires RTFM + Brand. |
+| `forge_create` | `fal` | Create a new empty artifact. Error if it already exists. Required before any `forge_write` on a new file. |
+| `forge_write` | `fal, block?, content` | Write content to an existing artifact. Error if the artifact does not exist — use `forge_create` first. Plain-text: full file. Structured: named block. Requires RTFM + Brand. |
+| `forge_mkdir` | `fal` | Create a folder. Error if it already exists. Issues a branded folder FAL. |
+| `forge_rmdir` | `fal` | Delete a folder. Error if not empty. |
+| `forge_mvdir` | `fal, target` | Move a folder within the same root. Error if target exists. |
+| `forge_rndir` | `fal, name` | Rename a folder in place. Error if target name exists in the same parent. |
 
 **Planned — artifacts:**
 
 | Tool | Arguments | Description |
 |---|---|---|
-| `forge_create` | `fal` | Create a new artifact |
 | `forge_delete` | `fal` | Delete an artifact |
 | `forge_move` | `fal, target` | Move an artifact within the same root |
 | `forge_rename` | `fal, name` | Rename an artifact |
@@ -631,19 +744,9 @@ Forge implements each tool by translating the MCP call into one or two registry 
 
 | Tool | Arguments | Description |
 |---|---|---|
-| `forge_write` | `fal, block, content` | Replace a block's own content |
 | `forge_append` | `fal, block, content` | Append text to a block's own content |
 | `forge_insert` | `fal, name, after, firstChild?` | Insert a new named block |
 | `forge_delete_block` | `fal, block` | Delete a block and its children |
-
-**Planned — folders:**
-
-| Tool | Arguments | Description |
-|---|---|---|
-| `forge_mkdir` | `fal` | Create a folder |
-| `forge_rmdir` | `fal` | Delete a folder — error if not empty |
-| `forge_mvdir` | `fal, target` | Move a folder within the same root |
-| `forge_rndir` | `fal, name` | Rename a folder |
 
 **Planned — registry:**
 
@@ -658,13 +761,14 @@ Forge implements each tool by translating the MCP call into one or two registry 
 [up](#table-of-contents)
 
 **Near term:**
+- Implement `forge_describe` + RTFM gate in `forge.js` — `described` flag in type registry, gate on `forge_read`/`forge_write`
+- Implement Brand registry — session-scoped in-memory set of issued FALs; Brand gate on `forge_read`/`forge_write`; FALs registered by `forge_ls` and `forge_mkdir`
 - Refactor `forge.js` — introduce type registry and root registry objects; Forge calls only registries
 - Split `forge.config.json` into `roots.json` and `types.json`; implement recursive namespace loader
 - Add `urlToFAL()` and `falToURL()` to all type handlers
 - Register first real types: `md`, `md-doc`, `doc-todolist`
-- Implement artifact CRUD: `forge_create`, `forge_delete`, `forge_move`, `forge_rename`
-- Implement block CRUD: `forge_write`, `forge_append`, `forge_insert`, `forge_delete_block`
-- Implement folder CRUD: `forge_mkdir`, `forge_rmdir`, `forge_mvdir`, `forge_rndir`
+- Implement remaining artifact CRUD: `forge_delete`, `forge_move`, `forge_rename`
+- Implement block CRUD: `forge_append`, `forge_insert`, `forge_delete_block`
 - Registry viewer — HTML tool browsing roots, types, namespaces, and artifacts via Forge
 
 **Medium term:**
@@ -682,56 +786,75 @@ Forge implements each tool by translating the MCP call into one or two registry 
 
 ## Changelog
 
-### Version 6.1 - Top-level error handler
+### Version 6.5 - forge_create implemented; forge_write requires existing file
 **Date:** 2026-06-07
-**Reason:** Error handling model specified — single top-level try/catch in the dispatcher; tools and handlers must throw, never return error objects.
+**Reason:** Two spec violations corrected: (1) `forge_write` was silently creating files via `fs.writeFileSync` even when the artifact did not exist — now throws "File does not exist: … — call forge_create first"; (2) `forge_create` was stubbed as "not implemented" — now creates an empty file and throws if the file already exists. `forge_create` promoted from Planned to Implemented in the MCP tools table.
 
 **Modifications:**
-- `## MCP tools`: Error handling paragraph added before the Implemented table
+- Type handlers: `createArtifact` contract note added; `writeBlock` contract updated — throws if artifact absent
+- Type handlers / Exceptions: `writeBlock` on non-existent artifact added; `createArtifact` on existing artifact added
+- MCP tools / Implemented: `forge_create` row added; `forge_write` description updated — "Error if the artifact does not exist"
+- MCP tools / Planned: `forge_create` row removed (now implemented)
+- Roadmap: "Implement artifact CRUD" updated — `forge_create` done, remaining items listed
+- `plain-text.js` v1.3: `writeBlock` — existsSync guard added; `createArtifact` — implemented
+- `forge.js` v2.4: `forge_create` tool added (ListTools + dispatcher)
+
+---
+
+### Version 6.4 - Brand principle
+**Date:** 2026-06-07
+**Reason:** TDD session — Brand principle specced before implementation. A FAL is only
+valid if issued by Forge. Prevents type errors caused by manually constructed FALs.
+Application of Constrain Don't Forbid and Fail Fast Fail Clear.
+
+**Modifications:**
+- Keywords: `brand` added
+- FAL section: `### Brand principle` added — Brand registry, session scope, Fail Fast Fail Clear error message
+- Registry / Type registry: Brand gate added to API comment; Brand gate step added to dispatch mechanism (step 4); `discover()` step 5 added — register FAL in Brand registry
+- Registry / Root registry: folder FAL Brand registration note added
+- Registry / Sequence diagrams: `forge_ls` updated — Brand registry registration steps added; `forge_read` updated — Brand gate added after RTFM gate
+- MCP tools: Brand principle paragraph added; `forge_ls` description updated — "Issues branded FALs"; `forge_read`/`forge_write` descriptions updated — "Requires RTFM + Brand"
+- Roadmap: Brand registry implementation added as second near-term item
+
+---
+
+### Version 6.3 - RTFM principle + forge_describe
+**Date:** 2026-06-07
+
+---
+
+### Version 6.2 - Folder CRUD implemented
+**Date:** 2026-06-07
+
+---
+
+### Version 6.1 - Top-level error handler
+**Date:** 2026-06-07
 
 ---
 
 ### Version 6.0 - Namespace model
 **Date:** 2026-06-07
-**Reason:** Design session — multi-project support via namespaces. Projects and libraries declare their own roots and types in separate registry files, loaded recursively at startup with a cumulative prefix. Collision detection at startup. KB remains the default namespace (no prefix).
-
-**Modifications:**
-- `## Quick Start`: namespace sentence added
-- `## Keywords`: `namespace`, `multiproject` added
-- `## Table of Contents`: entry `## Namespaces` added (section 9); subsequent sections renumbered
-- `## Key concepts`: Root and Type definitions updated — namespace prefix mentioned; Namespace entry added
-- `## Forge Artifact Locator FAL`: FAL syntax updated — namespace prefix noted for root and type names; Examples updated — namespaced and chained FAL examples added; Root registry and Type registry sub-sections updated — registry files replace MCP config as source
-- `## Type discovery`: hierarchy order note added — prefix stripped before computing specificity
-- `## Type handlers`: `urlToFAL`/`falToURL` note updated — handler uses local name, registry applies prefix
-- `## Registry`: Type registry internal structure updated — hashmap uses full prefixed names; collision check added; `discover()` step 4 added — namespace prefix prepended; sequence diagram updated — `local FAL name` + `prepend namespace prefix` step added; `forge_ls` root listing note added — `forge_roots_list` planned
-- `## Namespaces`: new section — why namespaces, declaration format, loading algorithm (recursive pseudocode), prefix rules, collision rule, FAL examples, portability note
-- `## Roots and configuration`: config split into `roots.json` + `types.json`; `forge.config.json` updated; `roots.json` example with `namespaces` array added; `types.json` example updated
-- `## MCP tools`: note updated — `:` as namespace separator mentioned; `forge_roots_list` added to planned registry tools; `forge_types_list` description updated
-- `## Roadmap`: near term updated — split config + recursive loader added as first step
 
 ---
 
 ### Version 5.0 - Registry API and sequence diagrams
 **Date:** 2026-06-06
-**Reason:** Design session — registry layer fully specified as the only interface between Forge and handlers. FAL as a capsule encoding type + URL. Type registry and root registry APIs documented. Sequence diagrams added for forge_ls and forge_read. urlToFAL/falToURL added to type handler interface.
 
 ---
 
 ### Version 4.0 - Handler interfaces, block model, config fully specified
 **Date:** 2026-06-06
-**Reason:** Full revision following design review session.
 
 ---
 
 ### Version 3.0 - Root handler, type handlers, type discovery rewritten
 **Date:** 2026-06-06
-**Reason:** Simplification of the design.
 
 ---
 
 ### Version 2.0 - FAL, key concepts, type model, support model
 **Date:** 2026-06-06
-**Reason:** Realignment session.
 
 ---
 
