@@ -1,13 +1,29 @@
 {
-  "version": "0.2.0",
+  "version": "0.4.0",
   "types": {
     "txt": {
       "version": "1.0",
-      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/txt.js"
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
     },
-    "unknown": {
-      "version": "0.2.0",
-      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/unknown.js"
+    "md": {
+      "version": "1.0",
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+    },
+    "js": {
+      "version": "1.0",
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+    },
+    "json": {
+      "version": "1.0",
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+    },
+    "css": {
+      "version": "1.0",
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+    },
+    "html": {
+      "version": "1.0",
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
     }
   }
 }

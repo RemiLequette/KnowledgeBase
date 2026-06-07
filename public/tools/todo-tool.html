@@ -12,6 +12,7 @@
     --open-h:#2563eb; --open-bg:#eef3ff;
     --wip-h:#ea580c;  --wip-bg:#fff3ee;
     --done-h:#16a34a; --done-bg:#eefaf4;
+    --critical:#7c2d12; --critical-bg:#fee2e2; --critical-border:#ef4444;
     --high:#dc2626; --normal:#4f46e5; --low:#475569;
     --dirty-bg:#fef08a; --dirty-border:#f59e0b;
   }
@@ -23,6 +24,22 @@
   .header-left{display:flex;align-items:center;gap:10px;}
   .app-title{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
   .project-name{font-family:'DM Mono',monospace;font-size:11px;color:#555;}
+  .header-center{flex:1;display:flex;align-items:center;justify-content:center;padding:0 12px;}
+  .search-wrap{position:relative;width:100%;max-width:320px;}
+  .search-input{
+    width:100%;font-family:'DM Sans',sans-serif;font-size:12px;
+    background:#2a2a28;border:1px solid #3a3a38;border-radius:6px;
+    color:#ddd;padding:5px 28px 5px 10px;outline:none;transition:border-color .15s;
+  }
+  .search-input::placeholder{color:#555;}
+  .search-input:focus{border-color:#666;background:#333;}
+  .search-clear{
+    position:absolute;right:7px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:#555;cursor:pointer;font-size:13px;line-height:1;
+    display:none;padding:0;
+  }
+  .search-clear.visible{display:block;}
+  .search-clear:hover{color:#aaa;}
   .header-right{display:flex;align-items:center;gap:6px;}
   .status{display:flex;align-items:center;gap:4px;font-family:'DM Mono',monospace;font-size:10px;color:#555;}
   .status-dot{width:6px;height:6px;border-radius:50%;background:#444;transition:background .3s;}
@@ -69,10 +86,12 @@
   .priority-lane{display:flex;flex-direction:column;}
   .priority-lane+.priority-lane{border-top:1px solid rgba(0,0,0,.07);margin-top:3px;padding-top:3px;}
   .priority-lane-header{display:flex;align-items:center;gap:5px;padding:3px 8px 2px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;}
+  .priority-lane-header.critical{color:var(--critical);}
   .priority-lane-header.high  {color:var(--high);}
   .priority-lane-header.normal{color:var(--normal);}
   .priority-lane-header.low   {color:var(--low);}
   .lane-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .lane-dot.critical{background:var(--critical);}
   .lane-dot.high  {background:var(--high);}
   .lane-dot.normal{background:var(--normal);}
   .lane-dot.low   {background:var(--low);}
@@ -112,9 +131,10 @@
   .card.dragging{opacity:.35;transform:scale(.95);}
   .card:hover{box-shadow:0 3px 10px rgba(0,0,0,.12);}
   .card.dirty-card{background:var(--dirty-bg);border-color:var(--dirty-border) !important;}
-  .card-high  {border-color:var(--high);}
-  .card-normal{border-color:var(--normal);}
-  .card-low   {border-color:var(--low);}
+  .card-critical{border-color:var(--critical-border);background:var(--critical-bg);}
+  .card-high    {border-color:var(--high);}
+  .card-normal  {border-color:var(--normal);}
+  .card-low     {border-color:var(--low);}
   .card.trashed{background:#f8f7f4;border-color:#d1d5db !important;opacity:.75;cursor:default;}
   .card.trashed .card-title{text-decoration:line-through;color:#9ca3af;}
   .card.trashed .card-desc{color:#bbb;}
@@ -127,9 +147,10 @@
     background:#fff;border-width:2px;border-style:solid;border-radius:4px;
     padding:1px 5px;line-height:1.4;
   }
-  .card-high   .card-index{border-color:var(--high);  color:var(--high);}
-  .card-normal .card-index{border-color:var(--normal);color:var(--normal);}
-  .card-low    .card-index{border-color:var(--low);   color:var(--low);}
+  .card-critical .card-index{border-color:var(--critical-border);color:var(--critical);}
+  .card-high     .card-index{border-color:var(--high);  color:var(--high);}
+  .card-normal   .card-index{border-color:var(--normal);color:var(--normal);}
+  .card-low      .card-index{border-color:var(--low);   color:var(--low);}
   .card.trashed .card-index{border-color:#d1d5db;color:#9ca3af;}
   .card-title{font-size:12px;font-weight:700;line-height:1.3;color:#111;word-break:break-word;flex:1;}
   .card-title.no-title{font-weight:400;color:#bbb;font-style:italic;font-size:11px;}
@@ -156,9 +177,10 @@
   .card-meta{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:2px;}
   .card-badge{font-family:'DM Mono',monospace;font-size:10px;padding:1px 5px;border-radius:3px;background:#f1f0ee;color:#555;cursor:pointer;border:1px solid #e0ddd8;transition:background .1s;white-space:nowrap;}
   .card-badge:hover{background:#e5e3de;}
-  .card-badge.priority-high  {background:#fee2e2;color:var(--high);  border-color:#fca5a5;}
-  .card-badge.priority-normal{background:#ede9fe;color:var(--normal);border-color:#c4b5fd;}
-  .card-badge.priority-low   {background:#f1f5f9;color:var(--low);   border-color:#cbd5e1;}
+  .card-badge.priority-critical{background:#fee2e2;color:var(--critical);border-color:#fca5a5;font-weight:700;}
+  .card-badge.priority-high    {background:#fee2e2;color:var(--high);  border-color:#fca5a5;}
+  .card-badge.priority-normal  {background:#ede9fe;color:var(--normal);border-color:#c4b5fd;}
+  .card-badge.priority-low     {background:#f1f5f9;color:var(--low);   border-color:#cbd5e1;}
 
   /* EFFORT PIPS */
   .effort-icon{display:inline-flex;align-items:flex-end;gap:2px;}
@@ -247,6 +269,12 @@
     <span class="app-title">TODO</span>
     <span class="project-name" id="projectName">—</span>
   </div>
+  <div class="header-center">
+    <div class="search-wrap">
+      <input class="search-input" id="searchInput" type="text" placeholder="Search…" oninput="onSearch(this.value)">
+      <button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button>
+    </div>
+  </div>
   <div class="header-right">
     <div class="status"><div class="status-dot" id="statusDot"></div><span id="statusText">connecting…</span></div>
     <button class="hbtn hbtn-dark"  onclick="openArchive()">Archive</button>
@@ -297,18 +325,40 @@ const ARCHIVE_PATH = TODO_PATH.replace(/TODO\.md$/i, 'TODO-archive.md');
 const WORK_PATH    = TODO_PATH.replace(/TODO\.md$/i, 'TODO-work.json');
 const SERVER       = 'http://localhost:3000';
 const LS_SPLIT     = 'todo-tool-split';
-const PRIORITIES   = ['high','normal','low'];
+const PRIORITIES   = ['critical','high','normal','low'];
 const STATES       = ['open','wip','done'];
 const IDX_PFX      = {open:'O',wip:'W',done:'D'};
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let items    = [];
-let trashed  = [];
-let snapshot = {};   // id → {title,desc,priority,state,effort} at load time
-let dirty    = false;
-let connected= false;
-let dirtyIds = new Set();
-let splitPct = parseFloat(localStorage.getItem(LS_SPLIT)||'65');
+let items      = [];
+let trashed    = [];
+let snapshot   = {};
+let dirty      = false;
+let connected  = false;
+let dirtyIds   = new Set();
+let splitPct   = parseFloat(localStorage.getItem(LS_SPLIT)||'65');
+let searchQuery = '';
+
+// ── SEARCH ────────────────────────────────────────────────────────────────────
+function onSearch(val){
+  searchQuery=val.trim().toLowerCase();
+  document.getElementById('searchClear').classList.toggle('visible', searchQuery.length>0);
+  render();
+}
+function clearSearch(){
+  document.getElementById('searchInput').value='';
+  onSearch('');
+  document.getElementById('searchInput').focus();
+}
+function matchesSearch(item){
+  if(!searchQuery) return true;
+  const idx=`${IDX_PFX[item.state]||'?'}${item.seq||''}`.toLowerCase();
+  return (item.title||'').toLowerCase().includes(searchQuery)
+      || (item.desc||'').toLowerCase().includes(searchQuery)
+      || (item.priority||'').toLowerCase().includes(searchQuery)
+      || (item.effort||'').toLowerCase().includes(searchQuery)
+      || idx.includes(searchQuery);
+}
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 async function init() {
@@ -355,7 +405,7 @@ function buildBoard() {
           <input type="text" id="add-${c.state}-desc"  placeholder="Description…"
             onkeydown="if(event.key==='Enter') confirmAdd('${c.state}'); if(event.key==='Escape') hideAddForm('${c.state}')">
           <div class="add-form-row">
-            <select id="add-${c.state}-priority"><option value="high">High</option><option value="normal" selected>Normal</option><option value="low">Low</option></select>
+            <select id="add-${c.state}-priority"><option value="critical">Critical</option><option value="high">High</option><option value="normal" selected>Normal</option><option value="low">Low</option></select>
             <select id="add-${c.state}-effort"><option value="">— effort</option><option value="XS">XS</option><option value="S">S</option><option value="M">M</option><option value="L">L</option><option value="XL">XL</option></select>
           </div>
           <div class="add-form-btns">
@@ -441,10 +491,12 @@ function parseTodo(md){
   const result=[]; let autoId=1;
   for(const line of lines){
     const t=line.trim().toLowerCase();
-    if(t.startsWith('## high'))  {priority='high';  continue;}
-    if(t.startsWith('## normal')){priority='normal';continue;}
-    if(t.startsWith('## low'))   {priority='low';   continue;}
-    if(t.startsWith('## done'))  {priority='normal';continue;} // done section — priority from index
+    if(t.startsWith('## critical')){priority='critical';continue;}
+    if(t.startsWith('## high'))    {priority='high';    continue;}
+    if(t.startsWith('## normal'))  {priority='normal';  continue;}
+    if(t.startsWith('## low'))     {priority='low';     continue;}
+    if(t.startsWith('## done'))    {priority='normal';  continue;}
+    if(t.startsWith('## wip'))     {                    continue;}
     const openMatch=line.match(/^- \[ \] (.+)/);
     const doneMatch=line.match(/^- \[x\] (.+)/i);
     if(openMatch||doneMatch){
@@ -462,15 +514,12 @@ function parseTodo(md){
       const em=rest.match(/\[effort:\s*(XS|S|M|L|XL)\]/i);
       const effort=em?em[1].toUpperCase():'';
       rest=rest.replace(/\[effort:\s*(XS|S|M|L|XL)\]\s*/i,'').trim();
-      // strip archived-from if present
       rest=rest.replace(/\[archived-from:\s*\w+\]\s*/i,'').trim();
       const pipeIdx=rest.indexOf(' | ');
       let title='',desc='';
       if(pipeIdx>=0){title=rest.slice(0,pipeIdx).trim();desc=rest.slice(pipeIdx+3).trim();}
       else{desc=rest;}
-      // determine state
       let state=isDone?'done':isWip?'wip':'open';
-      // if index exists and matches a different state, trust the section
       result.push({id:autoId++,title,desc,priority,state,effort,existingSeq,existingState});
     }
   }
@@ -495,7 +544,7 @@ function serializeTodo(existingMd,items){
   const headerLines=[]; let inContent=false;
   for(const l of lines){
     const t=l.trim().toLowerCase();
-    if(!inContent&&(t.startsWith('## high')||t.startsWith('## normal')||t.startsWith('## low')||t.startsWith('## done')||t.startsWith('## wip')))inContent=true;
+    if(!inContent&&(t.startsWith('## critical')||t.startsWith('## high')||t.startsWith('## normal')||t.startsWith('## low')||t.startsWith('## done')||t.startsWith('## wip')))inContent=true;
     if(!inContent)headerLines.push(l);
   }
   const footerStart=lines.findIndex(l=>l.trim().startsWith('## Index'));
@@ -516,6 +565,7 @@ function serializeTodo(existingMd,items){
   });
   const openItems=sortedBy('open');
   const body=[
+    section('Critical',    openItems.filter(i=>i.priority==='critical')),
     section('High priority',openItems.filter(i=>i.priority==='high')),
     section('Normal',       openItems.filter(i=>i.priority==='normal')),
     section('Low priority', openItems.filter(i=>i.priority==='low')),
@@ -594,7 +644,7 @@ function render(){
     });
     cnt.textContent=si.length;
     activeEl.innerHTML=PRIORITIES.map(priority=>{
-      const lane=si.filter(i=>i.priority===priority);
+      const lane=si.filter(i=>i.priority===priority&&matchesSearch(i));
       if(!lane.length)return'';
       return`<div class="priority-lane">
         <div class="priority-lane-header ${priority}"><span class="lane-dot ${priority}"></span>${priority}</div>
@@ -606,7 +656,7 @@ function render(){
         </div>
       </div>`;
     }).join('');
-    const stateTrash=trashed.filter(i=>i.origState===state);
+    const stateTrash=trashed.filter(i=>i.origState===state&&matchesSearch(i));
     trashEl.innerHTML=stateTrash.map(item=>renderCard(item,true)).join('');
   });
 }
@@ -715,8 +765,7 @@ function toggleExpand(id){const el=document.getElementById(`card-desc-${id}`);if
 function startEdit(id){
   const item=items.find(i=>i.id===id);if(!item)return;
   const wrap=document.getElementById(`edit-wrap-${id}`);if(!wrap)return;
-  // hide title and desc
-  wrap.previousElementSibling&&(wrap.previousElementSibling.style.display='none'); // no-title div
+  wrap.previousElementSibling&&(wrap.previousElementSibling.style.display='none');
   const titleEl=wrap.parentElement.querySelector('.card-title');
   if(titleEl)titleEl.style.display='none';
   const descEl=document.getElementById(`card-desc-${id}`);
@@ -791,8 +840,8 @@ function forgetItem(id){
 
 // ── DRAG ──────────────────────────────────────────────────────────────────────
 let dragId=null;
-let dropTargetId=null; // card id we're hovering, or null
-let dropBefore=true;   // insert before or after target
+let dropTargetId=null;
+let dropBefore=true;
 
 function onDragStart(e,id){
   dragId=id;
@@ -816,14 +865,13 @@ function onDragLeave(e){
   if(!e.currentTarget.contains(e.relatedTarget))e.currentTarget.classList.remove('drag-over');
 }
 
-// Card-level drag over — show placeholder before/after target card
 function onDragOverCard(e,targetId){
   e.preventDefault();e.stopPropagation();
   if(dragId===targetId)return;
   const card=e.currentTarget;
   const rect=card.getBoundingClientRect();
   const before=(e.clientY-rect.top)<rect.height/2;
-  if(dropTargetId===targetId&&dropBefore===before)return; // no change
+  if(dropTargetId===targetId&&dropBefore===before)return;
   dropTargetId=targetId; dropBefore=before;
   clearPlaceholders();
   const ph=document.createElement('div');
@@ -832,7 +880,6 @@ function onDragOverCard(e,targetId){
   else       card.parentNode.insertBefore(ph,card.nextSibling);
 }
 
-// Drop on a card — insert at computed position
 function onDropCard(e,targetId){
   e.preventDefault();e.stopPropagation();
   clearPlaceholders();
@@ -842,18 +889,15 @@ function onDropCard(e,targetId){
   const dragItem=items.find(i=>i.id===id);
   const targetItem=items.find(i=>i.id===targetId);
   if(!dragItem||!targetItem)return;
-  // determine state/priority from target
   const newState=targetItem.state;
   const newPriority=targetItem.priority;
   dragItem.state=newState; dragItem.priority=newPriority;
-  // reorder: remove dragItem, insert before/after targetItem in seq order
   const laneItems=items.filter(i=>i.state===newState&&i.priority===newPriority&&i.id!==id)
     .sort((a,b)=>a.seq-b.seq);
   const tIdx=laneItems.findIndex(i=>i.id===targetId);
   const insertAt=dropBefore?tIdx:tIdx+1;
   laneItems.splice(insertAt,0,dragItem);
   laneItems.forEach((item,n)=>{item.seq=n+1;});
-  // re-seq other states/priorities untouched
   STATES.forEach(st=>PRIORITIES.forEach(pr=>{
     if(st===newState&&pr===newPriority)return;
     items.filter(i=>i.state===st&&i.priority===pr).sort((a,b)=>a.seq-b.seq).forEach((item,n)=>{item.seq=n+1;});
@@ -861,7 +905,6 @@ function onDropCard(e,targetId){
   markDirty(id); saveWork(); render();
 }
 
-// Lane-level drag over (when not over a specific card — drop at end)
 function onDragOver(e,state,priority){
   e.preventDefault();e.stopPropagation();
   if(!document.querySelector(`#lane-${state}-${priority} .drop-ph`)){
@@ -878,7 +921,6 @@ function onDrop(e,state,priority){
   const item=items.find(i=>i.id===id);
   if(item){
     item.state=state;item.priority=priority;
-    // place at end of this lane
     const laneItems=items.filter(i=>i.state===state&&i.priority===priority&&i.id!==id).sort((a,b)=>a.seq-b.seq);
     laneItems.push(item);
     laneItems.forEach((it,n)=>{it.seq=n+1;});
@@ -909,7 +951,7 @@ function openPopover(e,type,id){
   popoverTarget=id;popoverType=type;
   const pop=document.getElementById('popover');
   const opts=type==='priority'
-    ?[{v:'high',l:'High'},{v:'normal',l:'Normal'},{v:'low',l:'Low'}]
+    ?[{v:'critical',l:'Critical'},{v:'high',l:'High'},{v:'normal',l:'Normal'},{v:'low',l:'Low'}]
     :[{v:'',l:'None'},{v:'XS',l:'XS'},{v:'S',l:'S'},{v:'M',l:'M'},{v:'L',l:'L'},{v:'XL',l:'XL'}];
   const cur=type==='priority'?item.priority:item.effort;
   pop.innerHTML=`<div class="popover-label">${type}</div>`+opts.map(o=>`<div class="popover-option ${o.v===cur?'selected':''}" onclick="selectPopover('${o.v}')">${o.l}</div>`).join('');

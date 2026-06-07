@@ -48,9 +48,14 @@ WHY: Prevents context pollution, unnecessary file reads, and unintended exposure
 
 ---
 
-## Decision Layer — What to load
+## Decision Layer — What to read
 
-Match the current task against the triggers below. Load only the files that match.
+To identify what type of document to read, ask: what would you need to audit it?
+- Artifacts → convention
+- A log → guide
+
+Match the current task against the triggers below. Read only the documents that match.
+Use Forge to read all KB documents — `forge_read(fal)`.
 
 | Trigger | Load |
 |---------|------|
@@ -144,6 +149,15 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 3.1 - Decision Layer litmus test + Forge vocabulary
+**Date:** 2026-07-07
+**Reason:** Decision Layer intro rewritten — litmus test convention/guide added, "load" replaced by "read", Forge mentioned as the tool to read KB documents.
+
+**Modifications:**
+- `## Decision Layer`: renamed to `What to read`; intro rewritten with litmus test and Forge reference
+
+---
 
 ### Version 3.0 - backlog alias in Decision Layer
 **Date:** 2026-06-06

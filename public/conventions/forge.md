@@ -26,10 +26,11 @@ forge, MCP, artifact, FAL, type, handler, blocks, filesystem, structured-access,
 5. [Root handler](#root-handler)
 6. [Type discovery](#type-discovery)
 7. [Type handlers](#type-handlers)
-8. [Roots and configuration](#roots-and-configuration)
-9. [MCP tools](#mcp-tools)
-10. [Roadmap](#roadmap)
-11. [Index](#index)
+8. [Registry](#registry)
+9. [Roots and configuration](#roots-and-configuration)
+10. [MCP tools](#mcp-tools)
+11. [Roadmap](#roadmap)
+12. [Index](#index)
 
 ## Why Forge exists
 [up](#table-of-contents)
@@ -65,7 +66,7 @@ Forge addresses all six by replacing raw file access with a structured, typed, c
 
 **Block** — a named unit of content within an artifact. Always accessed by full path from the root block, never by position or line number. Order among sibling blocks is significant. Block content is always plain text. A block may have both content of its own and child blocks — the content always precedes the children.
 
-**Handler** — a JavaScript module. Root handlers manage folder navigation; type handlers manage artifact and block operations.
+**Handler** — a JavaScript module. Root handlers manage folder navigation; type handlers manage artifact and block operations. Forge never calls handlers directly — all access goes through the registries.
 
 ## Forge Artifact Locator FAL
 [up](#table-of-contents)
@@ -97,6 +98,15 @@ forge://development/big-project/TODO.doc-todolist#W1                     ← blo
 forge://kb/public/TODO.doc-todolist#section:Normale#item:W1              ← nested block
 forge://kb/public/INDEX.doc#section:Session-Bootstrap                    ← nested block
 ```
+
+### FAL as a capsule
+
+An artifact FAL encodes two pieces of information that the type registry needs:
+
+- **type** — extracted from the extension (after the last `.`) — used to look up the handler in the hashmap
+- **URL** — reconstructed by the handler via `falToURL()` — the physical resource location
+
+Neither piece is stored separately. The FAL is self-contained. This is why artifact FALs must carry the real type name — without it, the type registry cannot dispatch to the correct handler.
 
 ### Root registry
 
@@ -187,7 +197,7 @@ export async function rmdir(url)             // delete a folder
 Returns an ordered array of `{ url, isFolder }` entries. Order is significant and preserved.
 
 - `isFolder: true` → Forge wraps the URL as a folder FAL.
-- `isFolder: false` → Forge passes the URL to type discovery.
+- `isFolder: false` → Forge passes the URL to the type registry for discovery.
 
 **Exceptions:**
 - `rmdir` on a non-empty folder → error. An `undefined` artifact inside cannot be deleted, so the folder cannot be destroyed.
@@ -197,13 +207,15 @@ Returns an ordered array of `{ url, isFolder }` entries. Order is significant an
 ## Type discovery
 [up](#table-of-contents)
 
-When the root handler returns a non-folder URL, Forge runs type discovery in two phases.
+When the root handler returns a non-folder URL, Forge passes it to the type registry for discovery. The type registry runs discovery in two phases.
 
 **Phase 1 — claim:**
 
-Forge calls `claim(url)` on all registered type handlers. Within a type hierarchy, Forge respects the order from most specific to least specific (`md-doc-convention` before `md-doc` before `md`) and **stops as soon as one handler claims the URL** — more general handlers in the same hierarchy are not called. Hierarchies that are independent of each other are all evaluated.
+The type registry calls `claim(url)` on all registered type handlers. Within a type hierarchy, the registry respects the order from most specific to least specific (`md-doc-convention` before `md-doc` before `md`) and **stops as soon as one handler claims the URL** — more general handlers in the same hierarchy are not called. Hierarchies that are independent of each other are all evaluated.
 
-Claim logic is entirely the handler's responsibility. Forge does not impose any mechanism — a handler may inspect the URL extension, the filename, or the file content (shebang). Examples:
+The hierarchy order is derived from the type names — a type name is split on `-` and longer names (more segments) are more specific. No explicit `extends` declaration is needed.
+
+Claim logic is entirely the handler's responsibility. A handler may inspect the URL extension, the filename, or the file content (shebang). Examples:
 
 - `md` — claims any `.md` file unconditionally. Called last among `md-*` types.
 - `md-doc` — claims `.md` files containing a specific shebang (e.g. `*Document type:*`). Placed above `md` in the hierarchy, so it is called first and stops the chain if it claims.
@@ -213,7 +225,7 @@ If two independent handlers could both claim the same URL (e.g. two handlers bot
 
 **Phase 2 — outcome:**
 
-- Exactly 1 claim → artifact typed, handler assigned.
+- Exactly 1 claim → artifact typed; handler calls `urlToFAL(url)` to produce the artifact FAL.
 - 0 claims → artifact assigned the built-in `undefined` type. It exists in the hierarchy (it can be listed) but no operation is possible on it. It cannot be read, written, moved, or deleted. A folder containing an `undefined` artifact cannot be deleted.
 - >1 claims → error. Forge reports all claiming handlers.
 
@@ -222,13 +234,17 @@ If two independent handlers could both claim the same URL (e.g. two handlers bot
 
 A type handler is a JavaScript module that manages artifacts and their block structure for a specific type. It is the executable form of a convention — conformance becomes automatic through the handler interface.
 
+Forge never calls a type handler directly. All calls go through the type registry.
+
 **Interface:**
 ```js
 export const type = 'md-doc';
 export const version = '1.0';
 
 // Type discovery
-export async function claim(url)
+export async function claim(url)                         // return true if this handler manages this URL
+export async function urlToFAL(url)                      // url physique → artifact FAL name (stem.type)
+export async function falToURL(falName, baseUrl)         // artifact FAL name → url physique
 
 // Artifact CRUD
 export async function createArtifact(url)
@@ -249,6 +265,15 @@ export async function appendBlock(url, block, content)   // append text to a blo
 export async function deleteBlock(url, block)            // delete a block and its children
 ```
 
+**`urlToFAL(url)` and `falToURL(falName, baseUrl)`:**
+
+These two functions are the bidirectional mapping between the physical URL and the FAL name. They are called by the type registry — never by Forge directly.
+
+- `urlToFAL("file:///path/TODO.md")` → `"TODO.doc-todolist"`
+- `falToURL("TODO.doc-todolist", "file:///path/")` → `"file:///path/TODO.md"`
+
+The FAL name is the artifact name with its type extension — the stem may differ from the physical filename. The handler is the only place that knows this mapping.
+
 **`listBlocks(url, block="")` contract:**
 
 Returns an ordered list of full block paths (direct children of `block` only — one level). Paths are complete from the root block and directly reusable as arguments to any block operation. Default `block=""` lists the top-level children of the artifact.
@@ -268,6 +293,131 @@ Returns an ordered list of full block paths (direct children of `block` only —
 - Any block operation on a non-existent block → error.
 - `deleteArtifact` on an `undefined` artifact → error.
 - `moveArtifact` across roots → error.
+
+## Registry
+[up](#table-of-contents)
+
+The registry layer is the only interface between Forge and the handlers. Forge never calls a handler directly — it calls a registry, which dispatches to the appropriate handler internally.
+
+There are two registries with complementary responsibilities. Both work with URLs as their common currency.
+
+### Type registry
+
+The type registry manages all artifact operations. It is loaded at startup from the types JSON file. It exposes a FAL-only API to Forge — types are hidden inside the registry and encoded in the FAL.
+
+**Internal structure:**
+
+At startup, the type registry builds a hashmap: `typeName → handler module`. The type hierarchy order (for `claim()` dispatch) is derived from the type names — names are split on `-` and sorted by descending length (more segments = more specific). No explicit ordering configuration is needed.
+
+**API exposed to Forge:**
+
+```js
+// Discovery — url physique → FAL (called by Forge during forge_ls)
+typeRegistry.discover(url)                          → fal
+
+// Artifact operations — all take a FAL, dispatch to handler via type extraction + falToURL()
+typeRegistry.read(fal, block?)                      → content
+typeRegistry.write(fal, block, content)
+typeRegistry.listBlocks(fal, block?)                → string[]
+typeRegistry.createArtifact(fal)
+typeRegistry.deleteArtifact(fal)
+typeRegistry.moveArtifact(fal, targetFal)
+typeRegistry.renameArtifact(fal, name)
+typeRegistry.insertBlock(fal, name, after, firstChild?)
+typeRegistry.appendBlock(fal, block, content)
+typeRegistry.deleteBlock(fal, block)
+```
+
+**Dispatch mechanism** (same for all artifact operations):
+1. Extract type from FAL extension (after last `.`)
+2. Look up handler in hashmap — O(1)
+3. Call `handler.falToURL(falName, baseUrl)` to recover the physical URL
+4. Delegate to handler
+
+**`discover(url)` mechanism:**
+1. Call `claim(url)` on handlers, most specific first (derived from type name length)
+2. Stop at first claim
+3. Call `handler.urlToFAL(url)` to produce the FAL name
+4. Return the complete FAL
+
+### Root registry
+
+The root registry manages folder navigation. It is loaded at startup from the roots array in the config. Each root has exactly one handler — no dispatch needed.
+
+Folder FALs are derived directly from URLs by Forge (strip the base URL, prepend `forge://<root>/`) — the root registry does not manage FAL encoding.
+
+**API exposed to Forge:**
+
+```js
+rootRegistry.list(url)                              → { folders: url[], artifacts: url[] }
+rootRegistry.mkdir(url)
+rootRegistry.rmdir(url)
+rootRegistry.mvdir(url, targetUrl)
+rootRegistry.rndir(url, name)
+```
+
+**Forge responsibilities for folders:**
+
+Forge translates between folder FALs and URLs before calling the root registry:
+- FAL → URL: strip `forge://<root>/`, prepend root base URL
+- URL → FAL: strip root base URL, prepend `forge://<root>/`
+
+### Sequence diagrams
+
+**`forge_ls` — folder listing:**
+
+```mermaid
+sequenceDiagram
+    participant MCP
+    participant Forge
+    participant RootReg as Root Registry
+    participant RootH as Root Handler
+    participant TypeReg as Type Registry
+    participant TypeH as Type Handler
+
+    MCP->>Forge: forge_ls(folderFal)
+    Forge->>Forge: FAL → url
+    Forge->>RootReg: list(url)
+    RootReg->>RootH: list(url)
+    RootH-->>RootReg: [{url, isFolder}, ...]
+    RootReg-->>Forge: [{url, isFolder}, ...]
+
+    loop each entry
+        alt isFolder = true
+            Forge->>Forge: url → folder FAL
+        else isFolder = false
+            Forge->>TypeReg: discover(url)
+            TypeReg->>TypeH: claim(url)
+            TypeH-->>TypeReg: true
+            TypeReg->>TypeH: urlToFAL(url)
+            TypeH-->>TypeReg: FAL name
+            TypeReg-->>Forge: artifact FAL
+        end
+    end
+
+    Forge-->>MCP: [folder FALs..., artifact FALs...]
+```
+
+**`forge_read` — artifact read:**
+
+```mermaid
+sequenceDiagram
+    participant MCP
+    participant Forge
+    participant TypeReg as Type Registry
+    participant TypeH as Type Handler
+
+    MCP->>Forge: forge_read(fal, block?)
+    Forge->>TypeReg: read(fal, block?)
+    TypeReg->>TypeReg: extract type from FAL extension
+    TypeReg->>TypeReg: lookup handler in hashmap
+    TypeReg->>TypeH: falToURL(falName, baseUrl)
+    TypeH-->>TypeReg: url
+    TypeReg->>TypeH: readBlock(url, block)
+    TypeH-->>TypeReg: content
+    TypeReg-->>Forge: content
+    Forge-->>MCP: content
+```
 
 ## Roots and configuration
 [up](#table-of-contents)
@@ -325,12 +475,14 @@ npm install
 
 All tools accept FALs. Folder FALs end with `/`. Block paths use `#`. See the FAL section for syntax and quoting rules.
 
+Forge implements each tool by translating the MCP call into one or two registry calls — no additional logic.
+
 **Implemented:**
 
 | Tool | Arguments | Description |
 |---|---|---|
 | `forge_ping` | — | Connectivity check — returns `pong` and server version |
-| `forge_ls` | `fal?, base?` | List one level. No arg: list roots. Folder FAL: list folders and artifacts with their types. Artifact FAL + block: list direct child blocks (full paths). |
+| `forge_ls` | `fal?` | List one level. No arg: list roots. Folder FAL: list folders and artifacts with their FALs. |
 | `forge_read` | `fal, block?` | Read a block's own content. Defaults to `""` — full managed content of the artifact. |
 
 **Planned — artifacts:**
@@ -372,7 +524,8 @@ All tools accept FALs. Folder FALs end with `/`. Block paths use `#`. See the FA
 [up](#table-of-contents)
 
 **Near term:**
-- Implement type discovery with `claim()` in all handlers
+- Refactor `forge.js` — introduce type registry and root registry objects; Forge calls only registries
+- Add `urlToFAL()` and `falToURL()` to all type handlers
 - Register first real types: `md`, `md-doc`, `doc-todolist`
 - Implement artifact CRUD: `forge_create`, `forge_delete`, `forge_move`, `forge_rename`
 - Implement block CRUD: `forge_write`, `forge_append`, `forge_insert`, `forge_delete_block`
@@ -394,35 +547,30 @@ All tools accept FALs. Folder FALs end with `/`. Block paths use `#`. See the FA
 
 ## Changelog
 
+### Version 5.0 - Registry API and sequence diagrams
+**Date:** 2026-06-06
+**Reason:** Design session — registry layer fully specified as the only interface between Forge and handlers. FAL as a capsule encoding type + URL. Type registry and root registry APIs documented. Sequence diagrams added for forge_ls and forge_read. urlToFAL/falToURL added to type handler interface.
+
+**Modifications:**
+- `## Key concepts`: Handler definition updated — Forge never calls handlers directly
+- `## Forge Artifact Locator FAL`: new sub-section `FAL as a capsule` — explains type + URL encoding
+- `## Type discovery`: hierarchy order rule clarified — derived from type name length, no explicit config needed; Phase 2 outcome updated — urlToFAL() called on claim
+- `## Type handlers`: `urlToFAL()` and `falToURL()` added to interface; note added — Forge never calls handlers directly; `urlToFAL`/`falToURL` contract documented
+- `## Registry`: new section — type registry API, root registry API, dispatch mechanism, sequence diagrams (forge_ls with alt isFolder branch, forge_read)
+- `## MCP tools`: note added — Forge translates MCP calls into registry calls, no additional logic; forge_ls description updated
+- `## Roadmap`: near term updated — refactor forge.js with registry objects as first step
+
+---
+
 ### Version 4.0 - Handler interfaces, block model, config fully specified
 **Date:** 2026-06-06
 **Reason:** Full revision following design review session — block separator unified to `#`, handler URLs in both registries, type registry externalised to a separate JSON file, block model clarified (order significant, content before children, readBlock returns own content only), listBlocks returns one level of full paths, insertBlock signature redesigned (after + firstChild), flat conflict explanation rewritten as two-phase discovery, configuration file updated with complete root and type examples.
-
-**Modifications:**
-- `## Quick Start`: block separator `#` noted, order significance noted, block arguments as full paths noted
-- `## Forge Artifact Locator FAL`: block separator unified to `#` in grammar and all examples
-- `## Forge Artifact Locator FAL — Type registry`: externalised to URL pointing to `types.json`; handler fields changed from relative paths to URLs
-- `## Blocks`: block principles expanded — order significant, content before children, readBlock own content only; all examples updated to `#` separator
-- `## Root handler`: unchanged
-- `## Type discovery`: rewritten as two explicit phases — Phase 1 (claim, hierarchy stops at first match) and Phase 2 (outcome: 1/0/>1); flat conflict replaced by concrete explanation with solutions
-- `## Type handlers`: `listBlocks(url, block="")` — one level, returns full paths, default `""`; `readBlock` — own content only; `insertBlock` — redesigned with `after` + `firstChild` flag, rules and error case documented; `writeBlock` with children — allowed, content precedes children
-- `## Roots and configuration`: config updated — root entries include handler URL; `types` field is a URL to external `types.json`; full example with two roots
-- `## MCP tools`: `forge_ls` updated to cover artifact FAL + block; `forge_insert` updated with new signature
 
 ---
 
 ### Version 3.0 - Root handler, type handlers, type discovery rewritten
 **Date:** 2026-06-06
 **Reason:** Simplification of the design — handler interfaces fully specified, root handler and type handler separated into distinct sections, type discovery mechanism precisely described, block anonymous `""` introduced, MCP tools reorganised by concern, Roadmap updated.
-
-**Modifications:**
-- `## Handlers`: removed — replaced by `## Root handler`, `## Type discovery`, `## Type handlers`
-- `## Root handler`: new — `list()` contract with `{url, isFolder}`, folder CRUD interface, exceptions
-- `## Type discovery`: new — claim order by name hierarchy, handler responsibility, 0/1/>1 outcomes
-- `## Type handlers`: new — full interface, anonymous block `""`, handler versioning, exceptions
-- `## MCP tools`: rewritten — tools split by concern, planned list updated
-- `## Versioning`: removed — handler versioning folded into `## Type handlers`
-- `## Roadmap`: updated
 
 ---
 

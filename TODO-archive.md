@@ -7,3 +7,7 @@
 - [x] md-doc: add `delete` command
 - [x] Move `public/tools/tests/` to `tools/tests/` at KB root — tests are KB maintenance artifacts, not public resources.
 - [x] Translate `conventions/md-doc-usage.md` to English — section names and content were in French, violating the documentation convention. Clarified `dump` command description.
+
+## 2026-06
+
+- [x] [O33] Rename conventions/ to contracts/ [archived-from: open]
