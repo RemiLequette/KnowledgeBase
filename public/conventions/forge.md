@@ -17,7 +17,7 @@ Within an artifact, content is accessed via named blocks — never by line numbe
 Roots and types are organised into **namespaces**. The KB is the default namespace (no prefix). Projects and libraries declare additional namespaces, each with their own roots and types loaded recursively at startup.
 
 ## Keywords
-forge, MCP, artifact, FAL, ArtifactRef, UrlRef, IRootRegistry, type, handler, blocks, filesystem, structured-access, roots, registry, claim, type-discovery, namespace, multiproject, RTFM, describe, brand
+forge, MCP, artifact, FAL, ArtifactRef, UrlRef, IRootRegistry, type, handler, blocks, filesystem, structured-access, roots, registry, claim, type-discovery, namespace, multiproject, RTFM, describe, brand, init, descriptor
 
 ## Table of Contents
 
@@ -88,6 +88,8 @@ Forge addresses all six by replacing raw file access with a structured, typed, c
 **Handler** — a JavaScript module. Root handlers implement `IRootRegistry` for a specific storage backend. Type handlers manage artifact structure and block operations for a specific type, using `IRootRegistry` to access storage. Forge never calls handlers directly — all access goes through the registries.
 
 **Namespace** — a named scope grouping roots and types belonging to a project or library. The KB is the default namespace (no prefix). All other namespaces are declared in registry files and loaded recursively at startup. A namespace is portable — its registry files can be moved to the KB or another namespace without changing their internal structure.
+
+**Descriptor** — an optional JSON object that configures a type handler at startup. Passed to the handler's `init(entry)` function by the type registry. May be declared inline in the type registry entry or in a separate file referenced by `"descriptor": "file:///..."`. Allows a single generic handler (e.g. `structured-text.js`) to serve multiple types without code duplication.
 
 ## Forge Artifact Locator FAL
 [up](#table-of-contents)
@@ -162,6 +164,8 @@ Each type entry:
 - `name` — short identifier or dash-separated hierarchy (`md`, `md-doc`, `md-doc-convention`); prefixed with namespace at load time
 - `version` — handler version, used to detect staleness against the convention it implements
 - `handler` — URL of the type handler JavaScript module
+- `descriptor` *(optional)* — URL of a JSON descriptor file; passed to `handler.init(entry)` at startup
+- *any other property* — passed as-is to `handler.init(entry)` at startup; Forge ignores unknown properties
 
 ## Blocks
 [up](#table-of-contents)
@@ -258,7 +262,7 @@ The type registry calls `claim(urlRef, rootRegistry)` on all registered type han
 
 The hierarchy order is derived from the type names — a type name is split on `-` and longer names (more segments) are more specific. No explicit `extends` declaration is needed. The namespace prefix is stripped before computing hierarchy order.
 
-Claim logic is entirely the handler's responsibility. A handler may inspect the `UrlRef` extension, the name, or the artifact content (shebang) via `rootRegistry.read(urlRef)`. Examples:
+Claim logic is entirely the handler's responsibility. A handler may inspect the `UrlRef` extension, the name, or the artifact content (shebang) via `rootRegistry.read(urlRef)`. `claim` may be async — the type registry always awaits its result. Examples:
 
 - `md` — claims any `UrlRef` with extension `.md` unconditionally. Called last among `md-*` types.
 - `md-doc` — claims `.md` files containing a specific shebang (e.g. `*Document type:*`). Reads the file via `rootRegistry.read()`. Called before `md` in the hierarchy.
@@ -286,9 +290,17 @@ Type handlers are **storage-agnostic** — they access storage exclusively throu
 export const type = 'md-doc';
 export const version = '1.0';
 
+// Initialisation — optional, called once at startup by the type registry
+export async function init(entry)
+  // entry = { name, version, handler, ...all other properties from the registry JSON }
+  // Use to configure the handler from a descriptor — inline properties or a loaded file.
+  // If entry.descriptor is present, load it from the file URL it points to.
+  // Not called for plain-text handlers that need no configuration.
+
 // Type discovery
 export async function claim(urlRef, rootRegistry)
   // return true if this handler manages this UrlRef
+  // may be async — always awaited by the type registry
   // may call rootRegistry.read(urlRef) to inspect content (shebang, etc.)
 
 // Type description — RTFM principle (optional — Registry provides default if absent)
@@ -320,6 +332,14 @@ export async function appendBlock(urlRef, block, content, rootRegistry)
 export async function deleteBlock(urlRef, block, rootRegistry)
   // delete a block and its children
 ```
+
+**`init(entry)` contract:**
+
+Called once per type name at startup, after the handler module is imported. Receives the full registry entry object — all properties from the JSON, including `name`, `version`, `handler`, and any extras (`descriptor`, `claim`, `blocks`, `reserved`, etc.).
+
+If `entry.descriptor` is present, it is a `file://` URL pointing to a JSON file — the handler loads it to complete its configuration. This allows descriptors that are too large or too structured to be inlined in the registry JSON.
+
+`init` is optional. Handlers that need no configuration (e.g. plain-text) do not export it.
 
 **`createArtifact` / `writeBlock` contract:**
 
@@ -396,6 +416,8 @@ The conversion `ArtifactRef ↔ UrlRef` is trivial once the handler is known: `r
 
 At startup, the type registry builds a hashmap: `typeName → { handler, described }`. Type names in the hashmap carry their full namespace prefix (`commwise:layout`). The `described` flag is `false` at startup and set to `true` by `typeRegistry.describe()` — it tracks whether the AI has called `forge_describe` for this type in the current session. The type hierarchy order (for `claim()` dispatch) is derived from the local type name (prefix stripped) — names are split on `-` and sorted by descending length (more segments = more specific). No explicit ordering configuration is needed.
 
+**Handler initialisation:** after importing a handler module, the type registry calls `handler.init(entry)` if the export exists, passing the full registry entry (including any extra properties from the JSON). This allows handlers to configure themselves from a descriptor without Forge needing to understand the descriptor format.
+
 **Collision check:** after all namespaces are loaded, if two entries share the same final name in the hashmap → startup error. Forge does not start. This applies to both roots and types.
 
 **API exposed to Forge:**
@@ -445,7 +467,7 @@ typeRegistry.deleteBlock(ref, block)
 6. Delegate to handler, passing `urlRef` and `rootRegistry`
 
 **`discover(urlRef, rootRegistry)` mechanism:**
-1. Call `claim(urlRef, rootRegistry)` on handlers, most specific first
+1. Call `await claim(urlRef, rootRegistry)` on handlers, most specific first
 2. Stop at first claim
 3. Build `ArtifactRef`: copy `root`, `path`, `name` from `UrlRef`; set `type` from `handler.type`
 4. Prepend namespace prefix to type name
@@ -484,7 +506,7 @@ sequenceDiagram
 
     loop each artifact UrlRef
         Forge->>TypeReg: discover(urlRef, rootRegistry)
-        TypeReg->>TypeH: claim(urlRef, rootRegistry)
+        TypeReg->>TypeH: await claim(urlRef, rootRegistry)
         TypeH-->>TypeReg: true
         TypeReg->>TypeReg: build ArtifactRef from UrlRef + handler.type
         TypeReg->>TypeReg: build FAL string; register in Brand registry
@@ -698,16 +720,32 @@ Forge is a **single shared process** across all projects. There is no per-projec
 }
 ```
 
-**KB types.json** (default namespace, no prefix):
+**KB types.json** — propriétés standard + propriétés de descripteur passées à `init` :
 ```json
 {
-  "types": [
-    { "name": "md",           "version": "1.0", "handler": "file:///...handlers/md.js" },
-    { "name": "md-doc",       "version": "1.0", "handler": "file:///...handlers/md-doc.js" },
-    { "name": "doc-todolist", "version": "2.5", "handler": "file:///...handlers/doc-todolist.js" }
-  ]
+  "types": {
+    "md": {
+      "version": "1.0",
+      "handler": "file:///...handlers/plain-text.js"
+    },
+    "js-managed": {
+      "version": "1.0",
+      "handler": "file:///...handlers/structured-text.js",
+      "claim":  { "strategy": "shebang", "value": "// @forge-type: js-managed" },
+      "blocks": { "separator": { "type": "regex", "pattern": "^// ====\\[ (.+?) \\]====$" } }
+    },
+    "md-doc": {
+      "version": "1.0",
+      "handler": "file:///...handlers/structured-text.js",
+      "descriptor": "file:///...descriptors/md-doc.json"
+    }
+  }
 }
 ```
+
+`md` — aucune propriété extra, pas d'`init`.
+`js-managed` — descripteur inline, `init` reçoit `{ name, version, handler, claim, blocks }`.
+`md-doc` — descripteur déporté, `init` charge le fichier JSON pointé par `descriptor`.
 
 Root and type names are short, lowercase, no spaces. URLs are the only place physical paths appear.
 
@@ -790,13 +828,10 @@ Forge implements each tool by parsing the FAL string into an `ArtifactRef`, then
 [up](#table-of-contents)
 
 **Near term:**
-- Implement `ArtifactRef` / `UrlRef` model — Forge parses FAL strings at the MCP boundary; registries and handlers work with refs only
-- Implement `IRootRegistry` interface — root handlers expose CRUD on `UrlRef`; type handlers receive `rootRegistry` on all operations
-- Implement `forge_describe` + RTFM gate — `described` flag per type in type registry; gate on `forge_read`/`forge_write`; Brand gate checked first
-- Implement Brand registry — session-scoped in-memory set of issued FALs; Brand gate on `forge_read`/`forge_write`; FALs registered by `forge_ls` and `forge_mkdir`
-- Refactor `forge.js` — introduce type registry and root registry objects; Forge calls only registries; no FAL strings inside registries
-- Split `forge.config.json` into `roots.json` and `types.json`; implement recursive namespace loader
-- Register first real types: `md`, `md-doc`, `doc-todolist`
+- `handler-lib.js` — shared library for type handlers: `loadDescriptor`, `makeClaim`, `makeDescribe`, `makeHandler`
+- `structured-text.js` — generic handler driven by a JSON descriptor; replaces per-type handler code
+- `js-managed` type — first descriptor-driven type; validates the `init` + descriptor mechanism
+- Register first real types: `md-doc`, `doc-todolist`
 - Implement remaining artifact CRUD: `forge_delete`, `forge_move`, `forge_rename`
 - Implement block CRUD: `forge_append`, `forge_insert`, `forge_delete_block`
 - Registry viewer — HTML tool browsing roots, types, namespaces, and artifacts via Forge
@@ -806,7 +841,6 @@ Forge implements each tool by parsing the FAL string into an `ArtifactRef`, then
 - `md-doc` tool absorbed as handler logic for `md-doc` type
 
 **Long term:**
-- `type-doc` — declarative type descriptor (extension, shebang, block structure) that generates a handler automatically. Makes adding a new type a configuration task, not a coding task.
 - `filesystem` MCP disabled in all project instructions
 
 ## Index
@@ -816,24 +850,34 @@ Forge implements each tool by parsing the FAL string into an `ArtifactRef`, then
 
 ## Changelog
 
-### Version 7.0 - ArtifactRef, UrlRef, IRootRegistry — clean architecture
+### Version 7.1 - init(entry) mechanism + claim async
 **Date:** 2026-06-07
-**Reason:** Design session — four decisions adopted: (A) `force` removed from `forge_describe`; (B) RTFM gate stays per-type; (C) Brand gate checked before RTFM gate; (D) root registry is the sole authority on URLs — only UrlRef objects circulate externally. The core insight: the root registry labels resources with an extension (storage metadata); the type registry interprets that label and content to assign a type (semantics). Forge parses and builds FAL strings at the MCP boundary only — no FAL strings inside registries or handlers.
+**Reason:** Two related changes implemented in type-registry.js: (1) claim() is now always
+awaited — handlers may be async to read file content (shebang strategy); (2) init(entry)
+called after import if the handler exports it — allows handlers to configure themselves
+from descriptor properties in the registry JSON without Forge understanding the format.
 
 **Modifications:**
-- Quick Start: rewritten — FAL described as external string representation parsed at MCP boundary
-- Keywords: `ArtifactRef`, `UrlRef`, `IRootRegistry` added; `URL` removed
-- TOC: `Root handler` renamed `Root registry`
-- Key concepts: `ArtifactRef`, `UrlRef`, `IRootRegistry` added; `Handler` reformulated; `Type` enriched with extension/semantics distinction
-- FAL section: `### FAL as a capsule` replaced by `### FAL parsing` — Forge is sole FAL authority, parses to ArtifactRef at boundary
-- Root handler section: renamed `Root registry`; rewritten — `IRootRegistry` interface defined (CRUD on UrlRef); folder navigation separated as Forge-only
-- Type discovery: `claim(url)` → `claim(urlRef, rootRegistry)`; outcome: builds ArtifactRef from UrlRef + handler.type; `urlToFAL` removed
-- Type handlers: all operations receive `rootRegistry`; `claim(urlRef, rootRegistry)`; `urlToFAL`/`falToURL` removed; `force` removed from `describe`; static/dynamic distinction removed
-- Registry / Type registry: core responsibility stated — extension↔type mapping; ArtifactRef↔UrlRef conversion explained; dispatch reordered — Brand gate step 1, RTFM gate step 2; `discover()` builds ArtifactRef; API takes ArtifactRef not FAL strings
-- Registry / Root registry: rewritten — URLs internal only; communicates via UrlRef; folder FALs built by Forge from UrlRef
-- Sequence diagrams: all three updated — ArtifactRef/UrlRef flow; Brand before RTFM; `forge_describe` `force` removed
-- MCP tools: `forge_describe` — `force?` removed; Brand+RTFM order corrected (Brand first); intro updated — FAL parsed to ArtifactRef at boundary
-- Roadmap: ArtifactRef/UrlRef/IRootRegistry refactor added as first near-term item; `urlToFAL`/`falToURL` items removed
+- Keywords: `init`, `descriptor` added
+- Key concepts: `Descriptor` added
+- FAL section / Type registry: `descriptor` and extra properties documented in entry format
+- Type discovery: note added — `claim` may be async, always awaited
+- Type handlers / Interface: `init(entry)` added with full contract
+- Registry / Type registry / Internal structure: handler initialisation paragraph added;
+  `discover` step 1 updated — `await claim()`
+- Registry / Sequence diagrams: forge_ls diagram — `claim` updated to `await claim()`
+- Roots and configuration: `forge-types.json` example rewritten — shows inline descriptor
+  (`js-managed`), deported descriptor (`md-doc`), and plain entry (`md`)
+- Roadmap: near term rewritten — `handler-lib.js`, `structured-text.js`, `js-managed` added;
+  completed items removed
+
+---
+
+### Version 7.0 - ArtifactRef, UrlRef, IRootRegistry — clean architecture
+**Date:** 2026-06-07
+**Reason:** Design session — four decisions adopted: (A) `force` removed from `forge_describe`;
+(B) RTFM gate stays per-type; (C) Brand gate checked before RTFM gate; (D) root registry
+is the sole authority on URLs — only UrlRef objects circulate externally.
 
 ---
 

@@ -39,6 +39,7 @@ export class TypeRegistry {
     for (const [typeName, entry] of Object.entries(registry.types)) {
       try {
         const mod = await import(entry.handler);
+        if (mod.init) await mod.init({ name: typeName, ...entry });
         this.handlers.set(typeName, {
           handler:   mod,
           described: false,
@@ -103,6 +104,7 @@ export class TypeRegistry {
    *      does not match urlRef.extension. This prevents a generic handler
    *      (e.g. plain-text claiming .css) from shadowing the correct one (md).
    *   2. claim(urlRef, rootRegistry) — handler may inspect content (shebang etc.)
+   *      claim() may be async — always awaited.
    *
    * Does NOT touch the Brand registry — caller (mcp-tools) is responsible.
    */
@@ -112,7 +114,7 @@ export class TypeRegistry {
       const entry = this.handlers.get(typeName);
       // Pre-filter: skip if registered extension does not match
       if (entry.extension.toLowerCase() !== ext) continue;
-      if (entry.handler.claim && entry.handler.claim(urlRef, rootRegistry)) {
+      if (entry.handler.claim && await entry.handler.claim(urlRef, rootRegistry)) {
         return { root: urlRef.root, path: urlRef.path, name: urlRef.name, type: typeName };
       }
     }
