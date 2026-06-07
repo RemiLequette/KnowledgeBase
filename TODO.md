@@ -33,9 +33,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O8] forge_read retourne FAL + bloc | Le résultat de forge_read doit inclure le FAL et le bloc dans la réponse — pas juste le contenu brut. Sinon l'AI perd le fil quand elle charge plusieurs blocs de fichiers différents. Changement simple dans forge.js. [effort: XS]
 - [ ] [O9] specs/ document type | Distinguer conventions opérationnelles (chargées par trigger) et specs descriptives (chargées explicitement). Créer `public/specs/`, migrer `forge.md`. Ajouter type Spec dans `documentation-style.md`. Ajouter section `specs/` dans INDEX.md. Litmus test : une spec n'a rien à auditer. [effort: M]
 - [ ] [O11] guide-maintenance.md conformance | Non-compliant: French content, obsolete reference to Claude.md, informal structure. Bring into line with documentation.md before next audit. [effort: S]
-- [ ] [O23] forge_describe + describe() | Interface `describe()` dans les handlers, outil MCP `forge_describe(fal)`. Retourne structure de blocs + sémantique du type. Nécessaire pour exploiter md-doc. → **Specced in forge.md v6.3 — implement in forge.js** [effort: M]
-- [ ] [O43] forge Brand registry | Session-scoped in-memory set of issued FALs. Brand gate on forge_read/forge_write — rejects FALs not issued by Forge with hint. FALs registered by forge_ls and forge_mkdir. → **Specced in forge.md v6.4 — implement in forge.js** [effort: S]
-- [ ] [O44] forge_describe — retirer le paramètre force | `force=true` est de la cuisine interne des handlers dynamiques — ne doit pas être exposé comme paramètre MCP public. Retirer de forge.md, working-with-forge.md, forge-testable.js et forge.js. Identifié par les tests forge-rtfm 2026-06-07. [effort: XS]
+- [ ] [O23] forge_describe + describe() | Interface `describe()` dans les handlers, outil MCP `forge_describe(fal)`. Retourne structure de blocs + sémantique du type. Nécessaire pour exploiter md-doc. → **Specced in forge.md v7.0 — implement in forge.js** [effort: M]
+- [ ] [O43] forge Brand registry | Session-scoped in-memory set of issued FALs. Brand gate on forge_read/forge_write — rejects FALs not issued by Forge with hint. FALs registered by forge_ls and forge_mkdir. → **Specced in forge.md v7.0 — implement in forge.js** [effort: S]
 
 ## Normal
 
@@ -72,7 +71,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## WIP
 
-- [ ] [WIP] [W1] Forge — RTFM + Brand + forge_create implementation | forge.md v6.5 : forge_create implemented, forge_write requires existing file. plain-text.js v1.3 : writeBlock guards existsSync, createArtifact implemented. forge.js v2.4 : forge_create tool added. Prochaines étapes : (1) implémenter forge_describe + RTFM gate dans forge.js, (2) implémenter Brand registry + Brand gate dans forge.js, (3) O8 forge_read retourne FAL+bloc, (4) md-doc handler (O24). [effort: L]
+- [ ] [WIP] [W1] Forge — ArtifactRef/UrlRef/IRootRegistry + RTFM + Brand implementation | forge.md v7.0 : clean architecture specced — ArtifactRef, UrlRef, IRootRegistry, Brand before RTFM, force removed. Prochaines étapes : (1) implémenter ArtifactRef/UrlRef model + IRootRegistry dans forge.js, (2) implémenter forge_describe + RTFM gate, (3) implémenter Brand registry + Brand gate, (4) O8 forge_read retourne FAL+bloc, (5) md-doc handler (O24). [effort: L]
 - [ ] [WIP] [W3] Namespace model — spec forge.md v6.0 | Modèle namespace conçu et documenté dans forge.md v6.0. Prochaines étapes : (1) split forge.config.json → roots.json + types.json, (2) implémenter le loader récursif dans forge.js. [effort: M]
 
 ## Done
@@ -90,6 +89,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [x] [D11] Streisand Effect — glossaire + nettoyage docs | GLOSSARY.md v1.1-1.2 + working-with-forge.md v1.1 + INDEX.md v3.3.
 - [x] [D12] Brand principle — spec + glossaire | forge.md v6.4 : Brand principle specced. GLOSSARY.md v1.3 : Brand, Constrain Don't Forbid, Fail Fast Fail Clear, TDD. working-with-forge.md v1.2 : Brand section + pattern filename-without-FAL.
 - [x] [D13] forge_create + forge_write existence guard | plain-text.js v1.3 + forge.js v2.4 + forge.md v6.5.
+- [x] [D14] forge.md v7.0 — clean architecture | ArtifactRef, UrlRef, IRootRegistry, Brand before RTFM, force removed. forge.md v7.0 + working-with-forge.md v1.3.
 
 ## Index
 
@@ -98,33 +98,29 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## Changelog
 
-### Version 4.4 - O44 forge_describe force parameter
+### Version 4.5 - forge.md v7.0 clean architecture
 **Date:** 2026-06-07
-**Reason:** Test forge-rtfm revealed that force=true on forge_describe is internal handler plumbing, not a public MCP parameter.
+**Reason:** Design session — ArtifactRef/UrlRef/IRootRegistry model specced. O44 closed (force removed from forge_describe). W1 updated.
 
 **Modifications:**
-- High priority: O44 ajouté
+- High priority: O44 removed (done); O23 and O43 spec references updated to v7.0
+- WIP: W1 updated — ArtifactRef/UrlRef/IRootRegistry added as first step
+- Done: D14 added
+
+---
+
+### Version 4.4 - O44 forge_describe force parameter
+**Date:** 2026-06-07
 
 ---
 
 ### Version 4.3 - forge_create done
 **Date:** 2026-06-07
-**Reason:** forge_create implemented + forge_write existence guard. plain-text.js v1.3, forge.js v2.4, forge.md v6.5.
-
-**Modifications:**
-- Done: D13 ajouté
-- WIP: W1 mis à jour — forge_create done, étapes restantes inchangées
 
 ---
 
 ### Version 4.2 - Brand principle done, W1 updated
 **Date:** 2026-06-07
-**Reason:** Brand principle specced (TDD) — forge.md v6.4, GLOSSARY.md v1.3, working-with-forge.md v1.2. O43 ouvert pour l'implémentation. W1 mis à jour.
-
-**Modifications:**
-- High priority: O43 ajouté — forge Brand registry implementation
-- WIP: W1 mis à jour — Brand ajouté aux prochaines étapes
-- Done: D12 ajouté
 
 ---
 

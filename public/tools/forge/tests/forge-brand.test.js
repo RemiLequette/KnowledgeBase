@@ -1,30 +1,32 @@
 /**
  * forge-brand.test.js
  *
- * A priori tests for the Brand gate in TypeRegistry.
- * All tests MUST FAIL before the Brand gate is implemented in forge.js.
+ * Tests for the Brand gate in TypeRegistry — v7.0 interface.
+ * All tests MUST FAIL on the current implementation (v2.4).
  *
  * Brand principle: a FAL is only valid if it was issued by Forge (via forge_ls
  * or forge_mkdir). A manually constructed FAL is rejected with:
  *   "This FAL was not issued by Forge — call forge_ls to obtain a valid FAL."
  *
- * References:
- *   - conventions/forge.md v6.4 [section Brand principle]
- *   - conventions/forge.md v6.4 [section Registry / Type registry — Brand gate]
- *   - conventions/forge.md v6.4 [section MCP tools — Brand principle]
- *   - guides/working-with-forge.md v1.2 [section The Brand principle]
+ * Gate order (v7.0): Brand gate fires BEFORE RTFM gate.
+ * An unbranded FAL throws Brand regardless of the described flag.
  *
- * Not yet in references: none
+ * References:
+ *   - conventions/forge.md v7.0 [section Brand principle]
+ *   - conventions/forge.md v7.0 [section Registry / Type registry — Brand gate]
+ *   - conventions/forge.md v7.0 [section MCP tools — Brand before RTFM]
+ *   - guides/working-with-forge.md v1.3 [section The Brand principle]
  */
 
 import assert from 'assert';
-import { TypeRegistry, RootRegistry, testConfig } from './forge-testable.js';
+import { testAsync, summary, artifactRef, toFAL } from './forge-testable.js';
+import { TypeRegistry, RootRegistry, testConfig } from '../forge.js';
 
 // ---------------------------------------------------------------------------
 // Setup
 // ---------------------------------------------------------------------------
 
-async function makeRegistry() {
+async function makeRegistries() {
   const tr = new TypeRegistry();
   await tr.load(testConfig.types);
   const rr = new RootRegistry();
@@ -32,101 +34,106 @@ async function makeRegistry() {
   return { tr, rr };
 }
 
-// A FAL that was never issued by forge_ls — constructed manually
-const MANUAL_FAL  = 'forge://test/sample.md';
+const SAMPLE_REF  = artifactRef('sample', 'md');
+const SAMPLE_FAL  = toFAL(SAMPLE_REF);
 const BRAND_MSG   = 'This FAL was not issued by Forge — call forge_ls to obtain a valid FAL.';
 const RTFM_MSG    = 'Call forge_describe(fal) first — RTFM: no read or write before the type is understood.';
 
 // ---------------------------------------------------------------------------
-// Test runner
+// Brand gate — fires first
 // ---------------------------------------------------------------------------
 
-let failed = 0;
-
-async function testAsync(name, fn) {
+// @convention conventions/forge.md v7.0 [section Brand principle]
+await testAsync('forge_read with unbranded + described FAL throws Brand message', async () => {
+  const { tr } = await makeRegistries();
+  // Describe so only Brand is tested
+  tr.describe(SAMPLE_REF);
+  // Do NOT brand
   try {
-    await fn();
-    console.log('PASS: ' + name);
+    await tr.read(SAMPLE_REF);
+    assert.fail('Expected Brand error');
   } catch (e) {
-    console.log('FAIL: ' + name + ' -- ' + e.message);
-    failed++;
+    assert.strictEqual(e.message, BRAND_MSG, `got: ${e.message}`);
   }
-}
+});
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-
-// @convention conventions/forge.md [section Brand principle]
-await testAsync('forge_read with manually constructed FAL throws Brand message', async () => {
-  const { tr } = await makeRegistry();
-  // Describe the type so only Brand is tested, not RTFM
-  tr.describe(MANUAL_FAL);
-  // Do NOT brand — simulates a manually constructed FAL
+// @convention conventions/forge.md v7.0 [section Brand principle]
+await testAsync('forge_write with unbranded + described FAL throws Brand message', async () => {
+  const { tr } = await makeRegistries();
+  tr.describe(SAMPLE_REF);
   try {
-    await tr.read(MANUAL_FAL, testConfig.roots);
-    assert.fail('Expected Brand error but read succeeded');
+    await tr.write(SAMPLE_REF, null, '', 'content');
+    assert.fail('Expected Brand error');
+  } catch (e) {
+    assert.strictEqual(e.message, BRAND_MSG, `got: ${e.message}`);
+  }
+});
+
+// @convention conventions/forge.md v7.0 [section MCP tools — Brand before RTFM]
+await testAsync('unbranded + undescribed FAL throws Brand message (not RTFM)', async () => {
+  const { tr } = await makeRegistries();
+  // Neither branded nor described — Brand gate must fire first
+  try {
+    await tr.read(SAMPLE_REF);
+    assert.fail('Expected Brand error');
   } catch (e) {
     assert.strictEqual(e.message, BRAND_MSG,
-      `Expected Brand message, got: ${e.message}`);
+      `Expected Brand (first gate), got: ${e.message}`);
+    assert.notStrictEqual(e.message, RTFM_MSG,
+      'RTFM fired before Brand — wrong order');
   }
 });
 
-// @convention conventions/forge.md [section Brand principle]
-await testAsync('forge_write with manually constructed FAL throws Brand message', async () => {
-  const { tr } = await makeRegistry();
-  tr.describe(MANUAL_FAL);
-  try {
-    await tr.write(MANUAL_FAL, testConfig.roots, '', 'content');
-    assert.fail('Expected Brand error but write succeeded');
-  } catch (e) {
-    assert.strictEqual(e.message, BRAND_MSG,
-      `Expected Brand message, got: ${e.message}`);
-  }
+// ---------------------------------------------------------------------------
+// Brand registry — populated by forge_ls
+// ---------------------------------------------------------------------------
+
+// @convention conventions/forge.md v7.0 [section Brand principle]
+await testAsync('forge_ls registers artifact FALs in brandRegistry', async () => {
+  const { tr, rr } = await makeRegistries();
+  await rr.list('forge://test/', tr);
+  assert.ok(tr.brandRegistry.has(SAMPLE_FAL),
+    `${SAMPLE_FAL} not in brandRegistry after forge_ls`);
 });
 
-// @convention conventions/forge.md [section Brand principle]
-await testAsync('forge_ls registers FALs — forge_read on a forge_ls FAL succeeds', async () => {
-  const { tr, rr } = await makeRegistry();
-  // forge_ls — discovers and brands FALs
-  const entries = await rr.list('forge://test/', testConfig.roots, tr);
-  const sampleEntry = entries.find(e => e.fal === MANUAL_FAL);
-  assert.ok(sampleEntry, `${MANUAL_FAL} not found after forge_ls`);
-  // The FAL must now be in the Brand registry
-  assert.ok(tr.brandRegistry.has(MANUAL_FAL),
-    `FAL not registered in Brand registry after forge_ls`);
-  // Describe + read should both succeed
-  tr.describe(MANUAL_FAL);
-  const content = await tr.read(MANUAL_FAL, testConfig.roots);
-  assert.ok(typeof content === 'string' && content.length > 0,
-    'read returned empty content on a branded FAL');
+// @convention conventions/forge.md v7.0 [section Brand principle]
+await testAsync('forge_ls registers folder FALs in brandRegistry', async () => {
+  const { tr, rr } = await makeRegistries();
+  await rr.list('forge://test/', tr);
+  const folderFAL = 'forge://test/sandbox/';
+  assert.ok(tr.brandRegistry.has(folderFAL),
+    `${folderFAL} not in brandRegistry after forge_ls`);
 });
 
-// @convention conventions/forge.md [section Registry / Type registry — Brand gate checked after RTFM gate]
-await testAsync('RTFM gate fires before Brand gate — unbranded + undescribed FAL throws RTFM not Brand', async () => {
-  const { tr } = await makeRegistry();
-  // Neither described nor branded
-  try {
-    await tr.read(MANUAL_FAL, testConfig.roots);
-    assert.fail('Expected RTFM error but read succeeded');
-  } catch (e) {
-    assert.strictEqual(e.message, RTFM_MSG,
-      `Expected RTFM (gate order), got: ${e.message}`);
-    assert.notStrictEqual(e.message, BRAND_MSG,
-      'Brand gate fired before RTFM gate — wrong order');
-  }
+// @convention conventions/forge.md v7.0 [section Brand principle]
+await testAsync('forge_ls FAL + describe allows forge_read to succeed', async () => {
+  const { tr, rr } = await makeRegistries();
+  await rr.list('forge://test/', tr);
+  tr.describe(SAMPLE_REF);
+  const content = await tr.read(SAMPLE_REF, rr);
+  assert.ok(typeof content === 'string' && content.length > 0);
+  assert.ok(content.includes('# Sample'));
 });
 
-// @convention conventions/forge.md [section Brand principle — Brand registry is session-scoped]
-await testAsync('Brand registry is empty at TypeRegistry construction', async () => {
-  const { tr } = await makeRegistry();
+// ---------------------------------------------------------------------------
+// Brand registry — startup state
+// ---------------------------------------------------------------------------
+
+// @convention conventions/forge.md v7.0 [section Brand principle — session-scoped]
+await testAsync('brandRegistry is empty at startup', async () => {
+  const { tr } = await makeRegistries();
   assert.strictEqual(tr.brandRegistry.size, 0,
-    `Brand registry should be empty at init, has ${tr.brandRegistry.size} entries`);
+    `brandRegistry should be empty at startup, has ${tr.brandRegistry.size} entries`);
 });
 
-// ---------------------------------------------------------------------------
-// Result
-// ---------------------------------------------------------------------------
+// @convention conventions/forge.md v7.0 [section Brand principle — session-scoped]
+await testAsync('brandRegistry is independent between TypeRegistry instances', async () => {
+  const { tr: tr1 } = await makeRegistries();
+  const { tr: tr2 } = await makeRegistries();
+  tr1.brandRegistry.add(SAMPLE_FAL);
+  assert.ok(tr1.brandRegistry.has(SAMPLE_FAL));
+  assert.ok(!tr2.brandRegistry.has(SAMPLE_FAL),
+    'brandRegistry leaked between instances');
+});
 
-console.log(`\n${failed === 0 ? 'All tests passed' : `${failed} test(s) failed`}`);
-process.exit(failed > 0 ? 1 : 0);
+summary();
