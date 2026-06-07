@@ -17,7 +17,7 @@ Within an artifact, content is accessed via named blocks — never by line numbe
 Roots and types are organised into **namespaces**. The KB is the default namespace (no prefix). Projects and libraries declare additional namespaces, each with their own roots and types loaded recursively at startup.
 
 ## Keywords
-forge, MCP, artifact, FAL, ArtifactRef, UrlRef, IRootRegistry, type, handler, blocks, filesystem, structured-access, roots, registry, claim, type-discovery, namespace, multiproject, RTFM, describe, brand, init, descriptor
+forge, MCP, artifact, FAL, ArtifactRef, UrlRef, IRootRegistry, type, handler, blocks, filesystem, structured-access, roots, registry, claim, type-discovery, namespace, multiproject, RTFM, describe, brand, init, descriptor, factory
 
 ## Table of Contents
 
@@ -164,6 +164,7 @@ Each type entry:
 - `name` — short identifier or dash-separated hierarchy (`md`, `md-doc`, `md-doc-convention`); prefixed with namespace at load time
 - `version` — handler version, used to detect staleness against the convention it implements
 - `handler` — URL of the type handler JavaScript module
+- `description` *(optional)* — short human-readable description of the type, included in `forge_describe` output
 - `descriptor` *(optional)* — URL of a JSON descriptor file; passed to `handler.init(entry)` at startup
 - *any other property* — passed as-is to `handler.init(entry)` at startup; Forge ignores unknown properties
 
@@ -290,12 +291,18 @@ Type handlers are **storage-agnostic** — they access storage exclusively throu
 export const type = 'md-doc';
 export const version = '1.0';
 
-// Initialisation — optional, called once at startup by the type registry
+// Initialisation — optional, called once per type name at startup by the type registry.
+// Two patterns:
+//   Factory pattern  — init returns a handler object with a closure on the type config.
+//                      The type registry uses the returned object as the handler.
+//                      Use when one module serves multiple types (e.g. structured-text.js).
+//   Side-effect pattern — init returns undefined; configures shared module state.
+//                      The type registry uses the module itself as the handler.
+//                      Avoid when multiple types share the same module (state collision).
 export async function init(entry)
-  // entry = { name, version, handler, ...all other properties from the registry JSON }
-  // Use to configure the handler from a descriptor — inline properties or a loaded file.
-  // If entry.descriptor is present, load it from the file URL it points to.
-  // Not called for plain-text handlers that need no configuration.
+  // entry = { name, version, handler, description?, ...all other properties from the registry JSON }
+  // Factory: return { claim, describe, readBlock, writeBlock, ... }
+  // Side-effect: return undefined (or omit return)
 
 // Type discovery
 export async function claim(urlRef, rootRegistry)
@@ -333,13 +340,23 @@ export async function deleteBlock(urlRef, block, rootRegistry)
   // delete a block and its children
 ```
 
-**`init(entry)` contract:**
+**`init(entry)` contract — factory vs side-effect:**
 
-Called once per type name at startup, after the handler module is imported. Receives the full registry entry object — all properties from the JSON, including `name`, `version`, `handler`, and any extras (`descriptor`, `claim`, `blocks`, `reserved`, etc.).
+Called once per type name at startup, after the handler module is imported. Receives the full registry entry object — all properties from the JSON, including `name`, `version`, `handler`, `description`, and any extras (`descriptor`, `claim`, `blocks`, `reserved`, etc.).
+
+**Factory pattern** (preferred when one module serves multiple types): `init` returns a handler object — a plain object or closure containing `claim`, `describe`, `readBlock`, `writeBlock`, and so on. The type registry uses this object as the handler for the type. Each type gets its own handler object with its own closure — no shared mutable state between types.
+
+**Side-effect pattern** (acceptable for single-type modules): `init` configures module-level state and returns `undefined`. The type registry falls back to using the module itself as the handler. Safe only when the module is registered under exactly one type name.
+
+The type registry resolves the handler as:
+```js
+const result  = mod.init ? await mod.init({ name: typeName, ...entry }) : undefined;
+const handler = (result && typeof result === 'object') ? result : mod;
+```
+
+`init` is optional. Handlers that need no configuration (e.g. plain-text) do not export it — the module is used directly.
 
 If `entry.descriptor` is present, it is a `file://` URL pointing to a JSON file — the handler loads it to complete its configuration. This allows descriptors that are too large or too structured to be inlined in the registry JSON.
-
-`init` is optional. Handlers that need no configuration (e.g. plain-text) do not export it.
 
 **`createArtifact` / `writeBlock` contract:**
 
@@ -416,7 +433,12 @@ The conversion `ArtifactRef ↔ UrlRef` is trivial once the handler is known: `r
 
 At startup, the type registry builds a hashmap: `typeName → { handler, described }`. Type names in the hashmap carry their full namespace prefix (`commwise:layout`). The `described` flag is `false` at startup and set to `true` by `typeRegistry.describe()` — it tracks whether the AI has called `forge_describe` for this type in the current session. The type hierarchy order (for `claim()` dispatch) is derived from the local type name (prefix stripped) — names are split on `-` and sorted by descending length (more segments = more specific). No explicit ordering configuration is needed.
 
-**Handler initialisation:** after importing a handler module, the type registry calls `handler.init(entry)` if the export exists, passing the full registry entry (including any extra properties from the JSON). This allows handlers to configure themselves from a descriptor without Forge needing to understand the descriptor format.
+**Handler initialisation:** after importing a handler module, the type registry resolves the handler object:
+```js
+const result  = mod.init ? await mod.init({ name: typeName, ...entry }) : undefined;
+const handler = (result && typeof result === 'object') ? result : mod;
+```
+If `init` returns an object (factory pattern), that object is stored as the handler. If `init` returns `undefined` or is absent, the module itself is stored. This allows one module to serve multiple types (each with its own closure) without shared mutable state.
 
 **Collision check:** after all namespaces are loaded, if two entries share the same final name in the hashmap → startup error. Forge does not start. This applies to both roots and types.
 
@@ -726,7 +748,8 @@ Forge is a **single shared process** across all projects. There is no per-projec
   "types": {
     "md": {
       "version": "1.0",
-      "handler": "file:///...handlers/plain-text.js"
+      "handler": "file:///...handlers/structured-text.js",
+      "description": "a Markdown document"
     },
     "js-managed": {
       "version": "1.0",
@@ -743,8 +766,8 @@ Forge is a **single shared process** across all projects. There is no per-projec
 }
 ```
 
-`md` — aucune propriété extra, pas d'`init`.
-`js-managed` — descripteur inline, `init` reçoit `{ name, version, handler, claim, blocks }`.
+`md` — description inline, `init` reçoit `{ name, version, handler, description }`, retourne un handler object (factory).
+`js-managed` — descripteur inline avec `claim` et `blocks`, `init` configure un handler avec shebang claim + bloc parsing.
 `md-doc` — descripteur déporté, `init` charge le fichier JSON pointé par `descriptor`.
 
 Root and type names are short, lowercase, no spaces. URLs are the only place physical paths appear.
@@ -829,8 +852,7 @@ Forge implements each tool by parsing the FAL string into an `ArtifactRef`, then
 
 **Near term:**
 - `handler-lib.js` — shared library for type handlers: `loadDescriptor`, `makeClaim`, `makeDescribe`, `makeHandler`
-- `structured-text.js` — generic handler driven by a JSON descriptor; replaces per-type handler code
-- `js-managed` type — first descriptor-driven type; validates the `init` + descriptor mechanism
+- `js-managed` type — shebang claim + block parsing via regex separator; validates descriptor mechanism
 - Register first real types: `md-doc`, `doc-todolist`
 - Implement remaining artifact CRUD: `forge_delete`, `forge_move`, `forge_rename`
 - Implement block CRUD: `forge_append`, `forge_insert`, `forge_delete_block`
@@ -850,34 +872,33 @@ Forge implements each tool by parsing the FAL string into an `ArtifactRef`, then
 
 ## Changelog
 
-### Version 7.1 - init(entry) mechanism + claim async
+### Version 7.2 - Factory pattern for init(entry)
 **Date:** 2026-06-07
-**Reason:** Two related changes implemented in type-registry.js: (1) claim() is now always
-awaited — handlers may be async to read file content (shebang strategy); (2) init(entry)
-called after import if the handler exports it — allows handlers to configure themselves
-from descriptor properties in the registry JSON without Forge understanding the format.
+**Reason:** structured-text.js implemented as a factory — init(entry) returns a handler
+object with a closure on the type configuration. One module serves multiple types
+without shared mutable state. type-registry.js updated to resolve handler from init
+return value.
 
 **Modifications:**
-- Keywords: `init`, `descriptor` added
-- Key concepts: `Descriptor` added
-- FAL section / Type registry: `descriptor` and extra properties documented in entry format
-- Type discovery: note added — `claim` may be async, always awaited
-- Type handlers / Interface: `init(entry)` added with full contract
-- Registry / Type registry / Internal structure: handler initialisation paragraph added;
-  `discover` step 1 updated — `await claim()`
-- Registry / Sequence diagrams: forge_ls diagram — `claim` updated to `await claim()`
-- Roots and configuration: `forge-types.json` example rewritten — shows inline descriptor
-  (`js-managed`), deported descriptor (`md-doc`), and plain entry (`md`)
-- Roadmap: near term rewritten — `handler-lib.js`, `structured-text.js`, `js-managed` added;
-  completed items removed
+- Keywords: `factory` added
+- FAL section / Type registry: `description` added to entry properties
+- Type handlers / Interface: `init(entry)` contract rewritten — factory vs side-effect
+  patterns documented with code example
+- Registry / Type registry / Internal structure: handler initialisation paragraph
+  rewritten — factory resolution logic documented with code snippet
+- Roots and configuration: forge-types.json example updated — `md` uses description,
+  `js-managed` and `md-doc` unchanged
+- Roadmap: `structured-text.js` removed (implemented); near term rewritten
+
+---
+
+### Version 7.1 - init(entry) mechanism + claim async
+**Date:** 2026-06-07
 
 ---
 
 ### Version 7.0 - ArtifactRef, UrlRef, IRootRegistry — clean architecture
 **Date:** 2026-06-07
-**Reason:** Design session — four decisions adopted: (A) `force` removed from `forge_describe`;
-(B) RTFM gate stays per-type; (C) Brand gate checked before RTFM gate; (D) root registry
-is the sole authority on URLs — only UrlRef objects circulate externally.
 
 ---
 

@@ -12,13 +12,18 @@ import { toFAL } from './fal.js';
 
 /**
  * Manages artifact types, discovery, describe, and artifact operations.
- * handlers Map: typeName → { handler: module, described: boolean, extension: string }
+ * handlers Map: typeName → { handler: object, described: boolean, extension: string }
  *
  * Gates (Brand + RTFM) are enforced here on read/write — brand.js provides
  * the checks, fal.js provides toFAL for FAL reconstruction.
  *
+ * Handler resolution:
+ *   If mod.init returns an object (factory pattern), that object is used as the handler.
+ *   If mod.init returns undefined (side-effect pattern), mod itself is used.
+ *   If mod has no init, mod is used directly (plain-text pattern).
+ *
  * References:
- *   - conventions/forge.md v7.0 [sections Key concepts, Type discovery,
+ *   - conventions/forge.md v7.1 [sections Key concepts, Type discovery,
  *     Type handlers, Registry / Type registry]
  */
 export class TypeRegistry {
@@ -38,10 +43,11 @@ export class TypeRegistry {
 
     for (const [typeName, entry] of Object.entries(registry.types)) {
       try {
-        const mod = await import(entry.handler);
-        if (mod.init) await mod.init({ name: typeName, ...entry });
+        const mod     = await import(entry.handler);
+        const result  = mod.init ? await mod.init({ name: typeName, ...entry }) : undefined;
+        const handler = (result && typeof result === 'object') ? result : mod;
         this.handlers.set(typeName, {
-          handler:   mod,
+          handler,
           described: false,
           extension: '.' + typeName
         });

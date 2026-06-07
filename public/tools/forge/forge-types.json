@@ -1,29 +1,31 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "types": {
     "txt": {
       "version": "1.0",
-      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js"
     },
     "md": {
       "version": "1.0",
-      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
+      "description": "a Markdown document"
     },
     "js": {
       "version": "1.0",
-      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
+      "description": "a JavaScript source file"
     },
     "json": {
       "version": "1.0",
-      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js"
     },
     "css": {
       "version": "1.0",
-      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js"
     },
     "html": {
       "version": "1.0",
-      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/plain-text.js"
+      "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js"
     }
   }
 }
