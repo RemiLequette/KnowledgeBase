@@ -86,7 +86,7 @@ function childRef(parentRef, entryName, isFolder) {
   const parentRelPath = (parentRef.path || '').replace(/\/?$/, '/').replace(/^\//, '');
 
   if (isFolder) {
-    return { root: parentRef.root, path: parentRelPath, name: entryName, extension: '', _url: entryUrl };
+    return { root: parentRef.root, path: parentRelPath + entryName + '/', name: '', extension: '', _url: entryUrl };
   } else {
     const ext  = path.extname(entryName);
     const stem = path.basename(entryName, ext);

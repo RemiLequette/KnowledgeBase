@@ -5,12 +5,6 @@
  * Forge MCP server v3.0 — entry point.
  * Loads config, initialises registries, starts the MCP server.
  *
- * Responsibilities:
- *   - Load forge.config.json
- *   - Instantiate TypeRegistry and RootRegistry
- *   - Register MCP tools and dispatcher
- *   - Export TypeRegistry, RootRegistry, testConfig for unit tests
- *
  * All logic lives in src/:
  *   src/logger.js         — log()
  *   src/type-registry.js  — TypeRegistry
@@ -19,10 +13,6 @@
  *
  * Entry-point guard:
  *   The MCP server starts only when this file is run directly (not imported).
- *   This allows test files to import TypeRegistry/RootRegistry without starting the server.
- *
- * testConfig points to knowledgebase/tests/forge/fixtures/ — the single canonical
- * test fixtures location. public/tools/forge/tests/ is deprecated.
  *
  * References:
  *   - conventions/forge.md v7.0
@@ -39,33 +29,17 @@ import { fileURLToPath, pathToFileURL } from 'url';
 import { log }          from './src/logger.js';
 import { TypeRegistry } from './src/type-registry.js';
 import { RootRegistry } from './src/root-registry.js';
+import { createSession } from './src/forge-api.js';
 import { TOOL_DEFINITIONS, dispatch } from './src/mcp-tools.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // ---------------------------------------------------------------------------
-// testConfig — exported for unit tests
-// Fixtures live in knowledgebase/tests/forge/fixtures/ (canonical location).
+// Re-exports
 // ---------------------------------------------------------------------------
 
-const TESTS_FIXTURES = path.resolve(__dirname, '..', '..', '..', 'tests', 'forge', 'fixtures');
-
-export const testConfig = {
-  roots: [
-    {
-      name: 'test',
-      url: pathToFileURL(TESTS_FIXTURES).href + '/',
-      handler: pathToFileURL(path.join(__dirname, 'handlers', 'file-root.js')).href
-    }
-  ],
-  types: pathToFileURL(path.join(__dirname, 'forge-types.json')).href
-};
-
-// ---------------------------------------------------------------------------
-// Re-exports for unit tests
-// ---------------------------------------------------------------------------
-
-export { TypeRegistry, RootRegistry };
+export { TypeRegistry } from './src/type-registry.js';
+export { RootRegistry } from './src/root-registry.js';
 
 // ---------------------------------------------------------------------------
 // MCP Server — only started when this file is the entry point
@@ -89,19 +63,7 @@ async function startServer() {
     process.exit(1);
   }
 
-  const typeRegistry = new TypeRegistry();
-  const rootRegistry = new RootRegistry();
-
-  try {
-    await typeRegistry.load(config.types);
-    await rootRegistry.load(config.roots);
-    log('INFO', 'Registries loaded');
-  } catch (err) {
-    log('ERROR', `Failed to load registries: ${err.message}`);
-    process.exit(1);
-  }
-
-  const ctx = { typeRegistry, rootRegistry, config };
+  const session = await createSession(config);
 
   const server = new Server(
     { name: 'forge', version: '3.0.0' },
@@ -114,7 +76,7 @@ async function startServer() {
 
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
-    return dispatch(name, args, ctx);
+    return dispatch(name, args, session);
   });
 
   log('INFO', 'Forge MCP server starting — v3.0.0');

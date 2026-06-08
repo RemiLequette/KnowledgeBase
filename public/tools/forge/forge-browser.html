@@ -81,7 +81,7 @@
   .tb-btn.active   { border-color: var(--accent); color: var(--accent); }
   .tb-btn:disabled { opacity: .45; cursor: default; }
 
-  /* Tooltip — shown via data-tip attribute */
+  /* Tooltip */
   .tb-btn[data-tip]::after {
     content: attr(data-tip);
     position: absolute;
@@ -102,7 +102,7 @@
   }
   .tb-btn[data-tip]:hover::after { opacity: 1; }
 
-  /* Tree rows */
+  /* Tree rows — shared by file tree and block navigator */
   .tree-row    { display: flex; align-items: center; gap: 4px; padding: 3px 8px 3px 0; cursor: pointer; white-space: nowrap; overflow: hidden; }
   .tree-row:hover    { background: var(--hover); }
   .tree-row.selected { background: var(--selected); }
@@ -111,6 +111,11 @@
   .tree-icon   { font-size: 13px; flex-shrink: 0; }
   .tree-label  { overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
   .tree-tag    { font-size: 10px; color: var(--muted); margin-left: 4px; flex-shrink: 0; padding: 0 4px; background: var(--border); border-radius: 3px; }
+
+  /* Block navigator */
+  #block-nav       { width: 220px; min-width: 120px; max-width: 400px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--surface); overflow-y: auto; padding: 4px 0; }
+  #block-content   { flex: 1; overflow-y: auto; }
+  .content-split   { display: flex; flex: 1; overflow: hidden; }
 
   /* Raw text */
   #content-pre { margin: 0; padding: 18px 20px; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-word; }
@@ -231,7 +236,7 @@ const Persist = {
   openFolders() {
     const open = [];
     for (const [fal, node] of tree.entries()) {
-      if (node.entry?.type === 'folder' && node.open) open.push(fal);
+      if (node.entry?.folder === true && node.open) open.push(fal);
     }
     return open;
   }
@@ -261,7 +266,7 @@ const Forge = {
   },
 
   async ping()  { return this._call('forge_ping'); },
-  async ls(fal) { return this._call('forge_ls', fal ? { fal } : {}); },
+  async lsFolder(fal) { return this._call('forge_ls', fal ? { fal } : {}); },
 
   async describe(fal) {
     if (this._describeCache.has(fal)) return this._describeCache.get(fal);
@@ -275,6 +280,13 @@ const Forge = {
     if (!this._described.has(_typeOf(fal))) await this.describe(fal);
     const raw = await this._call('forge_read', { fal });
     return typeof raw === 'string' ? raw : JSON.stringify(raw, null, 2);
+  },
+
+  async ls(fal, node = '') {
+    if (!fal.endsWith('/') && !this._described.has(_typeOf(fal))) await this.describe(fal);
+    const falWithNode = node ? `${fal}#${node}` : `${fal}#`;
+    const result = await this._call('forge_ls', { fal: falWithNode });
+    return result.entries || [];
   },
 
   async reloadRegistry() {
@@ -296,9 +308,13 @@ function _typeOf(fal) {
 // STATE
 // ═══════════════════════════════════════════════════════════════════════════
 
-let rawMode     = false;
-let selectedFal = null;
-const tree      = new Map();
+let rawMode      = false;
+let selectedFal  = null;
+let selectedBlock = null; // current block path within the active file
+const tree       = new Map();
+// block navigator state: Map<blockPath, { open, loaded, children }>
+// '' = root of current file
+const blockNav   = new Map();
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STATUS + TOAST
@@ -328,11 +344,11 @@ async function updateInfoPanel(fal, type) {
 
   const falEl = document.createElement('div');
   falEl.id        = 'info-fal';
-  falEl.className = type === 'folder' ? 'folder' : '';
+  falEl.className = (!type || type === 'folder') ? 'folder' : '';
   falEl.textContent = fal;
   panel.appendChild(falEl);
 
-  if (type === 'folder' || type === 'undefined') return;
+  if (!type || type === 'folder' || type === 'undefined') return;
 
   let desc;
   try { desc = await Forge.describe(fal); }
@@ -372,7 +388,7 @@ function clearInfoPanel() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// TREE RENDERING
+// FILE TREE RENDERING
 // ═══════════════════════════════════════════════════════════════════════════
 
 function fileIcon(fal, type) {
@@ -394,7 +410,7 @@ function buildTreeDOM(container, parentKey, depth) {
     const node = tree.get(childFal);
     if (!node) continue;
     const { entry } = node;
-    const isFolder  = entry.type === 'folder';
+    const isFolder  = entry.folder === true;
     const ext       = isFolder ? '' : _typeOf(childFal);
 
     const row = document.createElement('div');
@@ -413,13 +429,13 @@ function buildTreeDOM(container, parentKey, depth) {
 
     const ico = document.createElement('span');
     ico.className   = 'tree-icon';
-    ico.textContent = node.loading ? '⏳' : fileIcon(childFal, entry.type);
+    ico.textContent = node.loading ? '⏳' : (isFolder ? '📁' : '📄');
     row.appendChild(ico);
 
     const lbl = document.createElement('span');
     lbl.className   = 'tree-label';
     lbl.textContent = shortName(childFal);
-    lbl.style.color = fileColor(childFal, entry.type);
+    lbl.style.color = isFolder ? 'var(--folder)' : (fileColor(childFal, entry.type));
     row.appendChild(lbl);
 
     if (!isFolder && ext && ext !== 'undefined') {
@@ -442,16 +458,16 @@ function renderTree() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// TREE LOADING
+// FILE TREE LOADING
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function loadRoots() {
-  const data  = await Forge.ls();
+  const data  = await Forge.lsFolder();
   const roots = data.roots || [];
   tree.set('__roots__', { children: [] });
   for (const r of roots) {
-    const fal = `forge://${r.name}/`;
-    tree.set(fal, { entry: { fal, type: 'folder' }, open: false, loaded: false, loading: false, children: [] });
+    const fal = r.fal;
+    tree.set(fal, { entry: { fal, folder: true }, open: false, loaded: false, loading: false, children: [] });
     tree.get('__roots__').children.push(fal);
   }
   renderTree();
@@ -462,7 +478,7 @@ async function loadChildren(fal) {
   if (!node) return;
   node.loading = true; renderTree();
   try {
-    const data    = await Forge.ls(fal);
+    const data    = await Forge.lsFolder(fal);
     const entries = data.entries || [];
     node.children = [];
     for (const e of entries) {
@@ -480,7 +496,7 @@ async function loadChildren(fal) {
 async function restoreOpenFolders(openFals) {
   for (const fal of openFals) {
     const node = tree.get(fal);
-    if (!node || node.entry.type !== 'folder') continue;
+    if (!node || node.entry.folder !== true) continue;
     node.open = true;
     if (!node.loaded) {
       try { await loadChildren(fal); }
@@ -500,7 +516,7 @@ async function onRowClick(fal) {
   selectedFal = fal;
   document.getElementById('fal-display').textContent = fal;
   updateInfoPanel(fal, node.entry.type);
-  if (node.entry.type === 'folder') {
+  if (node.entry.folder === true) {
     node.open = !node.open;
     if (node.open && !node.loaded) {
       try { await loadChildren(fal); }
@@ -531,8 +547,159 @@ function showMsg(icon, text, cls = '') { setBody(`<div class="state-msg ${cls}">
 
 async function showFile(fal, type) {
   setContentHeader(fal, type);
+  selectedBlock = null;
+
   if (type === 'undefined') { showMsg('🚫', 'Type <em>undefined</em> — no handler for this artifact.'); return; }
+
   showSpinner();
+
+  // Check capabilities
+  let desc;
+  try { desc = await Forge.describe(fal); }
+  catch (err) { showMsg('⚠', escHtml(err.message), 'err'); return; }
+
+  if (desc.capabilities?.blocks) {
+    await showBlockNavigator(fal);
+  } else {
+    await showRawContent(fal, type);
+  }
+}
+
+// ─── Block navigator ───────────────────────────────────────────────────────
+
+async function showBlockNavigator(fal) {
+  blockNav.clear();
+  blockNav.set('', { open: true, loaded: false, loading: false, children: [] });
+
+  const body = document.getElementById('content-body');
+  body.innerHTML = '';
+
+  const split = document.createElement('div');
+  split.className = 'content-split';
+
+  const nav = document.createElement('div');
+  nav.id = 'block-nav';
+
+  const blockContent = document.createElement('div');
+  blockContent.id = 'block-content';
+  blockContent.innerHTML = '<div class="state-msg"><span class="icon">⬡</span><span>Select a block</span></div>';
+
+  split.appendChild(nav);
+  split.appendChild(blockContent);
+  body.appendChild(split);
+
+  await loadBlockChildren(fal, '');
+  renderBlockNav(fal, nav);
+}
+
+async function loadBlockChildren(fal, blockPath) {
+  const node = blockNav.get(blockPath);
+  if (!node) return;
+  node.loading = true;
+  renderBlockNav(fal, document.getElementById('block-nav'));
+  try {
+    const falWithNode = blockPath ? `${fal}#${blockPath}` : `${fal}#`;
+    const children = await Forge.ls(fal, blockPath);
+    node.children = children.map(e => e.name);
+    node.loaded   = true;
+  } catch (err) {
+    node.open = false;
+    toast(err.message, 'err', 5000);
+  } finally {
+    node.loading = false;
+    renderBlockNav(fal, document.getElementById('block-nav'));
+  }
+}
+
+function renderBlockNav(fal, container) {
+  if (!container) return;
+  container.innerHTML = '';
+  buildBlockNavDOM(fal, container, '', 0);
+}
+
+function buildBlockNavDOM(fal, container, parentPath, depth) {
+  const parent = blockNav.get(parentPath);
+  if (!parent || !parent.children) return;
+
+  for (const child of parent.children) {
+    const blockPath = parentPath ? `${parentPath}/${child}` : child;
+    if (!blockNav.has(blockPath)) {
+      blockNav.set(blockPath, { open: false, loaded: false, loading: false, children: [] });
+    }
+    const childNode = blockNav.get(blockPath);
+
+    const row = document.createElement('div');
+    row.className = 'tree-row' + (blockPath === selectedBlock ? ' selected' : '');
+
+    const ind = document.createElement('span');
+    ind.className  = 'tree-indent';
+    ind.style.width = (depth * 14 + 6) + 'px';
+    row.appendChild(ind);
+
+    const tog = document.createElement('span');
+    tog.className   = 'tree-toggle';
+    const hasOrMayHaveChildren = !childNode.loaded || childNode.children.length > 0;
+    tog.textContent = hasOrMayHaveChildren ? (childNode.open ? '▾' : '▸') : '';
+    row.appendChild(tog);
+
+    const ico = document.createElement('span');
+    ico.className   = 'tree-icon';
+    ico.textContent = childNode.loading ? '⏳' : '⬡';
+    ico.style.color = 'var(--accent)';
+    row.appendChild(ico);
+
+    const lbl = document.createElement('span');
+    lbl.className   = 'tree-label';
+    lbl.textContent = child;
+    lbl.style.color = 'var(--text)';
+    row.appendChild(lbl);
+
+    row.addEventListener('click', () => onBlockClick(fal, blockPath));
+    container.appendChild(row);
+
+    if (childNode.open) buildBlockNavDOM(fal, container, blockPath, depth + 1);
+  }
+}
+
+async function onBlockClick(fal, blockPath) {
+  if (!blockNav.has(blockPath)) {
+    blockNav.set(blockPath, { open: false, loaded: false, loading: false, children: [] });
+  }
+  const navNode = blockNav.get(blockPath);
+
+  selectedBlock = blockPath;
+
+  navNode.open = !navNode.open;
+  if (navNode.open && !navNode.loaded) {
+    await loadBlockChildren(fal, blockPath);
+  } else {
+    renderBlockNav(fal, document.getElementById('block-nav'));
+  }
+
+  // Always read and display block content
+  const falWithBlock = `${fal}#${blockPath}`;
+  setContentHeader(falWithBlock, _typeOf(fal));
+
+  const blockContent = document.getElementById('block-content');
+  if (!blockContent) return;
+  blockContent.innerHTML = '<div class="state-msg"><div class="spinner"></div><span>Loading…</span></div>';
+
+  try {
+    const raw  = await Forge.read(falWithBlock);
+    const text = raw.replace(/^\[fal:[^\]]*\]\n/, '');
+    const pre  = document.createElement('pre');
+    pre.id          = 'content-pre';
+    pre.textContent = text;
+    blockContent.innerHTML = '';
+    blockContent.appendChild(pre);
+  } catch (err) {
+    blockContent.innerHTML = `<div class="state-msg err"><span class="icon">⚠</span><span>${escHtml(err.message)}</span></div>`;
+  }
+}
+
+// ─── Raw / Markdown content ────────────────────────────────────────────────
+
+async function showRawContent(fal, type) {
   let raw;
   try { raw = await Forge.read(fal); }
   catch (err) { showMsg('⚠', escHtml(err.message), 'err'); return; }
@@ -683,7 +850,7 @@ document.getElementById('btn-reload-registry').addEventListener('click', async f
   setStatus('', 'reloading registry…');
   try {
     const result = await Forge.reloadRegistry();
-    tree.clear(); selectedFal = null;
+    tree.clear(); selectedFal = null; selectedBlock = null;
     document.getElementById('fal-display').textContent = '—';
     setContentHeader('—', null);
     showMsg('⬡', 'Select a file in the navigator');
@@ -702,7 +869,7 @@ document.getElementById('btn-reload-registry').addEventListener('click', async f
 
 document.getElementById('btn-refresh').addEventListener('click', async () => {
   tree.clear(); Forge._described.clear(); Forge._describeCache.clear();
-  selectedFal = null;
+  selectedFal = null; selectedBlock = null;
   document.getElementById('fal-display').textContent = '—';
   setContentHeader('—', null);
   showMsg('⬡', 'Select a file in the navigator');
@@ -726,7 +893,7 @@ document.getElementById('btn-raw').addEventListener('click', async () => {
   Persist.save({ rawMode });
   if (selectedFal) {
     const node = tree.get(selectedFal);
-    if (node && node.entry.type !== 'folder') await showFile(selectedFal, node.entry.type);
+    if (node && !node.entry.folder) await showFile(selectedFal, node.entry.type);
   }
 });
 
@@ -762,7 +929,7 @@ async function boot() {
     if (saved.openFolders?.length) await restoreOpenFolders(saved.openFolders);
     if (saved.selectedFal) {
       const node = tree.get(saved.selectedFal);
-      if (node && node.entry.type !== 'folder') {
+      if (node && !node.entry.folder) {
         selectedFal = saved.selectedFal;
         document.getElementById('fal-display').textContent = selectedFal;
         renderTree();

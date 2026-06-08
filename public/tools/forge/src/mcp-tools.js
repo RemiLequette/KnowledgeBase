@@ -3,8 +3,7 @@
 // ====[ imports ]====
 
 import { log } from './logger.js';
-import { parseFAL, toFAL } from './fal.js';
-import { brand } from './brand.js';
+import { ForgeSession } from './forge-api.js';
 
 // ====[ tool-definitions ]====
 
@@ -16,10 +15,10 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'forge_ls',
-    description: 'List roots or folder contents. No argument: returns configured roots. Folder FAL (ending with /): returns entries with their FAL and type. Always free — no Brand or RTFM required. Issues branded FALs.',
+    description: 'List one level — unified at all depths. No arg: list roots. Folder FAL (ending with /): list folders and artifacts. Artifact FAL with node fragment (artifact#node): list node children as { name, type } in order. Always free for folder/root listing. Artifact node listing requires Brand + RTFM.',
     inputSchema: {
       type: 'object',
-      properties: { fal: { type: 'string', description: 'Folder FAL. Omit to list all roots.' } },
+      properties: { fal: { type: 'string', description: 'Folder FAL, or artifact FAL with optional #node fragment.' } },
       required: []
     }
   },
@@ -43,7 +42,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'forge_create',
-    description: 'Create a new empty artifact. Error if the artifact already exists. Required before any forge_write on a new file.',
+    description: 'Create a new empty artifact. Error if the artifact already exists. Brands the FAL — forge_write can follow without forge_ls.',
     inputSchema: {
       type: 'object',
       properties: { fal: { type: 'string', description: 'Artifact FAL.' } },
@@ -61,6 +60,24 @@ export const TOOL_DEFINITIONS = [
         content: { type: 'string', description: 'Content to write.' }
       },
       required: ['fal', 'content']
+    }
+  },
+  {
+    name: 'forge_is_block',
+    description: 'Returns true if the target is a block (writable), false if it is a node. Requires Brand + RTFM.',
+    inputSchema: {
+      type: 'object',
+      properties: { fal: { type: 'string', description: 'Artifact FAL with #block fragment.' } },
+      required: ['fal']
+    }
+  },
+  {
+    name: 'forge_delete',
+    description: 'Delete an artifact (FAL without fragment) or a node/block and its children (FAL with #name fragment). Requires Brand + RTFM for intra-artifact targets.',
+    inputSchema: {
+      type: 'object',
+      properties: { fal: { type: 'string', description: 'Artifact FAL, or artifact FAL with #name fragment.' } },
+      required: ['fal']
     }
   },
   {
@@ -107,163 +124,81 @@ export const TOOL_DEFINITIONS = [
   }
 ];
 
+// ====[ helpers ]====
+
+function ok(data) {
+  return { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] };
+}
+
+function err(name, e) {
+  log('ERROR', `${name} error: ${e.message}`);
+  return { content: [{ type: 'text', text: JSON.stringify({ error: e.message }) }], isError: true };
+}
+
 // ====[ dispatch ]====
 
 /**
- * Dispatch a CallTool request.
- * FAL strings are parsed into refs at this boundary — no FAL strings below.
- * Gates (Brand + RTFM) are enforced by TypeRegistry.read/write.
+ * Dispatch a MCP CallTool request to ForgeSession.
+ * Pure protocol wrapper — no Forge logic here.
+ * @param {string}       name
+ * @param {object}       args
+ * @param {ForgeSession} session
  */
-export async function dispatch(name, args, ctx) {
-  const { typeRegistry, rootRegistry, config } = ctx;
+export async function dispatch(name, args, session) {
   try {
-    if (name === 'forge_ping')     return _ping();
-    if (name === 'forge_ls')       return await _ls(args, config, rootRegistry, typeRegistry);
-    if (name === 'forge_describe') return _describe(args, typeRegistry);
-    if (name === 'forge_read')     return await _read(args, typeRegistry, rootRegistry);
-    if (name === 'forge_create')   return await _create(args, typeRegistry, rootRegistry);
-    if (name === 'forge_write')    return await _write(args, typeRegistry, rootRegistry);
-    if (name === 'forge_mkdir')    return await _mkdir(args, rootRegistry);
-    if (name === 'forge_rmdir')    return await _rmdir(args, rootRegistry);
-    if (name === 'forge_mvdir')    return await _mvdir(args, rootRegistry);
-    if (name === 'forge_rndir')    return await _rndir(args, rootRegistry);
-    throw new Error(`Unknown tool: ${name}`);
-  } catch (err) {
-    log('ERROR', `${name} error: ${err.message}`);
-    return { content: [{ type: 'text', text: JSON.stringify({ error: err.message }) }], isError: true };
+    switch (name) {
+      case 'forge_ping': {
+        return ok(session.ping());
+      }
+      case 'forge_ls': {
+        const result = await session.ls(args.fal);
+        return ok(result);
+      }
+      case 'forge_describe': {
+        return ok(session.describe(args.fal));
+      }
+      case 'forge_read': {
+        const content = await session.read(args.fal);
+        // O8: prepend FAL header so the AI keeps context across multiple reads
+        const header = `[fal: ${args.fal}]\n`;
+        return { content: [{ type: 'text', text: header + content }] };
+      }
+      case 'forge_create': {
+        await session.create(args.fal);
+        return ok({ ok: true, fal: args.fal });
+      }
+      case 'forge_write': {
+        await session.write(args.fal, args.block || '', args.content);
+        return ok({ ok: true, fal: args.fal, block: args.block || '', written: args.content.length });
+      }
+      case 'forge_is_block': {
+        const isBlock = await session.isBlock(args.fal);
+        return ok({ fal: args.fal, isBlock });
+      }
+      case 'forge_delete': {
+        await session.delete(args.fal);
+        return ok({ ok: true, fal: args.fal });
+      }
+      case 'forge_mkdir': {
+        await session.mkdir(args.fal);
+        return ok({ ok: true, fal: args.fal });
+      }
+      case 'forge_rmdir': {
+        await session.rmdir(args.fal);
+        return ok({ ok: true, fal: args.fal });
+      }
+      case 'forge_mvdir': {
+        await session.mvdir(args.fal, args.target);
+        return ok({ ok: true, fal: args.fal, target: args.target });
+      }
+      case 'forge_rndir': {
+        await session.rndir(args.fal, args.name);
+        return ok({ ok: true, fal: args.fal, name: args.name });
+      }
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
+  } catch (e) {
+    return err(name, e);
   }
-}
-
-// ====[ tool-ping ]====
-
-function _ping() {
-  log('INFO', 'forge_ping');
-  return { content: [{ type: 'text', text: 'pong — forge v3.0.0' }] };
-}
-
-// ====[ tool-ls ]====
-
-async function _ls(args, config, rootRegistry, typeRegistry) {
-  const { fal } = args;
-  log('INFO', `forge_ls — fal: ${fal || '(none)'}`);
-
-  if (!fal) {
-    const roots = config.roots.map(r => ({ name: r.name, url: r.url }));
-    return { content: [{ type: 'text', text: JSON.stringify({ roots }, null, 2) }] };
-  }
-
-  const ref = parseFAL(fal);
-  if (ref.name) throw new Error(`forge_ls requires a folder FAL (ending with /). Got: ${fal}`);
-
-  const raw     = await rootRegistry.list(ref, typeRegistry);
-  const entries = raw.map(e => {
-    const entryFal = e.artifactRef ? toFAL(e.artifactRef) : e.fal;
-    brand(entryFal);
-    return { fal: entryFal, type: e.type };
-  });
-
-  return { content: [{ type: 'text', text: JSON.stringify({ fal, count: entries.length, entries }, null, 2) }] };
-}
-
-// ====[ tool-describe ]====
-
-function _describe(args, typeRegistry) {
-  const { fal } = args;
-  log('INFO', `forge_describe — fal: ${fal}`);
-  const ref = parseFAL(fal);
-  if (!ref.name) throw new Error(`forge_describe requires an artifact FAL. Got: ${fal}`);
-  const result = typeRegistry.describe(ref);
-  return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
-}
-
-// ====[ tool-read ]====
-
-async function _read(args, typeRegistry, rootRegistry) {
-  const { fal } = args;
-  log('INFO', `forge_read — fal: ${fal}`);
-  const ref     = parseFAL(fal);
-  if (!ref.name) throw new Error(`forge_read requires an artifact FAL. Got: ${fal}`);
-  const block   = ref.block || '';
-  const content = await typeRegistry.read(ref, rootRegistry, block);
-  log('INFO', `forge_read — ${content.length} chars`);
-  // O8: prepend FAL + block header so the AI keeps context across multiple reads
-  const header = `[fal: ${fal}${block ? `  block: ${block}` : ''}]\n`;
-  return { content: [{ type: 'text', text: header + content }] };
-}
-
-// ====[ tool-create ]====
-
-async function _create(args, typeRegistry, rootRegistry) {
-  const { fal } = args;
-  log('INFO', `forge_create — fal: ${fal}`);
-  const ref = parseFAL(fal);
-  if (!ref.name) throw new Error(`forge_create requires an artifact FAL. Got: ${fal}`);
-  await typeRegistry.createArtifact(ref, rootRegistry);
-  log('INFO', `forge_create — done`);
-  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
-}
-
-// ====[ tool-write ]====
-
-async function _write(args, typeRegistry, rootRegistry) {
-  const { fal, block = '', content } = args;
-  log('INFO', `forge_write — fal: ${fal}, block: "${block}", ${content?.length ?? 0} chars`);
-  if (content === undefined || content === null) throw new Error('forge_write requires content.');
-  const ref = parseFAL(fal);
-  if (!ref.name) throw new Error(`forge_write requires an artifact FAL. Got: ${fal}`);
-  await typeRegistry.write(ref, rootRegistry, block, content);
-  log('INFO', `forge_write — done`);
-  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, block, written: content.length }) }] };
-}
-
-// ====[ tool-mkdir ]====
-
-async function _mkdir(args, rootRegistry) {
-  const { fal } = args;
-  log('INFO', `forge_mkdir — fal: ${fal}`);
-  const ref = parseFAL(fal);
-  if (ref.name) throw new Error(`forge_mkdir requires a folder FAL (ending with /). Got: ${fal}`);
-  await rootRegistry.mkdir(ref);
-  brand(fal);
-  log('INFO', `forge_mkdir — done`);
-  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
-}
-
-// ====[ tool-rmdir ]====
-
-async function _rmdir(args, rootRegistry) {
-  const { fal } = args;
-  log('INFO', `forge_rmdir — fal: ${fal}`);
-  const ref = parseFAL(fal);
-  if (ref.name) throw new Error(`forge_rmdir requires a folder FAL (ending with /). Got: ${fal}`);
-  await rootRegistry.rmdir(ref);
-  log('INFO', `forge_rmdir — done`);
-  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal }) }] };
-}
-
-// ====[ tool-mvdir ]====
-
-async function _mvdir(args, rootRegistry) {
-  const { fal, target } = args;
-  log('INFO', `forge_mvdir — fal: ${fal}, target: ${target}`);
-  const ref       = parseFAL(fal);
-  const targetRef = parseFAL(target);
-  if (ref.name)       throw new Error(`forge_mvdir source must be a folder FAL. Got: ${fal}`);
-  if (targetRef.name) throw new Error(`forge_mvdir target must be a folder FAL. Got: ${target}`);
-  await rootRegistry.mvdir(ref, targetRef);
-  log('INFO', `forge_mvdir — done`);
-  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, target }) }] };
-}
-
-// ====[ tool-rndir ]====
-
-async function _rndir(args, rootRegistry) {
-  const { fal, name } = args;
-  log('INFO', `forge_rndir — fal: ${fal}, name: ${name}`);
-  if (!name) throw new Error('forge_rndir requires a name.');
-  const ref = parseFAL(fal);
-  if (ref.name) throw new Error(`forge_rndir requires a folder FAL. Got: ${fal}`);
-  await rootRegistry.rndir(ref, name);
-  log('INFO', `forge_rndir — done`);
-  return { content: [{ type: 'text', text: JSON.stringify({ ok: true, fal, name }) }] };
 }

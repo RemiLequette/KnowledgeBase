@@ -1,5 +1,5 @@
 {
-  "version": "0.8.0",
+  "version": "0.9.0",
   "types": {
     "txt": {
       "version": "1.0",
@@ -15,12 +15,13 @@
       "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
       "description": "a JavaScript source file"
     },
-    "js-managed": {
+    "managed.js": {
       "version": "1.0",
       "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
       "description": "a managed JavaScript source file with named blocks",
       "extension": "js",
-      "shebang": "// @forge-type: js-managed",
+      "shebang": "// @forge-type: managed.js",
+      "oldShebang": "// @forge-type: js-managed",
       "blocks": {
         "separators": [
           {
@@ -32,10 +33,11 @@
         ]
       }
     },
-    "md-structured": {
+    "doc.md": {
       "version": "1.0",
       "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
       "description": "a structured Markdown document with named sections",
+      "extension": "md",
       "blocks": {
         "separators": [
           {
@@ -67,10 +69,11 @@
         ]
       }
     },
-    "doc-todolist": {
+    "todolist.doc.md": {
       "version": "1.0",
       "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/structured-text.js",
       "description": "a TODO list document",
+      "extension": "md",
       "matchName": "^TODO$",
       "blocks": {
         "separators": [

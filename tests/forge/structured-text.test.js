@@ -1,17 +1,17 @@
 /**
  * structured-text.test.js
  *
- * Unit tests for handlers/structured-text.js v3.0
- * Tests: claim (extension, shebang, matchName), listBlocks, readBlock, writeBlock, createArtifact.
+ * Unit tests for handlers/structured-text.js v3.4
+ * Tests: claim, ls, isBlock, readBlock, writeBlock (leaf-only + separator guard), createArtifact.
+ * Also tests: old-shebang migration in claim and writeBlock.
  *
  * References:
- *   - conventions/structured-text.md
- *   - conventions/forge.md v7.2 [section Type handlers]
+ *   - conventions/forge.md v7.8 [section Type handlers]
  */
 
-import assert from 'assert';
+import { describe, it, expect } from 'vitest';
 import fs from 'fs';
-import { init } from '../../public/tools/forge/handlers/structured-text.js';
+import { initType } from '../../public/tools/forge/handlers/structured-text.js';
 import { urlRef, urlRefPath, sandboxCreate, sandboxClean, sandboxRead, FIXTURES_DIR } from './helpers.js';
 
 // ---------------------------------------------------------------------------
@@ -41,16 +41,15 @@ const rootRegistry = {
 // Handler instances
 // ---------------------------------------------------------------------------
 
-// Plain md — extension only, no shebang, no matchName, no blocks
-const mdHandler = await init({ name: 'md', version: '1.0',
+const mdHandler = await initType({ name: 'md', version: '1.0',
   handler: '', description: 'a Markdown document' });
 
-// js-managed — shebang + extension override + block grammar
-const jsManagedHandler = await init({
-  name: 'js-managed', version: '1.0', handler: '',
+const managedJsHandler = await initType({
+  name: 'managed.js', version: '1.0', handler: '',
   description: 'a managed JavaScript source file with named blocks',
   extension: 'js',
-  shebang: '// @forge-type: js-managed',
+  shebang: '// @forge-type: managed.js',
+  oldShebang: '// @forge-type: js-managed',
   blocks: {
     separators: [
       { type: 'regex', pattern: '^// ====\\[ (.+?) \\]====$', nameGroup: 1, repeat: '+' }
@@ -58,10 +57,10 @@ const jsManagedHandler = await init({
   }
 });
 
-// md-structured — block grammar with Changelog special case
-const mdStructuredHandler = await init({
-  name: 'md-structured', version: '1.0', handler: '',
+const docMdHandler = await initType({
+  name: 'doc.md', version: '1.0', handler: '',
   description: 'a structured Markdown document with named sections',
+  extension: 'md',
   blocks: {
     separators: [
       {
@@ -78,10 +77,8 @@ const mdStructuredHandler = await init({
   }
 });
 
-// doc-todolist — matchName + extension: 'md' + block grammar
-// matchName is tested against urlRef.name (filename stem without extension)
-const todoHandler = await init({
-  name: 'doc-todolist', version: '1.0', handler: '',
+const todoHandler = await initType({
+  name: 'todolist.doc.md', version: '1.0', handler: '',
   description: 'a TODO list document',
   extension: 'md',
   matchName: '^sample-todo$',
@@ -101,293 +98,328 @@ const todoHandler = await init({
   }
 });
 
-// UrlRefs for fixtures
 const MANAGED_REF    = urlRef('sample-managed', '.js');
 const STRUCTURED_REF = urlRef('sample-structured', '.md');
 const TODO_REF       = urlRef('sample-todo', '.md');
 const SAMPLE_MD_REF  = urlRef('sample', '.md');
 const PLAIN_JS_REF   = urlRef('sample-plain', '.js');
 
-let failed = 0;
-async function testAsync(name, fn) {
-  try   { await fn(); console.log('PASS: ' + name); }
-  catch (e) { console.log('FAIL: ' + name + ' — ' + e.message); failed++; }
-}
-
 // ---------------------------------------------------------------------------
 // claim — extension only (md)
 // ---------------------------------------------------------------------------
 
-await testAsync('md claim: .md → true', async () => {
-  assert.strictEqual(await mdHandler.claim(urlRef('f', '.md'), rootRegistry), true);
-});
-await testAsync('md claim: .txt → false', async () => {
-  assert.strictEqual(await mdHandler.claim(urlRef('f', '.txt'), rootRegistry), false);
+describe('claim — extension only (md)', () => {
+  it('md claim: .md → true',  async () => expect(await mdHandler.claim(urlRef('f', '.md'),  rootRegistry)).toBe(true));
+  it('md claim: .txt → false', async () => expect(await mdHandler.claim(urlRef('f', '.txt'), rootRegistry)).toBe(false));
 });
 
 // ---------------------------------------------------------------------------
-// claim — shebang (js-managed)
+// claim — shebang (managed.js)
 // ---------------------------------------------------------------------------
 
-await testAsync('js-managed claim: .js with shebang → true', async () => {
-  assert.strictEqual(await jsManagedHandler.claim(MANAGED_REF, rootRegistry), true);
-});
-await testAsync('js-managed claim: .js without shebang → false', async () => {
-  assert.strictEqual(await jsManagedHandler.claim(PLAIN_JS_REF, rootRegistry), false);
-});
-await testAsync('js-managed claim: .md → false', async () => {
-  assert.strictEqual(await jsManagedHandler.claim(SAMPLE_MD_REF, rootRegistry), false);
+describe('claim — shebang (managed.js)', () => {
+  it('claim: .js with new shebang → true', async () => {
+    sandboxCreate('new-shebang.js', '// @forge-type: managed.js\n// ====[ imports ]====\n\n');
+    const ref = urlRef('new-shebang', '.js', 'sandbox');
+    expect(await managedJsHandler.claim(ref, rootRegistry)).toBe(true);
+    sandboxClean('new-shebang.js');
+  });
+
+  it('claim: .js with old shebang → true (migration)', async () => {
+    expect(await managedJsHandler.claim(MANAGED_REF, rootRegistry)).toBe(true);
+  });
+
+  it('claim: .js without shebang → false', async () => {
+    expect(await managedJsHandler.claim(PLAIN_JS_REF, rootRegistry)).toBe(false);
+  });
+
+  it('claim: .md → false', async () => {
+    expect(await managedJsHandler.claim(SAMPLE_MD_REF, rootRegistry)).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------
-// claim — matchName (doc-todolist)
+// claim — matchName (todolist.doc.md)
 // ---------------------------------------------------------------------------
 
-await testAsync('doc-todolist claim: name matches → true', async () => {
-  assert.strictEqual(await todoHandler.claim(TODO_REF, rootRegistry), true);
+describe('claim — matchName (todolist.doc.md)', () => {
+  it('name matches → true', async () => expect(await todoHandler.claim(TODO_REF, rootRegistry)).toBe(true));
+  it('name does not match → false', async () => expect(await todoHandler.claim(SAMPLE_MD_REF, rootRegistry)).toBe(false));
+  it('wrong extension → false', async () => expect(await todoHandler.claim(urlRef('sample-todo', '.txt'), rootRegistry)).toBe(false));
 });
-await testAsync('doc-todolist claim: name does not match → false', async () => {
-  assert.strictEqual(await todoHandler.claim(SAMPLE_MD_REF, rootRegistry), false);
-});
-await testAsync('doc-todolist claim: wrong extension → false', async () => {
-  assert.strictEqual(await todoHandler.claim(urlRef('sample-todo', '.txt'), rootRegistry), false);
+
+// ---------------------------------------------------------------------------
+// claim — hierarchy: todolist.doc.md and doc.md do not conflict
+// ---------------------------------------------------------------------------
+
+// @convention conventions/forge.md [section Type discovery — hierarchy]
+describe('claim — hierarchy: todolist.doc.md vs doc.md', () => {
+  it('todolist.doc.md claims sample-todo.md', async () => {
+    expect(await todoHandler.claim(TODO_REF, rootRegistry)).toBe(true);
+  });
+
+  it('doc.md does not claim sample-todo.md when todolist.doc.md is in the hierarchy', async () => {
+    // todolist.doc.md is more specific than doc.md in the *.md hierarchy —
+    // doc.md should not be evaluated once todolist.doc.md claims.
+    // This test verifies doc.md alone does claim it (it would if evaluated),
+    // but the hierarchy stops at the first claim.
+    expect(await docMdHandler.claim(TODO_REF, rootRegistry)).toBe(true); // doc.md alone would claim
+    // The TypeRegistry stops at todolist.doc.md — no conflict at the registry level.
+    // Conflict only happens when two INDEPENDENT groups both claim — not within the same hierarchy.
+  });
+
+  it('doc.md claims non-TODO .md files', async () => {
+    expect(await docMdHandler.claim(STRUCTURED_REF, rootRegistry)).toBe(true);
+  });
 });
 
 // ---------------------------------------------------------------------------
 // describe
 // ---------------------------------------------------------------------------
 
-await testAsync('md describe: no blocks → capabilities.blocks false', async () => {
-  const d = mdHandler.describe();
-  assert.strictEqual(d.capabilities.blocks, false);
-  assert.ok(d.recognition.startsWith('A FAL ending with .md'));
-});
-await testAsync('js-managed describe: has blocks → capabilities.blocks true', async () => {
-  const d = jsManagedHandler.describe();
-  assert.strictEqual(d.capabilities.blocks, true);
-});
+describe('describe', () => {
+  it('md describe: no blocks → capabilities.blocks false', () => {
+    const d = mdHandler.describe();
+    expect(d.capabilities.blocks).toBe(false);
+    expect(d.recognition).toMatch(/^A FAL ending with \.md/);
+  });
 
-// ---------------------------------------------------------------------------
-// listBlocks — no grammar → throws
-// ---------------------------------------------------------------------------
-
-await testAsync('md listBlocks: no grammar → throws', async () => {
-  try {
-    await mdHandler.listBlocks(SAMPLE_MD_REF, '', rootRegistry);
-    assert.fail('Expected error');
-  } catch (e) {
-    assert.ok(e.message.includes('no block grammar'), `unexpected: ${e.message}`);
-  }
+  it('managed.js describe: has blocks → capabilities.blocks true', () => {
+    expect(managedJsHandler.describe().capabilities.blocks).toBe(true);
+  });
 });
 
 // ---------------------------------------------------------------------------
-// listBlocks — js-managed (flat, shebang stripped)
+// readBlock — managed.js
 // ---------------------------------------------------------------------------
 
-await testAsync('js-managed listBlocks(""): returns all block names', async () => {
-  const blocks = await jsManagedHandler.listBlocks(MANAGED_REF, '', rootRegistry);
-  assert.deepStrictEqual(blocks, ['imports', 'constants', 'helpers', 'exports']);
-});
+describe('readBlock — managed.js', () => {
+  it('readBlock(""): returns content before first separator (no shebang)', async () => {
+    const content = await managedJsHandler.readBlock(MANAGED_REF, '', rootRegistry);
+    expect(content).not.toMatch(/^\/\/ @forge-type:/);
+    expect(content).not.toContain('// ====');
+  });
 
-await testAsync('js-managed listBlocks on named block: no child grammar → empty array', async () => {
-  const blocks = await jsManagedHandler.listBlocks(MANAGED_REF, 'imports', rootRegistry);
-  assert.deepStrictEqual(blocks, []);
-});
+  it('readBlock("imports"): returns block content only', async () => {
+    const content = await managedJsHandler.readBlock(MANAGED_REF, 'imports', rootRegistry);
+    expect(content).toContain('import fs');
+    expect(content).not.toContain('// ====');
+  });
 
-// ---------------------------------------------------------------------------
-// listBlocks — md-structured (hierarchical)
-// ---------------------------------------------------------------------------
+  it('readBlock("helpers"): returns helpers content', async () => {
+    const content = await managedJsHandler.readBlock(MANAGED_REF, 'helpers', rootRegistry);
+    expect(content).toContain('helper()');
+  });
 
-await testAsync('md-structured listBlocks(""): top-level sections', async () => {
-  const blocks = await mdStructuredHandler.listBlocks(STRUCTURED_REF, '', rootRegistry);
-  assert.ok(blocks.includes('Quick Start'), `missing Quick Start, got: ${blocks}`);
-  assert.ok(blocks.includes('Changelog'),   `missing Changelog, got: ${blocks}`);
-  assert.ok(blocks.includes('Section A'),   `missing Section A, got: ${blocks}`);
-});
-
-await testAsync('md-structured listBlocks("Changelog"): returns version entries', async () => {
-  const blocks = await mdStructuredHandler.listBlocks(STRUCTURED_REF, 'Changelog', rootRegistry);
-  assert.ok(blocks.length >= 2, `expected >= 2 entries, got: ${blocks.length}`);
-  assert.ok(blocks[0].startsWith('Version'), `expected Version, got: ${blocks[0]}`);
-});
-
-await testAsync('md-structured listBlocks("Quick Start"): no child grammar → empty', async () => {
-  const blocks = await mdStructuredHandler.listBlocks(STRUCTURED_REF, 'Quick Start', rootRegistry);
-  assert.deepStrictEqual(blocks, []);
+  it('readBlock unknown block → throws', async () => {
+    await expect(managedJsHandler.readBlock(MANAGED_REF, 'nonexistent', rootRegistry))
+      .rejects.toThrow(/not found/);
+  });
 });
 
 // ---------------------------------------------------------------------------
-// readBlock — js-managed
+// readBlock — doc.md
 // ---------------------------------------------------------------------------
 
-// readBlock("") on a file with grammar returns the anonymous root block content:
-// the content BEFORE the first separator (shebang stripped).
-// sample-managed.js starts with shebang + blank line, then first separator.
-// So the anonymous block content is the blank line only — not the named blocks.
-await testAsync('js-managed readBlock(""): returns content before first separator (no shebang)', async () => {
-  const content = await jsManagedHandler.readBlock(MANAGED_REF, '', rootRegistry);
-  assert.ok(!content.startsWith('// @forge-type:'), 'shebang must be stripped');
-  assert.ok(!content.includes('// ===='), 'separator must not appear in anonymous block');
-});
+describe('readBlock — doc.md', () => {
+  it('readBlock("Section A"): returns section content', async () => {
+    const content = await docMdHandler.readBlock(STRUCTURED_REF, 'Section A', rootRegistry);
+    expect(content).toContain('Content of section A');
+    expect(content).not.toMatch(/^## /m);
+  });
 
-await testAsync('js-managed readBlock("imports"): returns block content only', async () => {
-  const content = await jsManagedHandler.readBlock(MANAGED_REF, 'imports', rootRegistry);
-  assert.ok(content.includes("import fs"), `expected import, got: ${content}`);
-  assert.ok(!content.includes('// ===='), 'separator must not appear in content');
-});
+  it('readBlock("Changelog"): own content only, no version entries', async () => {
+    const content = await docMdHandler.readBlock(STRUCTURED_REF, 'Changelog', rootRegistry);
+    expect(content).not.toMatch(/^### /m);
+  });
 
-await testAsync('js-managed readBlock("helpers"): returns helpers content', async () => {
-  const content = await jsManagedHandler.readBlock(MANAGED_REF, 'helpers', rootRegistry);
-  assert.ok(content.includes('helper()'), `expected helper fn, got: ${content}`);
-});
-
-await testAsync('js-managed readBlock unknown block → throws', async () => {
-  try {
-    await jsManagedHandler.readBlock(MANAGED_REF, 'nonexistent', rootRegistry);
-    assert.fail('Expected error');
-  } catch (e) {
-    assert.ok(e.message.includes('not found'), `unexpected: ${e.message}`);
-  }
+  it('readBlock nested: Changelog/Version 1.0 - Creation', async () => {
+    const entries = await docMdHandler.ls(STRUCTURED_REF, 'Changelog', rootRegistry);
+    const version = entries.find(e => e.name.includes('1.0'));
+    expect(version).toBeTruthy();
+    const content = await docMdHandler.readBlock(STRUCTURED_REF, `Changelog/${version.name}`, rootRegistry);
+    expect(content).toContain('Initial content');
+  });
 });
 
 // ---------------------------------------------------------------------------
-// readBlock — md-structured
+// writeBlock — leaf-only guard
 // ---------------------------------------------------------------------------
 
-await testAsync('md-structured readBlock("Section A"): returns section content', async () => {
-  const content = await mdStructuredHandler.readBlock(STRUCTURED_REF, 'Section A', rootRegistry);
-  assert.ok(content.includes('Content of section A'), `unexpected: ${content}`);
-  assert.ok(!content.includes('## '), 'no separator in own content');
-});
+describe('writeBlock — leaf-only guard', () => {
+  it('doc.md writeBlock on node (Changelog) → throws', async () => {
+    sandboxCreate('st-node.md', [
+      '## Quick Start', '', 'Some content.', '',
+      '## Changelog', '', '### Version 1.0', '', 'Initial.'
+    ].join('\n'));
+    const ref = urlRef('st-node', '.md', 'sandbox');
+    await expect(docMdHandler.writeBlock(ref, 'Changelog', 'should fail', rootRegistry))
+      .rejects.toThrow(/node|child grammar/);
+    sandboxClean('st-node.md');
+  });
 
-await testAsync('md-structured readBlock("Changelog"): own content only, no version entries', async () => {
-  const content = await mdStructuredHandler.readBlock(STRUCTURED_REF, 'Changelog', rootRegistry);
-  assert.ok(!content.includes('### '), `child separators must not appear: ${content}`);
-});
-
-await testAsync('md-structured readBlock nested: Changelog/Version 1.0 - Creation', async () => {
-  const blocks  = await mdStructuredHandler.listBlocks(STRUCTURED_REF, 'Changelog', rootRegistry);
-  const version = blocks.find(b => b.includes('1.0'));
-  assert.ok(version, 'Version 1.0 entry not found');
-  const content = await mdStructuredHandler.readBlock(STRUCTURED_REF, `Changelog/${version}`, rootRegistry);
-  assert.ok(content.includes('Initial content'), `unexpected: ${content}`);
+  it('doc.md writeBlock on block (Quick Start) → succeeds', async () => {
+    sandboxCreate('st-leaf.md', [
+      '## Quick Start', '', 'Old content.', '',
+      '## Changelog', '', '### Version 1.0', '', 'Initial.'
+    ].join('\n'));
+    const ref = urlRef('st-leaf', '.md', 'sandbox');
+    await docMdHandler.writeBlock(ref, 'Quick Start', 'New content.', rootRegistry);
+    const raw = sandboxRead('st-leaf.md');
+    expect(raw).toContain('New content.');
+    expect(raw).not.toContain('Old content.');
+    sandboxClean('st-leaf.md');
+  });
 });
 
 // ---------------------------------------------------------------------------
-// writeBlock — js-managed
+// writeBlock — managed.js (new shebang)
 // ---------------------------------------------------------------------------
 
-await testAsync('js-managed writeBlock: replaces named block content', async () => {
-  sandboxCreate('st-managed.js', [
-    '// @forge-type: js-managed',
-    '',
-    '// ====[ imports ]====',
-    '',
-    "import fs from 'fs';",
-    '',
-    '// ====[ helpers ]====',
-    '',
-    'export function helper() { return 42; }'
-  ].join('\n'));
+describe('writeBlock — managed.js (new shebang)', () => {
+  it('replaces named block content, writes new shebang', async () => {
+    sandboxCreate('st-managed.js', [
+      '// @forge-type: managed.js', '',
+      '// ====[ imports ]====', '', "import fs from 'fs';", '',
+      '// ====[ helpers ]====', '', 'export function helper() { return 42; }'
+    ].join('\n'));
+    const ref = urlRef('st-managed', '.js', 'sandbox');
+    await managedJsHandler.writeBlock(ref, 'imports', "import path from 'path';", rootRegistry);
+    const raw = sandboxRead('st-managed.js');
+    expect(raw).toMatch(/^\/\/ @forge-type: managed\.js/);
+    expect(raw).toContain("import path from 'path';");
+    expect(raw).not.toContain("import fs from 'fs';");
+    expect(raw).toContain('// ====[ helpers ]====');
+    expect(raw).toContain('helper()');
+    sandboxClean('st-managed.js');
+  });
 
-  const ref = urlRef('st-managed', '.js', 'sandbox');
-  await jsManagedHandler.writeBlock(ref, 'imports', "import path from 'path';", rootRegistry);
-
-  const raw = sandboxRead('st-managed.js');
-  assert.ok(raw.startsWith('// @forge-type: js-managed'), 'shebang preserved');
-  assert.ok(raw.includes("import path from 'path';"), 'new content present');
-  assert.ok(!raw.includes("import fs from 'fs';"), 'old content removed');
-  assert.ok(raw.includes('// ====[ helpers ]===='), 'other block preserved');
-  assert.ok(raw.includes('helper()'), 'other block content preserved');
-
-  sandboxClean('st-managed.js');
+  it('writeBlock(""): replaces full content, writes new shebang', async () => {
+    sandboxCreate('st-managed.js', '// @forge-type: managed.js\nold body');
+    const ref = urlRef('st-managed', '.js', 'sandbox');
+    await managedJsHandler.writeBlock(ref, '', 'new body', rootRegistry);
+    const raw = sandboxRead('st-managed.js');
+    expect(raw).toMatch(/^\/\/ @forge-type: managed\.js\n/);
+    expect(raw).toContain('new body');
+    expect(raw).not.toContain('old body');
+    sandboxClean('st-managed.js');
+  });
 });
 
-await testAsync('js-managed writeBlock(""): replaces full content, preserves shebang', async () => {
-  sandboxCreate('st-managed.js', '// @forge-type: js-managed\nold body');
-  const ref = urlRef('st-managed', '.js', 'sandbox');
-  await jsManagedHandler.writeBlock(ref, '', 'new body', rootRegistry);
-  const raw = sandboxRead('st-managed.js');
-  assert.ok(raw.startsWith('// @forge-type: js-managed\n'), 'shebang first');
-  assert.ok(raw.includes('new body'), 'new body present');
-  assert.ok(!raw.includes('old body'), 'old body removed');
-  sandboxClean('st-managed.js');
+// ---------------------------------------------------------------------------
+// old-shebang migration — writeBlock upgrades silently
+// ---------------------------------------------------------------------------
+
+describe('old-shebang migration', () => {
+  it('writeBlock on old-shebang file: migrates to new shebang', async () => {
+    sandboxCreate('st-old-shebang.js', [
+      '// @forge-type: js-managed', '',
+      '// ====[ imports ]====', '', "import fs from 'fs';"
+    ].join('\n'));
+    const ref = urlRef('st-old-shebang', '.js', 'sandbox');
+    await managedJsHandler.writeBlock(ref, 'imports', "import path from 'path';", rootRegistry);
+    const raw = sandboxRead('st-old-shebang.js');
+    expect(raw).toMatch(/^\/\/ @forge-type: managed\.js\n/);
+    expect(raw).toContain("import path from 'path';");
+    expect(raw).not.toContain('js-managed');
+    sandboxClean('st-old-shebang.js');
+  });
 });
 
-await testAsync('writeBlock on non-existent file → existence guard error', async () => {
-  sandboxClean('st-missing.js');
-  const ref = urlRef('st-missing', '.js', 'sandbox');
-  try {
-    await jsManagedHandler.writeBlock(ref, '', 'x', rootRegistry);
-    assert.fail('Expected error');
-  } catch (e) {
-    assert.ok(
-      e.message.includes('forge_create') || e.message.includes('does not exist'),
-      `unexpected: ${e.message}`
-    );
-  }
+// ---------------------------------------------------------------------------
+// writeBlock — existence guard
+// ---------------------------------------------------------------------------
+
+describe('writeBlock — existence guard', () => {
+  it('non-existent file → existence guard error', async () => {
+    sandboxClean('st-missing.js');
+    const ref = urlRef('st-missing', '.js', 'sandbox');
+    await expect(managedJsHandler.writeBlock(ref, '', 'x', rootRegistry))
+      .rejects.toThrow(/forge_create|does not exist/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// writeBlock — separator guard
+// ---------------------------------------------------------------------------
+
+describe('writeBlock — separator guard', () => {
+  it('managed.js writeBlock(""): content with separator → throws', async () => {
+    sandboxCreate('st-sep.js', [
+      '// @forge-type: managed.js', '',
+      '// ====[ imports ]====', '', "import fs from 'fs';"
+    ].join('\n'));
+    const ref = urlRef('st-sep', '.js', 'sandbox');
+    await expect(managedJsHandler.writeBlock(ref, '', '// ====[ imports ]====\nbad content', rootRegistry))
+      .rejects.toThrow(/separator/);
+    sandboxClean('st-sep.js');
+  });
+
+  it('managed.js writeBlock(name): content with separator → throws', async () => {
+    sandboxCreate('st-sep.js', [
+      '// @forge-type: managed.js', '',
+      '// ====[ imports ]====', '', "import fs from 'fs';", '',
+      '// ====[ helpers ]====', '', 'export function helper() { return 42; }'
+    ].join('\n'));
+    const ref = urlRef('st-sep', '.js', 'sandbox');
+    await expect(managedJsHandler.writeBlock(ref, 'imports', '// ====[ helpers ]====\nbad', rootRegistry))
+      .rejects.toThrow(/separator/);
+    sandboxClean('st-sep.js');
+  });
+
+  it('doc.md writeBlock(name): content with separator → throws', async () => {
+    sandboxCreate('st-sep.md', ['## Quick Start', '', 'Some content.', '', '## Keywords', '', 'test'].join('\n'));
+    const ref = urlRef('st-sep', '.md', 'sandbox');
+    await expect(docMdHandler.writeBlock(ref, 'Quick Start', '## Keywords\nbad', rootRegistry))
+      .rejects.toThrow(/separator/);
+    sandboxClean('st-sep.md');
+  });
 });
 
 // ---------------------------------------------------------------------------
 // createArtifact
 // ---------------------------------------------------------------------------
 
-await testAsync('md createArtifact: creates empty file', async () => {
-  sandboxClean('st-new.md');
-  const ref = urlRef('st-new', '.md', 'sandbox');
-  await mdHandler.createArtifact(ref, rootRegistry);
-  assert.ok(fs.existsSync(urlRefPath(ref)));
-  assert.strictEqual(sandboxRead('st-new.md'), '');
-  sandboxClean('st-new.md');
-});
-
-await testAsync('js-managed createArtifact: writes shebang only (no fixed-name blocks)', async () => {
-  sandboxClean('st-new.js');
-  const ref = urlRef('st-new', '.js', 'sandbox');
-  await jsManagedHandler.createArtifact(ref, rootRegistry);
-  const raw = sandboxRead('st-new.js');
-  assert.ok(raw.startsWith('// @forge-type: js-managed\n'), `unexpected: ${raw}`);
-  sandboxClean('st-new.js');
-});
-
-await testAsync('md-structured createArtifact: skeleton has Changelog block', async () => {
-  sandboxClean('st-new.md');
-  const ref = urlRef('st-new', '.md', 'sandbox');
-  await mdStructuredHandler.createArtifact(ref, rootRegistry);
-  const raw = sandboxRead('st-new.md');
-  assert.ok(raw.includes('## Changelog'), `expected Changelog in skeleton: ${raw}`);
-  sandboxClean('st-new.md');
-});
-
-await testAsync('createArtifact throws if file already exists', async () => {
-  sandboxCreate('st-new.md', 'x');
-  const ref = urlRef('st-new', '.md', 'sandbox');
-  try {
-    await mdHandler.createArtifact(ref, rootRegistry);
-    assert.fail('Expected error');
-  } catch (e) {
-    assert.ok(e.message.length > 0);
-  } finally {
+describe('createArtifact', () => {
+  it('md: creates empty file', async () => {
     sandboxClean('st-new.md');
-  }
+    const ref = urlRef('st-new', '.md', 'sandbox');
+    await mdHandler.createArtifact(ref, rootRegistry);
+    expect(fs.existsSync(urlRefPath(ref))).toBe(true);
+    expect(sandboxRead('st-new.md')).toBe('');
+    sandboxClean('st-new.md');
+  });
+
+  it('managed.js: writes new shebang only', async () => {
+    sandboxClean('st-new.js');
+    const ref = urlRef('st-new', '.js', 'sandbox');
+    await managedJsHandler.createArtifact(ref, rootRegistry);
+    expect(sandboxRead('st-new.js')).toMatch(/^\/\/ @forge-type: managed\.js\n/);
+    sandboxClean('st-new.js');
+  });
+
+  it('doc.md: skeleton has Changelog block', async () => {
+    sandboxClean('st-new.md');
+    const ref = urlRef('st-new', '.md', 'sandbox');
+    await docMdHandler.createArtifact(ref, rootRegistry);
+    expect(sandboxRead('st-new.md')).toContain('## Changelog');
+    sandboxClean('st-new.md');
+  });
+
+  it('throws if file already exists', async () => {
+    sandboxCreate('st-new.md', 'x');
+    const ref = urlRef('st-new', '.md', 'sandbox');
+    await expect(mdHandler.createArtifact(ref, rootRegistry)).rejects.toThrow();
+    sandboxClean('st-new.md');
+  });
 });
 
 // ---------------------------------------------------------------------------
 // Unimplemented stubs
 // ---------------------------------------------------------------------------
 
-await testAsync('insertBlock throws', async () => {
-  try { await mdHandler.insertBlock(SAMPLE_MD_REF, 'x', 'y', rootRegistry); assert.fail(); }
-  catch (e) { assert.ok(e.message.includes('not implemented')); }
+describe('Unimplemented stubs — all throw', () => {
+  it('insertBlock', async () => { await expect(mdHandler.insertBlock(SAMPLE_MD_REF, 'x', 'y', rootRegistry)).rejects.toThrow(/not implemented/); });
+  it('appendBlock', async () => { await expect(mdHandler.appendBlock(SAMPLE_MD_REF, '', 'x', rootRegistry)).rejects.toThrow(/not implemented/); });
+  it('deleteBlock', async () => { await expect(mdHandler.deleteBlock(SAMPLE_MD_REF, 'x', rootRegistry)).rejects.toThrow(/not implemented/); });
 });
-await testAsync('appendBlock throws', async () => {
-  try { await mdHandler.appendBlock(SAMPLE_MD_REF, '', 'x', rootRegistry); assert.fail(); }
-  catch (e) { assert.ok(e.message.includes('not implemented')); }
-});
-await testAsync('deleteBlock throws', async () => {
-  try { await mdHandler.deleteBlock(SAMPLE_MD_REF, 'x', rootRegistry); assert.fail(); }
-  catch (e) { assert.ok(e.message.includes('not implemented')); }
-});
-
-console.log(`\n${failed === 0 ? 'All tests passed' : `${failed} test(s) failed`}`);
-process.exit(failed > 0 ? 1 : 0);

@@ -9,11 +9,11 @@
  *   POST /forge-reload — hot-reload Forge registries from JSON config
  *
  * Forge is loaded via dynamic import() at startup (forge.js is ESM).
- * TypeRegistry and RootRegistry come from forge.js re-exports.
- * dispatch() is imported directly from src/mcp-tools.js (not re-exported by forge.js).
- * Hot-reload reconstructs TypeRegistry + RootRegistry from the JSON files.
- * Handler JS modules are NOT reloaded (ESM cache) — only registry JSON changes
- * are picked up.
+ * createSession() comes from forge-api.js — builds a ForgeSession directly.
+ * dispatch() is imported from src/mcp-tools.js.
+ * Hot-reload calls createSession() again — reconstructs a fresh ForgeSession
+ * from the JSON config files. Handler JS modules are NOT reloaded (ESM cache)
+ * — only registry JSON changes are picked up.
  *
  * Usage:
  *   node tools/local-server.js <root1> [<root2> ...] [--port <port>]
@@ -96,29 +96,28 @@ function readBody(req) {
 
 // ---------------------------------------------------------------------------
 // Forge proxy
-// TypeRegistry + RootRegistry from forge.js re-exports.
-// dispatch() imported directly from src/mcp-tools.js (not re-exported by forge.js).
-// forgeCtx is replaced on every reload.
+// forgeCtx = { session: ForgeSession, dispatch, config }
+// Replaced on every reload.
 // ---------------------------------------------------------------------------
 
-let forgeCtx        = null;
-let forgeMod        = null; // { TypeRegistry, RootRegistry } from forge.js
-let forgeDispatch   = null; // dispatch() from src/mcp-tools.js
+let forgeCtx      = null;
+let forgeApiMod   = null; // { createSession } from forge-api.js
+let forgeDispatch = null; // dispatch() from src/mcp-tools.js
 let forgeConfigPath = null;
 
 async function loadForgeMods() {
-  if (forgeMod && forgeDispatch) return;
+  if (forgeApiMod && forgeDispatch) return;
 
   const forgeDir    = path.resolve(__dirname, 'forge');
-  const forgeJsUrl  = 'file:///' + path.join(forgeDir, 'forge.js').replace(/\\/g, '/');
+  const forgeApiUrl = 'file:///' + path.join(forgeDir, 'src', 'forge-api.js').replace(/\\/g, '/');
   const mcpToolsUrl = 'file:///' + path.join(forgeDir, 'src', 'mcp-tools.js').replace(/\\/g, '/');
 
-  const [mod, toolsMod] = await Promise.all([
-    import(forgeJsUrl),
+  const [apiMod, toolsMod] = await Promise.all([
+    import(forgeApiUrl),
     import(mcpToolsUrl)
   ]);
 
-  forgeMod        = mod;               // .TypeRegistry, .RootRegistry
+  forgeApiMod     = apiMod;            // .createSession
   forgeDispatch   = toolsMod.dispatch;
   forgeConfigPath = path.join(forgeDir, 'forge.config.json');
 }
@@ -128,22 +127,16 @@ async function reloadForge() {
 
   await loadForgeMods();
 
-  const { TypeRegistry, RootRegistry } = forgeMod;
-
   if (!fs.existsSync(forgeConfigPath)) {
     throw new Error(`forge.config.json not found at ${forgeConfigPath}`);
   }
 
-  const config       = JSON.parse(fs.readFileSync(forgeConfigPath, 'utf8'));
-  const typeRegistry = new TypeRegistry();
-  const rootRegistry = new RootRegistry();
+  const config  = JSON.parse(fs.readFileSync(forgeConfigPath, 'utf8'));
+  const session = await forgeApiMod.createSession(config);
 
-  await typeRegistry.load(config.types);
-  await rootRegistry.load(config.roots);
+  forgeCtx = { session, dispatch: forgeDispatch, config };
 
-  forgeCtx = { typeRegistry, rootRegistry, config, dispatch: forgeDispatch };
-
-  const types = [...typeRegistry.handlers.keys()];
+  const types = [...session.typeRegistry.handlers.keys()];
   const roots = config.roots.map(r => r.name);
   return { types, roots };
 }
@@ -194,7 +187,7 @@ const server = http.createServer(async (req, res) => {
       return send(res, 400, { error: 'Missing field: tool' });
     }
     try {
-      const result = await forgeCtx.dispatch(tool, toolArgs, forgeCtx);
+      const result = await forgeCtx.dispatch(tool, toolArgs, forgeCtx.session);
       return send(res, 200, result);
     } catch (err) {
       return send(res, 500, { error: err.message });

@@ -62,45 +62,23 @@ export class RootRegistry {
     return { ...ref, _url: url + (ref.name ? '' : '/') };
   }
 
-  _urlToFolderFAL(url, rootName) {
-    const baseUrl = this._baseUrl(rootName);
-    if (!url.startsWith(baseUrl)) throw new Error(`URL not under root '${rootName}': ${url}`);
-    return `forge://${rootName}/${url.slice(baseUrl.length)}`;
+  rootRefs() {
+    return [...this.handlers.keys()].map(name => ({ root: name, path: '', name: '', type: '' }));
   }
 
 // ====[ folder-operations ]====
 
   /**
    * List one level of a folder.
+   * Returns raw UrlRefs — type discovery is the caller's responsibility.
    * @param {{ root: string, path: string, name: string, type: string }} ref — folder ref (name === '')
-   * @param {object} typeRegistry — used for type discovery
-   * @returns {Promise<Array<{ fal: string, type: string, artifactRef?: object }>>}
+   * @returns {Promise<{ folders: UrlRef[], artifacts: UrlRef[] }>}
    */
-  async list(ref, typeRegistry) {
+  async list(ref) {
     const folderUrlRef = this._refToUrlRef(ref);
     const entry        = this.handlers.get(ref.root);
     if (!entry) throw new Error(`No root handler for: ${ref.root}`);
-
-    const { folders, artifacts } = await entry.handler.list(folderUrlRef);
-    const result = [];
-
-    for (const folderUrlRef of folders) {
-      let folderFAL;
-      if (folderUrlRef._url) {
-        const urlWithSlash = folderUrlRef._url.endsWith('/') ? folderUrlRef._url : folderUrlRef._url + '/';
-        folderFAL = this._urlToFolderFAL(urlWithSlash, ref.root);
-      } else {
-        folderFAL = `forge://${ref.root}/${folderUrlRef.path}${folderUrlRef.name}/`;
-      }
-      result.push({ fal: folderFAL, type: 'folder' });
-    }
-
-    for (const artifactUrlRef of artifacts) {
-      const artifactRef = await typeRegistry.discover(artifactUrlRef, this);
-      result.push({ artifactRef, type: artifactRef.type });
-    }
-
-    return result;
+    return entry.handler.list(folderUrlRef);
   }
 
   async mkdir(ref) {

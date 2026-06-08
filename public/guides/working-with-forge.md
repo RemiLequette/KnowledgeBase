@@ -11,7 +11,7 @@ It covers what a FAL is, the RTFM workflow (describe before read or write), and 
 Load at session start whenever Forge tools are available.
 
 ## Keywords
-forge, FAL, forge_describe, forge_read, forge_write, forge_ls, RTFM, brand, workflow, AI-assistant, session, artifact, type
+forge, FAL, forge_describe, forge_read, forge_write, forge_ls, forge_is_block, forge_delete, RTFM, brand, workflow, AI-assistant, session, artifact, node, block, type
 
 ## Table of Contents
 
@@ -93,16 +93,16 @@ The `capabilities` field tells you whether the type supports blocks (named secti
 ## The Brand principle
 [up](#table-of-contents)
 
-**Every FAL used in a read or write must have been issued by Forge** — obtained via `forge_ls` or `forge_mkdir`, never constructed manually.
+**Every FAL used in a read or write must have been issued by Forge** — obtained via `forge_ls` (for existing artifacts) or `forge_create` (for new artifacts), never constructed manually.
 
 Forge maintains a Brand registry of all FALs it has emitted in the current session. A FAL not in the registry is rejected:
 ```
-"This FAL was not issued by Forge — call forge_ls to obtain a valid FAL."
+"This FAL was not issued by Forge — call forge_ls to discover existing artifacts, or forge_create to create a new one."
 ```
 
 This protects against type errors: a manually constructed FAL may have the wrong type extension, silently routing the operation to the wrong handler and corrupting the artifact.
 
-**The rule in practice:** always start with `forge_ls` to discover FALs. Never type a FAL by hand, even if you think you know it. If a human gives you a filename without a full FAL, call `forge_ls` to find the correct FAL and confirm with the human before proceeding.
+**The rule in practice:** always start with `forge_ls` to discover existing FALs, or `forge_create` to create a new artifact. Never type a FAL by hand, even if you think you know it. If a human gives you a filename without a full FAL, call `forge_ls` to find the correct FAL and confirm with the human before proceeding.
 
 ## Tool reference
 [up](#table-of-contents)
@@ -110,16 +110,22 @@ This protects against type errors: a manually constructed FAL may have the wrong
 ### forge_ls
 
 ```
-forge_ls()           → list all roots
-forge_ls(folderFal)  → list one level of a folder
+forge_ls()                  → list all roots
+forge_ls(folderFal)         → list one level of a folder
+forge_ls(fal#node)          → list children of a node — { name, type: "node"|"block" }[], in order
 ```
 
-Always free — no brand or describe required. Returns branded FALs with their type. **This is the only tool that issues valid FALs.** Use it to navigate and discover artifact addresses.
+`forge_ls` is unified at all depths — same tool for roots, folders, and nodes inside an artifact. Always free for root and folder listing. Artifact node listing requires Brand + RTFM. **This is the primary tool for discovering and branding existing artifact FALs.**
 
 Folder FALs end with `/`:
 ```
 forge://development/with-claude/knowledgebase/
 forge://development/with-claude/knowledgebase/public/
+```
+
+Node fragment syntax for intra-artifact listing:
+```
+forge://…/TODO.doc-todolist#section:High-priority
 ```
 
 ### forge_describe
@@ -143,10 +149,27 @@ Requires a branded FAL (Brand) and prior `forge_describe` for the type (RTFM) �
 
 ```
 forge_write(fal, content)          → replace full file (plain-text types)
-forge_write(fal, block, content)   → replace named block (structured types only)
+forge_write(fal, block, content)   → replace a block's content (structured types only)
 ```
 
-Requires a branded FAL (Brand) and prior `forge_describe` for the type (RTFM) — Brand is checked first. For plain-text types, always omit the block argument.
+Requires Brand + RTFM — Brand is checked first. The target must be a **block**, not a node. Use `forge_is_block` to check before writing if unsure.
+
+### forge_is_block
+
+```
+forge_is_block(fal#name)   → true if block (writable), false if node
+```
+
+Requires Brand + RTFM. Use before `forge_write` when the type of the target is uncertain.
+
+### forge_delete
+
+```
+forge_delete(fal)      → delete an artifact
+forge_delete(fal#name) → delete a node or block and its children
+```
+
+Requires Brand + RTFM for intra-artifact targets.
 
 ### forge_ping
 
@@ -193,11 +216,22 @@ forge_write("forge://…/PROJECT.md", newContent)  → write back
 ### Navigate an unknown project
 
 ```
-forge_ls()                               → list roots
-forge_ls("forge://development/")        → list top-level folders
-forge_ls("forge://development/myproject/")  → list project files
-forge_describe("forge://…/PROJECT.md")  → understand the type
-forge_read("forge://…/PROJECT.md")      → read project context
+forge_ls()                                      → list roots
+forge_ls("forge://development/")               → list top-level folders
+forge_ls("forge://development/myproject/")     → list project files
+forge_describe("forge://…/PROJECT.md")        → understand the type
+forge_read("forge://…/PROJECT.md")            → read project context
+```
+
+### Explore a structured artifact
+
+```
+forge_describe("forge://…/TODO.doc-todolist")         → type unlocked, blocks: true
+forge_ls("forge://…/TODO.doc-todolist")               → children of root node
+forge_ls("forge://…/TODO.doc-todolist#section:High")  → children of a node
+forge_is_block("forge://…/TODO.doc-todolist#item:O1") → true — safe to write
+forge_read("forge://…/TODO.doc-todolist#item:O1")    → block content
+forge_write("forge://…/TODO.doc-todolist#item:O1", newContent)
 ```
 
 ### Human gives a filename without a FAL
@@ -216,6 +250,32 @@ Human: "read Forge.md"
 |------|-------------|
 
 ## Changelog
+
+### Version 1.5 - forge_create brande; forge_ls n'est plus le seul émetteur
+**Date:** 2026-06-08
+**Reason:** forge_create était absent du Brand principle. Après un create, forge_write doit pouvoir suivre sans forge_ls. Message d'erreur et règles mises à jour.
+
+**Changes:**
+- Brand principle : `forge_ls or forge_mkdir` → `forge_ls (existing) or forge_create (new)`
+- Brand principle : message d'erreur corrigé
+- Brand principle : "The rule in practice" — forge_create ajouté
+- Tool reference / forge_ls : "only tool that issues valid FALs" → "primary tool for discovering and branding existing artifact FALs"
+
+---
+
+### Version 1.4 - Node/block model + new tools
+**Date:** 2026-06-07
+**Reason:** forge.md v7.3–7.5 — node/block vocabulary, `forge_ls` unified, `forge_is_block` and `forge_delete` added.
+
+**Changes:**
+- Keywords: `forge_is_block`, `forge_delete`, `node`, `block` added
+- Tool reference / forge_ls: unified description — folder and artifact#node; node fragment syntax
+- Tool reference / forge_write: target must be a block (not a node); `forge_is_block` mentioned
+- Tool reference / forge_is_block: new section
+- Tool reference / forge_delete: new section
+- Common patterns: `Explore a structured artifact` pattern added
+
+---
 
 ### Version 1.3 - Brand before RTFM; force removed
 **Date:** 2026-06-07

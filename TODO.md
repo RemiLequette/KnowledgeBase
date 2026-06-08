@@ -32,6 +32,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O6] Convention self-reference in artifacts | An AI reading a project file directly (e.g. `TODO.md`, `GLOSSARY.md`) without going through `INDEX.md` has no signal to load the relevant convention. Explore a lightweight mechanism for files to reference their own governing convention — e.g. a standard comment header, a frontmatter field, or a convention pointer in the file's Quick Start. Constaté sur guideIA 2026-06-05.
 - [ ] [O9] specs/ document type | Distinguer conventions opérationnelles (chargées par trigger) et specs descriptives (chargées explicitement). Créer `public/specs/`, migrer `forge.md`. Ajouter type Spec dans `documentation-style.md`. Ajouter section `specs/` dans INDEX.md. Litmus test : une spec n'a rien à auditer. [effort: M]
 - [ ] [O11] guide-maintenance.md conformance | Non-compliant: French content, obsolete reference to Claude.md, informal structure. Bring into line with documentation.md before next audit. [effort: S]
+- [ ] [O50] writeBlock leaf-only rule | Only leaf blocks (no children) have text content. A parent block is a container — like a folder, it holds child blocks, not text. readBlock/writeBlock on a parent block → throw. writeBlock("") on a type with blockGrammar → throw (root is always a parent). Implement in structured-text.js + tests + update forge.md. [effort: M]
 - [ ] [O43] forge Brand registry | Session-scoped in-memory set of issued FALs. Brand gate on forge_read/forge_write — rejects FALs not issued by Forge with hint. FALs registered by forge_ls and forge_mkdir. → **Specced in forge.md v7.0 — implement in forge.js** [effort: S]
 
 ## Normal
@@ -104,6 +105,15 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 5.1 - O50 writeBlock leaf-only rule
+**Date:** 2026-06-07
+**Reason:** Session debug forge — discussion sur la sémantique de writeBlock("") a mené à une règle de conception : seuls les blocs feuilles ont du contenu, les blocs parents sont des conteneurs comme des dossiers.
+
+**Modifications:**
+- High priority: O50 ajouté
+
+---
 
 ### Version 5.0 - structured-text.js v3.0 done + nouveaux items
 **Date:** 2026-06-07

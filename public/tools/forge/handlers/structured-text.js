@@ -1,26 +1,31 @@
-// @forge-type: js-managed
+// @forge-type: managed.js
 
 // ====[ imports ]====
 
 // (none)
 
-// ====[ init ]====
+// ====[ docstring ]====
 
 /**
  * structured-text.js
  *
  * Generic type handler — factory pattern.
- * init(entry) returns a handler object with a closure on the type configuration.
+ * initType(entry) returns a handler object with a closure on the type configuration.
  * One handler object per type name — no shared mutable state.
  *
- * v3.0 — block grammar: separators, repeat, recursion, matchName claim, createArtifact skeleton.
+ * v3.1 — separator guard in writeBlock: content containing separator lines is rejected.
+ * v3.2 — leaf-only rule in writeBlock: nodes cannot hold content.
+ * v3.3 — ls() replaces listBlocks(): returns { name, type } in order; isBlock() added; insertBlock() revised signature.
+ * v3.4 — init() renamed initType(); old-shebang support in claim() for transparent shebang migration.
  *
- * Configuration via init(entry):
+ * Configuration via initType(entry):
  *   entry.name        — type name
  *   entry.description — optional human-readable description for forge_describe
  *   entry.extension   — optional override for file extension (default: entry.name)
- *   entry.shebang     — optional shebang string (e.g. "// @forge-type: js-managed")
- *                       If present: claim = extension match AND first line === shebang
+ *   entry.shebang     — optional shebang string (e.g. "// @forge-type: managed.js")
+ *                       If present: claim = extension match AND first line === shebang (or oldShebang)
+ *   entry.oldShebang  — optional legacy shebang accepted during claim for transparent migration
+ *                       Files with oldShebang are claimed and silently migrated on next write
  *   entry.matchName   — optional regexp string matched against the filename stem (no extension)
  *                       If present: claim requires name match in addition to extension/shebang
  *   entry.blocks      — optional block grammar: { separators: [ SeparatorDef, ... ] }
@@ -34,28 +39,34 @@
  *
  * Shebang contract:
  *   readBlock("")      — returns content WITHOUT the shebang line
- *   writeBlock("", c)  — prepends shebang + newline before writing
- *   createArtifact     — creates file with shebang + newline as initial content
+ *   writeBlock("", c)  — prepends entry.shebang + newline before writing (migration happens here)
+ *   createArtifact     — creates file with entry.shebang + newline as initial content
+ *
+ * old-shebang migration:
+ *   claim() accepts both entry.shebang and entry.oldShebang.
+ *   writeBlock() always writes entry.shebang — old-shebang files are silently upgraded on first write.
  *
  * Block contract:
  *   readBlock(name)    — returns block own content (no separator line, no children)
  *   writeBlock(name,c) — replaces block own content; reconstructs full file
- *   listBlocks("")     — returns direct children names of root
- *   listBlocks(name)   — returns direct children names of named block
+ *   ls("")             — returns direct children names of root
+ *   ls(name)           — returns direct children names of named block
  *   createArtifact     — generates skeleton: shebang + one separator per fixed-name block
  *                        (separator with name + repeat min >= 1)
  *
  * writeBlock contract:
  *   Throws "File does not exist — call forge_create first" if artifact absent.
  *   Existence is checked before any read, to produce a clear error message.
+ *   Throws if the target block has a child grammar (leaf-only rule — node blocks cannot hold content).
+ *   Throws if content contains lines matching the active grammar's separators.
  *
  * References:
- *   - conventions/forge.md v7.2 [section Type handlers]
+ *   - conventions/forge.md v7.8 [section Type handlers]
  *   - conventions/structured-text.md
  */
 
 export const type    = 'structured-text';
-export const version = '3.0';
+export const version = '3.4';
 
 // ====[ repeat-helpers ]====
 
@@ -154,19 +165,20 @@ function parseLevel(lines, grammar) {
 
 /**
  * Resolve a block path (array of name segments) recursively.
- * Returns the ParsedBlock for the final segment, plus the lines and child grammar.
+ * Returns the ParsedBlock for the final segment, plus the lines, child grammar,
+ * and the grammar of the level where the block lives (parentGrammar).
  *
  * @param {string[]}  pathSegments  — e.g. ["Changelog", "Version 1.0 - Creation"]
  * @param {string[]}  lines
  * @param {object}    grammar
- * @returns {{ block: ParsedBlock, lines: string[], childGrammar: object|null }}
+ * @returns {{ block: ParsedBlock, lines: string[], childGrammar: object|null, parentGrammar: object }}
  */
 function resolveBlock(pathSegments, lines, grammar) {
   if (pathSegments.length === 0) {
     const blocks = parseLevel(lines, grammar);
     const root   = blocks.find(b => b.name === '');
     if (!root) throw new Error('Internal: anonymous block not found');
-    return { block: root, lines, childGrammar: grammar };
+    return { block: root, lines, childGrammar: grammar, parentGrammar: grammar };
   }
 
   const [head, ...tail] = pathSegments;
@@ -179,7 +191,7 @@ function resolveBlock(pathSegments, lines, grammar) {
     : null;
 
   if (tail.length === 0) {
-    return { block: found, lines, childGrammar };
+    return { block: found, lines, childGrammar, parentGrammar: grammar };
   }
 
   if (!childGrammar) {
@@ -197,7 +209,8 @@ function resolveBlock(pathSegments, lines, grammar) {
       ownEnd:       result.block.ownEnd       + found.contentStart
     },
     lines,
-    childGrammar: result.childGrammar
+    childGrammar:  result.childGrammar,
+    parentGrammar: result.parentGrammar
   };
 }
 
@@ -260,20 +273,47 @@ function buildSeparatorLine(sep, name, _typeName) {
   return raw;
 }
 
-// ====[ init ]====
+// ====[ shebang-helpers ]====
+
+/**
+ * Strip the first line (shebang) from content.
+ */
+function stripShebang(content) {
+  const nl = content.indexOf('\n');
+  return nl === -1 ? '' : content.slice(nl + 1);
+}
+
+/**
+ * Check if content contains any line matching a separator of the given grammar.
+ * Used as a guard in writeBlock to prevent structure corruption.
+ *
+ * @param {string} content
+ * @param {object} grammar — { separators: SeparatorDef[] }
+ * @returns {boolean}
+ */
+function containsSeparator(content, grammar) {
+  if (!grammar?.separators) return false;
+  const lines = content.split('\n');
+  return lines.some(line =>
+    grammar.separators.some(sep => new RegExp(sep.pattern).test(line))
+  );
+}
+
+// ====[ initType ]====
 
 /**
  * Factory — called once per type name at startup by the type registry.
- * Returns a handler object with its own closure on typeName/extension/shebang/matchName/blocks.
+ * Returns a handler object with its own closure on typeName/extension/shebang/oldShebang/matchName/blocks.
  */
-export async function init(entry) {
+export async function initType(entry) {
   const typeName     = entry.name;
   const extension    = '.' + (entry.extension || entry.name);
   const description  = entry.description || '';
-  const shebang      = entry.shebang   || null;
-  const matchNameStr = entry.matchName || null;
+  const shebang      = entry.shebang    || null;
+  const oldShebang   = entry.oldShebang || null;
+  const matchNameStr = entry.matchName  || null;
   const matchNameRe  = matchNameStr ? new RegExp(matchNameStr) : null;
-  const blockGrammar = entry.blocks    || null;
+  const blockGrammar = entry.blocks     || null;
 
   // ---- claim ----
 
@@ -281,10 +321,10 @@ export async function init(entry) {
     const ext = (urlRef.extension || '').toLowerCase();
     if (ext !== extension.toLowerCase()) return false;
     if (matchNameRe && !matchNameRe.test(urlRef.name || '')) return false;
-    if (shebang) {
+    if (shebang || oldShebang) {
       const content   = await rootRegistry.read(urlRef);
       const firstLine = content.split('\n')[0];
-      if (firstLine !== shebang) return false;
+      if (firstLine !== shebang && firstLine !== oldShebang) return false;
     }
     return true;
   }
@@ -309,7 +349,7 @@ export async function init(entry) {
 
   async function readBlock(urlRef, block, rootRegistry) {
     const raw     = await rootRegistry.read(urlRef);
-    const content = shebang ? stripShebang(raw) : raw;
+    const content = (shebang || oldShebang) ? stripShebang(raw) : raw;
 
     if (!block) {
       if (!blockGrammar) return content;
@@ -346,12 +386,19 @@ export async function init(entry) {
       throw new Error(`File does not exist — call forge_create first`);
     }
 
-    const managed = shebang ? stripShebang(raw) : raw;
+    // Strip shebang (current or legacy) before processing
+    const hasShebang = shebang || oldShebang;
+    const managed    = hasShebang ? stripShebang(raw) : raw;
 
     if (!block) {
       if (!blockGrammar) {
+        // Always write current shebang — migrates old-shebang files transparently
         const toWrite = shebang ? shebang + '\n' + content : content;
         return rootRegistry.write(urlRef, toWrite);
+      }
+      // Separator guard — content must not contain separators of the root grammar level
+      if (containsSeparator(content, blockGrammar)) {
+        throw new Error(`content contains block separators — use writeBlock(blockName) to write named blocks`);
       }
       const lines   = managed.split('\n');
       const blocks  = parseLevel(lines, blockGrammar);
@@ -367,7 +414,17 @@ export async function init(entry) {
 
     const lines    = managed.split('\n');
     const segments = splitBlockPath(block);
-    const { block: found, childGrammar } = resolveBlock(segments, lines, blockGrammar);
+    const { block: found, childGrammar, parentGrammar } = resolveBlock(segments, lines, blockGrammar);
+
+    // Leaf guard — cannot write to a block that has a child grammar (node blocks, even empty)
+    if (childGrammar) {
+      throw new Error(`cannot write to block "${block}" — it has a child grammar (write to leaf blocks only)`);
+    }
+
+    // Separator guard — content must not contain separators of the parent grammar level
+    if (containsSeparator(content, parentGrammar)) {
+      throw new Error(`content contains block separators — use writeBlock(blockName) to write named blocks`);
+    }
 
     const ownEnd   = computeOwnEnd(found, lines, childGrammar);
     const newLines = [
@@ -376,39 +433,56 @@ export async function init(entry) {
       ...lines.slice(ownEnd)
     ];
 
+    // Always write current shebang — migrates old-shebang files transparently
     const toWrite = shebang ? shebang + '\n' + newLines.join('\n') : newLines.join('\n');
     return rootRegistry.write(urlRef, toWrite);
   }
 
-  // ---- list-blocks ----
+  // ---- ls ----
 
-  async function listBlocks(urlRef, block, rootRegistry) {
-    if (!blockGrammar) {
-      throw new Error(`${typeName}: listBlocks not available — no block grammar configured`);
-    }
-
+  async function ls(urlRef, node, rootRegistry) {
     const raw     = await rootRegistry.read(urlRef);
-    const content = shebang ? stripShebang(raw) : raw;
+    const content = (shebang || oldShebang) ? stripShebang(raw) : raw;
     const lines   = content.split('\n');
 
-    if (!block) {
-      const blocks = parseLevel(lines, blockGrammar);
-      return blocks.filter(b => b.name !== '').map(b => b.name);
+    if (!blockGrammar) {
+      throw new Error(`${typeName}: ls not available — no block grammar configured`);
     }
 
-    const segments = splitBlockPath(block);
+    const segments = node ? splitBlockPath(node) : [];
+
+    if (segments.length === 0) {
+      const blocks = parseLevel(lines, blockGrammar);
+      return blocks
+        .filter(b => b.name !== '')
+        .map(b => ({ name: b.name, type: b.separatorDef && b.separatorDef.blocks ? 'node' : 'block' }));
+    }
+
     const { block: found, childGrammar } = resolveBlock(segments, lines, blockGrammar);
-
     if (!childGrammar) return [];
-
     const childLines  = lines.slice(found.contentStart, found.contentEnd);
     const childBlocks = parseLevel(childLines, childGrammar);
-    return childBlocks.filter(b => b.name !== '').map(b => b.name);
+    return childBlocks
+      .filter(b => b.name !== '')
+      .map(b => ({ name: b.name, type: b.separatorDef && b.separatorDef.blocks ? 'node' : 'block' }));
+  }
+
+  // ---- is-block ----
+
+  async function isBlock(urlRef, block, rootRegistry) {
+    if (!blockGrammar) return true; // no grammar = plain text = always a block
+    const raw     = await rootRegistry.read(urlRef);
+    const content = (shebang || oldShebang) ? stripShebang(raw) : raw;
+    const lines   = content.split('\n');
+    const segments = splitBlockPath(block);
+    if (segments.length === 0) return false; // root is always a node
+    const { childGrammar } = resolveBlock(segments, lines, blockGrammar);
+    return !childGrammar;
   }
 
   // ---- stubs ----
 
-  async function insertBlock(_u, _n, _a, _r, _f = false) {
+  async function insertBlock(urlRef, node, name, type, position, rootRegistry) {
     throw new Error(`${typeName}: insertBlock not implemented`);
   }
   async function appendBlock(_u, _b, _c, _r) {
@@ -440,18 +514,9 @@ export async function init(entry) {
     type: typeName,
     version: entry.version,
     claim, describe,
-    readBlock, writeBlock, listBlocks,
+    ls, isBlock,
+    readBlock, writeBlock,
     insertBlock, appendBlock, deleteBlock,
     createArtifact, deleteArtifact, moveArtifact, renameArtifact
   };
-}
-
-// ====[ shebang-helpers ]====
-
-/**
- * Strip the first line (shebang) from content.
- */
-function stripShebang(content) {
-  const nl = content.indexOf('\n');
-  return nl === -1 ? '' : content.slice(nl + 1);
 }

@@ -4,7 +4,35 @@
 
 ## Sessions
 
+- [Session 2026-06-07 — Forge node/block model](#session-2026-06-07--forge-nodeblock-model)
 - [Session 2026-06-05 — Guide editor-tool](#session-2026-06-05--guide-editor-tool)
+
+---
+
+## Session 2026-06-07 — Forge node/block model
+
+### Objectif
+
+Refactoring conceptuel et implémentation du modèle node/block dans Forge — écriture dans les feuilles seulement, vocabulaire unifié, API cohérente.
+
+### Décisions
+
+- **Leaf-only write** : `writeBlock` lève une erreur si le bloc cible a une child grammar (node). Implémenté dans `structured-text.js` v3.2.
+- **Vocabulaire node/block** : dans un artifact, les unités structurelles sont des **nodes** (contiennent des enfants, pas de données) et les unités de données sont des **blocks** (contiennent du texte, pas d'enfants). Miroir de la distinction dossier/artifact au niveau filesystem.
+- **Ordre significatif** : l'ordre des enfants dans un node est significatif et préservé — contrairement à l'ordre des dossiers dans le filesystem.
+- **`forge_ls` unifié** : même outil à tous les niveaux (racines, dossiers, nodes intra-artifact). `forge_listblocks` supprimé.
+- **`forge_is_block`** : teste si une cible est un block (inscriptible) ou un node, via FAL fragment.
+- **`forge_delete`** : supprime un artifact (FAL sans fragment) ou un node/block (FAL avec fragment). `forge_delete_block` et `forge_delete` artifact fusionnés.
+- **`forge_insert`** : déclare explicitement `type: "node"|"block"` à la création. Position par index (0 = en tête, omis = en queue). Pas de flag firstChild/after.
+- **`ls()` handler method** : `listBlocks` renommé `ls`, retourne `{ name, type }[]` en ordre.
+
+### Fichiers modifiés
+
+- `public/tools/forge/handlers/structured-text.js` — v3.1 → v3.3 : leaf-only guard, `ls()`, `isBlock()`
+- `public/tools/forge/src/type-registry.js` — `ls()`, `isBlock()`, `deleteArtifact()`, `deleteBlock()`
+- `public/tools/forge/src/mcp-tools.js` — `forge_ls` unifié, `forge_is_block`, `forge_delete`, `forge_listblocks` supprimé
+- `public/conventions/forge.md` — v7.3 → v7.5 : node/block vocabulaire, contrats mis à jour
+- `public/guides/working-with-forge.md` — v1.3 → v1.4 : nouveaux outils documentés
 
 ---
 
