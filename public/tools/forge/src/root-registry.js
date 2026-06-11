@@ -2,7 +2,9 @@
 
 // ====[ imports ]====
 
-import { log } from './logger.js';
+import pino from 'pino';
+
+const log = pino({ name: 'forge:root-registry' });
 
 // ====[ class-open ]====
 
@@ -12,7 +14,7 @@ import { log } from './logger.js';
  * The sole authority on URL syntax — URLs never leave this module.
  *
  * References:
- *   - conventions/forge.md v7.0 [sections Key concepts, Root registry,
+ *   - conventions/forge.md v0.5 [sections Key concepts, Root registry,
  *     IRootRegistry, Registry / Root registry]
  */
 export class RootRegistry {
@@ -34,9 +36,9 @@ export class RootRegistry {
           const mod = await import(root.handler);
           cache.set(root.handler, mod);
           if (mod.registerRoot) mod.registerRoot(root.name, root.url);
-          log('INFO', `Root handler loaded: ${root.name}`);
+          log.info({ root: root.name }, 'Root handler loaded');
         } catch (err) {
-          log('ERROR', `Failed to load root handler for '${root.name}': ${err.message}`);
+          log.error({ root: root.name, err }, 'Failed to load root handler');
         }
       }
       this.handlers.set(root.name, { handler: cache.get(root.handler), root });
@@ -51,11 +53,6 @@ export class RootRegistry {
     return root.url.endsWith('/') ? root.url : root.url + '/';
   }
 
-  /**
-   * Build a UrlRef from a parsed ref and the root base URL.
-   * For folder refs (name === ''), returns a folder UrlRef.
-   * For artifact refs, returns an artifact UrlRef.
-   */
   _refToUrlRef(ref) {
     const baseUrl = this._baseUrl(ref.root);
     const url     = baseUrl + ref.path + (ref.name ? ref.name + (ref.extension || '') : '');
@@ -68,12 +65,6 @@ export class RootRegistry {
 
 // ====[ folder-operations ]====
 
-  /**
-   * List one level of a folder.
-   * Returns raw UrlRefs — type discovery is the caller's responsibility.
-   * @param {{ root: string, path: string, name: string, type: string }} ref — folder ref (name === '')
-   * @returns {Promise<{ folders: UrlRef[], artifacts: UrlRef[] }>}
-   */
   async list(ref) {
     const folderUrlRef = this._refToUrlRef(ref);
     const entry        = this.handlers.get(ref.root);

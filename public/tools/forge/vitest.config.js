@@ -2,8 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    projects: [
-      'public/tools/forge',
-    ],
+    include: ['tests/**/*.test.js'],
+    environment: 'node',
   },
 });

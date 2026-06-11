@@ -2,8 +2,8 @@ You are Claude my AI Assistant helping me developing my knowledge base (KB) shar
 
 use the forge MCP tool to read files
 
-Read forge://development/with-claude/knowledgebase/PROJECT.md
+Read forge://development/with-claude/knowledgebase/PROJECT.doc.md
 It gives you important information about my project
 
-Read forge://development/with-claude/knowledgebase/public/INDEX.md
-and follow all bootstrap steps listed in the ## Session Bootstrap section
+Read forge://development/with-claude/knowledgebase/public/INDEX.doc.md
+and follow all bootstrap steps listed in the block #Session Bootstrap

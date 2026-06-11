@@ -29,7 +29,7 @@ public/
 - **TODO.md** — active backlog
 - **howto/** — practical guides for humans
 - **tests/** — test suites for KB tools (private, not part of the public KB)
-  - **tests/forge/** — RTFM and Brand gate tests for the Forge MCP server
+  - **tests/forge/** — test suite for the Forge MCP server (Forge v2)
 - **tmp/** — temporary working files (not committed)
 
 
@@ -89,6 +89,15 @@ project, knowledge-base, conventions, workflows, guides, structure, audit, metad
 ---
 
 ## Changelog
+
+### Version 1.7 - tests/forge description updated for v2
+**Date:** 2026-06-11
+**Reason:** Description referenced v1 concepts (RTFM, Brand gate) — replaced with neutral v2 label.
+
+**Modifications:**
+- Structure / Project files: `tests/forge/` description updated
+
+---
 
 ### Version 1.6 - tests/ documented
 **Date:** 2026-06-07

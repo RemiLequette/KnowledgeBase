@@ -52,6 +52,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O47] Convention structured-text.md | Documenter le mécanisme générique structured-text.js : matchName, grammaire blocks.separators, repeat, récursion, template, createArtifact squelette. Inclure les types instanciés dans la KB (js-managed, md-structured, doc-todolist) avec leur descripteur JSON et leur grammaire expliquée. Ajouter trigger dans INDEX.md. [effort: M]
 - [ ] [O48] forge_read batch + sous-arbre | forge_read(fal, blocks=[]) — lire plusieurs blocs en un appel. forge_read(fal, block, depth=∞) — retourner un bloc + tous ses enfants récursivement. Réduit les allers-retours pour les lectures multi-blocs. [effort: M]
 - [ ] [O49] forge_ls récursif avec tailles | forge_ls(fal, depth=N) — arborescence complète jusqu'à profondeur N. Chaque entrée inclut size (caractères ou lignes) pour orienter la lecture sans ouvrir les blocs. [effort: S]
+- [ ] [O51] idea-inbox convention — simplifier et clarifier | Rendre le registre projet plus simple et clair pour utilisation directe par un AI Assistant. Mieux le référencer dans INDEX.md (trigger + description). [effort: S]
+- [ ] [O52] working-with-forge.md — adapt to Forge v2 | Guide describes Forge v1 (FAL, RTFM, Brand, forge_describe). Rewrite for Forge v2: formats, forge_read/write/create with JSON payload, dot-notation query, metadata block, registry. Restore trigger in INDEX.md Decision Layer on completion. [effort: M]
 
 ## Low priority
 
@@ -75,8 +77,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## WIP
 
-- [ ] [WIP] [W1] structured-text.js v3.0 — grammaire blocs | structured-text.js v3.0 : matchName, grammaire blocks.separators (regex, repeat, récursion, template), listBlocks, readBlock/writeBlock par nom, createArtifact squelette. forge-types.json v0.8.0 : js-managed avec blocks, md-structured, doc-todolist. Tests structured-text.test.js : 34 tests, 134/0 suite complète. Prochaines étapes : (1) O47 convention structured-text.md, (2) O24 md-doc handler. [effort: L]
-- [ ] [WIP] [W3] Namespace model — spec forge.md v6.0 | Modèle namespace conçu et documenté dans forge.md v6.0. Prochaines étapes : (1) split forge.config.json → roots.json + types.json, (2) implémenter le loader récursif dans forge.js. [effort: M]
+- [ ] [WIP] [W5] forge-formats.json v1 + handler loader + tests | Grammaire format conçue en session 2026-06-11 (forge.md v0.5) : primitives, séquence, annotations (optional, repeat, key, lazy, min, max, pattern), handler par format. Prochaine session : (1) lire structure projet Forge, (2) générer forge-formats.json v1 avec primitives + changelog + doc, (3) code loader qui instancie les handlers depuis le registre, (4) tests. [effort: M]
+
 
 ## Done
 
@@ -105,6 +107,52 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 5.6 - W5 forge-formats.json v1
+**Date:** 2026-06-11
+**Reason:** Grammaire format complète conçue en session — prête pour implémentation.
+
+**Modifications:**
+- WIP: W5 ajouté
+
+---
+
+### Version 5.5 - W1, W3, W4 archived — superseded by Forge v2 redesign
+**Date:** 2026-06-11
+**Reason:** Forge v2 redesign (format grammar, new architecture) makes W1/W3/W4 obsolete. Archived.
+
+**Modifications:**
+- WIP: W1, W3, W4 removed
+- TODO-archive.md: W1, W3, W4 added with [archived-from: wip]
+
+---
+
+### Version 5.4 - O52 working-with-forge.md adapt to Forge v2
+**Date:** 2026-06-11
+**Reason:** Guide obsolete — describes Forge v1. Trigger removed from INDEX Decision Layer pending rewrite.
+
+**Modifications:**
+- Normal: O52 ajouté
+
+---
+
+### Version 5.3 - W4 forge.md How passe 2
+**Date:** 2026-06-10
+**Reason:** Why/What nettoyés en session. How à traiter en session dédiée.
+
+**Modifications:**
+- WIP: W4 ajouté
+
+---
+
+### Version 5.2 - O51 idea-inbox simplification
+**Date:** 2026-06-10
+**Reason:** Simplifier la convention idea-inbox et mieux la référencer dans INDEX.
+
+**Modifications:**
+- Normal: O51 ajouté
+
+---
 
 ### Version 5.1 - O50 writeBlock leaf-only rule
 **Date:** 2026-06-07

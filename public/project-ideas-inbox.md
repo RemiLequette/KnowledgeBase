@@ -16,13 +16,63 @@ inbox, ideas, cross-project, triage, posting
 
 ## Ideas
 
-- `kb-maintenance` | Créer un viewer/explorateur de la registry des projets (`projects.md`) — outil HTML ou Node.js permettant de naviguer dans les projets enregistrés, leurs conventions, et leurs dépendances. [effort: M] [date: 2026-06-06]
 - `kb-maintenance/conventions` | Mettre à jour la description de `filesystem.md` dans `INDEX.md` — refléter l'ajout de la règle "large file generation via container + download" (keywords `download`, `present_files`, `large-files`). [effort: XS] [date: 2026-06-06]
 - `kb-maintenance/conventions` | Nouvelle convention : "Artefact + outil de maintenance co-généré" — pattern à formaliser. Idée centrale : tout artefact volumineux à structure connue (HTML, JSON, Markdown long) devrait être accompagné dès sa création d'un outil de maintenance dédié (script Node.js ou Python) qui expose des opérations structurées sur ses sections : lire un bout, écrire un bout, lister des éléments. Claude invoque l'outil via `commands` MCP (zéro tokens), jamais le fichier brut. Analogie : c'est un "MCP local co-généré" — même philosophie qu'un vrai MCP (interface structurée, pas d'accès aux entrailles), mais spécifique à l'artefact, vivant dans le projet, sans serveur. Exemple existant dans guideIA : `guide-parser.js` + `plan-editor.html` jouent ce rôle pour `Plan.md` et `GuideIA.md`. Questions à trancher en session : nommage du pattern, structure minimale d'un outil de maintenance (interface CLI standard ?), quand le co-générer (toujours ? seulement au-delà d'un seuil ?), lien avec `conventions/tools.md` et `conventions/artifact.md`. [effort: M] [date: 2026-06-06]
-- `kb-maintenance/conventions` | Nouvelle convention : tests Vitest — structure d'un fichier de test, approche boîte noire vs boîte blanche, nommage, helpers, makeCtx pattern, organisation par describe. Motivé par la session de conversion forge-brand.test.js 2026-06-08. [effort: S] [date: 2026-06-08]
-- `kb-maintenance/conventions` | Nouvelle convention : logs — quand logger, niveaux (INFO/ERROR), format, ce qu'on ne logue pas, lien avec forge.log et gitignore. [effort: S] [date: 2026-06-08]
+- `kb-maintenance/conventions` | Convention méthodes de dev : tests (vitest) et logs (pino) — outillage standard pour tous les projets Node.js. Consolide les deux idées séparées (2026-06-08) en une seule convention : quand utiliser vitest, structure des tests, config globale ; quand logger, niveaux, format structuré JSON avec pino. [effort: S] [date: 2026-06-11]
+- `kb-maintenance/conventions` | Bonnes pratiques pour une liste de gaps — même contenu que l'idée guide-ia. Extension : appliquer cette méthode dans les déviations d'audit — chaque déviation est traitée comme un gap, la liste est nettoyée (redondances, dépendances, ordre) avant de lancer les corrections. [effort: S] [date: 2026-06-10]
+- `kb-maintenance` | Créer un viewer/explorateur de la registry des projets (`projects.md`) — outil HTML ou Node.js permettant de naviguer dans les projets enregistrés, leurs conventions, et leurs dépendances. [effort: M] [date: 2026-06-06]
+- `kb-maintenance` | Bonne pratique : pas de référence en avant dans les conventions KB — chaque section ne doit utiliser que des concepts déjà introduits dans le document. [effort: XS] [date: 2026-06-10]
+- `kb-maintenance` | Pattern mot-clé pour référencer un concept déjà défini — documenter le pattern dans best-practices.md ou glossary.md : un mot-clé stable évoque un concept sans le répéter, raccourcit les échanges, définit un contexte partagé. [effort: S] [date: 2026-06-10]
+- `guide-ia` | Ajouter l'effet Streisand comme exemple de bonne pratique dans la rédaction de prompts et instructions — mentionner explicitement ce qu'on veut éviter attire l'attention dessus. [effort: XS] [date: 2026-06-10]
+- `guide-ia` | Bonne pratique : pas de référence en avant dans la documentation — un document ne devrait pas mentionner un concept qui n'a pas encore été introduit (comme au Rugby : pas de passe en avant). Rend la lecture linéaire et autonome. [effort: XS] [date: 2026-06-10]
+- `guide-ia` | La session comme source de connaissance — une conversation riche produit des décisions, trouvailles, formulations qui disparaissent si on ne les extrait pas. Bonne pratique : en fin de session, balayer la conversation et capturer l'essentiel (TODO, changelog, convention). Voir KB : `guides/how-to-get-things-done.md` Phase 3 Closure + "If it is not written it does not exist". [effort: S] [date: 2026-06-10]
+- `guide-ia` | Pattern mot-clé pour référencer un concept déjà défini — utiliser un mot-clé ou une expression courte et stable pour évoquer un concept sans le re-définir. Permet des conversations courtes et précises : énoncer le mot-clé pose le contexte immédiatement. [effort: S] [date: 2026-06-10]
+- `guide-ia` | Bonnes pratiques pour une liste de gaps : (1) vérifier que chaque gap est indépendant — pas de redondance, pas de symptôme confondu avec sa cause ; (2) identifier les dépendances entre gaps — un gap qui en implique un autre n'est pas indépendant ; (3) ordonner par dépendance d'abord, importance ensuite — les gaps fondateurs en tête. Motivé par la session forge.md gap detection 2026-06-10. [effort: S] [date: 2026-06-10]
+- `guide-ia` | Métaphore "Un jour sans fin" (Groundhog Day) — l'IA repart à zéro à chaque session, comme le personnage qui revit la même journée. Cette contrainte devient un avantage : on peut affiner sa méthode de travail par essais/erreurs sans conséquences cumulatives pour l'IA. Chaque session est une répétition où l'humain progresse et capitalise (conventions, TODO, WIP) pendant que l'IA reste fraîche. Bonne pratique : traiter chaque session comme une itération délibérée — tester une approche, observer, ajuster la convention ou le prompt, recommencer. [effort: S] [date: 2026-06-11]
 
 ## Changelog
+
+### Version 2.2 - Convention méthodes de dev (vitest + pino)
+**Date:** 2026-06-11
+**Reason:** Consolide les deux idées séparées vitest/logs (2026-06-08) en une seule convention. Les deux entrées originales supprimées.
+
+---
+
+### Version 2.1 - Groundhog Day metaphor for GuideIA
+**Date:** 2026-06-11
+**Reason:** Métaphore "Un jour sans fin" — l'IA repart à zéro à chaque session comme avantage pour affiner la méthode de travail.
+
+---
+
+### Version 2.0 - gap list best practices
+**Date:** 2026-06-10
+**Reason:** Best practices for gap lists identified during forge.md gap detection session — posted to guide-ia and kb-maintenance.
+
+---
+
+### Version 1.9 - session as knowledge source
+**Date:** 2026-06-10
+**Reason:** Extraire l'essentiel d'une session riche — pour GuideIA, avec référence au GTD KB.
+
+---
+
+### Version 1.8 - keyword pattern idea
+**Date:** 2026-06-10
+**Reason:** Pattern mot-clé pour référencer un concept déjà défini — pour GuideIA et KB.
+
+---
+
+### Version 1.7 - 2 ideas no-forward-reference
+**Date:** 2026-06-10
+**Reason:** Bonne pratique pas de référence en avant — pour GuideIA et KB.
+
+---
+
+### Version 1.6 - Idea for GuideIA
+**Date:** 2026-06-10
+**Reason:** Streisand Effect — bon pratique rédaction prompts/instructions.
+
+---
 
 ### Version 1.5 - 2 ideas from KB session 2026-06-08
 **Date:** 2026-06-08

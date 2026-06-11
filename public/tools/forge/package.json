@@ -3,7 +3,15 @@
   "version": "0.1.0",
   "description": "Forge — artefact registry and structured access MCP server",
   "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "pino": "^9.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.0"
   }
 }

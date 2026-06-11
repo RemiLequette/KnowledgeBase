@@ -82,7 +82,6 @@ Use Forge to read all KB documents — `forge_read(fal)`.
 | Auditing a project for conformance | `guides/audit-process.md` |
 | Updating a guide file | `guides/guide-maintenance.md` |
 | Building or setting up the HTML todo list tool | `guides/todo-tool.md`, `conventions/todo-list.md`, `conventions/local-server.md` |
-| Using Forge to read or write artifacts, first session with Forge | `guides/working-with-forge.md` |
 
 
 ---
@@ -152,6 +151,15 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 ---
 
 ## Changelog
+
+### Version 3.4 - working-with-forge.md trigger removed
+**Date:** 2026-06-11
+**Reason:** `working-with-forge.md` describes Forge v1 (FAL, RTFM, Brand, forge_describe) — incompatible with Forge v2. Trigger removed from Decision Layer to prevent loading an obsolete guide. Table entry kept for traceability. See TODO O52.
+
+**Modifications:**
+- Decision Layer: trigger `Using Forge to read or write artifacts, first session with Forge` removed
+
+---
 
 ### Version 3.3 - Streisand Effect applied to forge.md entry
 **Date:** 2026-06-07
