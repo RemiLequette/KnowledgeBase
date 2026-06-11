@@ -1,0 +1,42 @@
+{
+  "primitives": {
+    "text":    { "type": "primitive" },
+    "integer": { "type": "primitive" },
+    "date":    { "type": "primitive" },
+    "boolean": { "type": "primitive" }
+  },
+  "formats": {
+    "doc": {
+      "type": "sequence",
+      "extension": "md",
+      "handler": "./mock-handler.js",
+      "claimResult": false,
+      "description": "A structured Markdown document.",
+      "sections": [
+        { "name": "why",  "format": "text" },
+        { "name": "what", "format": "text" },
+        { "name": "how",  "format": "text" }
+      ]
+    },
+    "todo": {
+      "type": "sequence",
+      "extension": "md",
+      "handler": "./mock-handler.js",
+      "claimResult": true,
+      "description": "A Markdown backlog.",
+      "sections": [
+        { "name": "items", "format": "text", "repeat": true }
+      ]
+    },
+    "managed": {
+      "type": "sequence",
+      "extension": "js",
+      "handler": "./mock-handler.js",
+      "claimResult": true,
+      "description": "A managed JS file.",
+      "sections": [
+        { "name": "body", "format": "text" }
+      ]
+    }
+  }
+}

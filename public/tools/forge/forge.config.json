@@ -10,6 +10,5 @@
       "url": "file:///C:/Users/RemiLequette/Dropbox",
       "handler": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/handlers/file-root.js"
     }
-  ],
-  "types": "file:///C:/Users/RemiLequette/Development/with-claude/knowledgebase/public/tools/forge/forge-types.json"
+  ]
 }

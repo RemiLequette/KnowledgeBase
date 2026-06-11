@@ -12,7 +12,7 @@ Forge is the single access layer for all file operations — navigation and cont
 Nine tools: `forge_ls`, `forge_mkdir`, `forge_rmdir`, `forge_move`, `forge_rename` for navigation; `forge_read`, `forge_write`, `forge_create`, `forge_delete` for content.
 
 ## Keywords
-forge, MCP, format, registry, metadata-block, read-wide-write-narrow, lazy, family, rootRegistry
+forge, MCP, format, registry, metadata-block, read-wide-write-narrow, lazy, claim, native, sequence, syntax-adapter, rootRegistry
 
 ## Table of Contents
 
@@ -89,7 +89,7 @@ The file extension constrains what formats are valid for that file — a format 
 - `.json` — formats must remain valid JSON
 - Any other extension — treated as native format automatically
 
-Every extension has a **native format** — full file read/write, no imposed structure. If no metadata block is found, the file is treated as native. Declared formats beyond native are registered in the **format registry** (see Architecture).
+Every extension has a **native format** — full file read/write, no imposed structure. Native is the fallback: if no registered format handler claims the file, it is treated as native. Declared formats beyond native are registered in the **format registry** (see Architecture).
 
 ### Metadata block
 
@@ -100,28 +100,28 @@ The metadata block syntax depends on the extension — it must respect the file'
 ```
 .md   →  [//]: # (forge-start)
           format: todo
-          ... format metadata ...
+          version: 1.0
          [//]: # (forge-end)
 
 .js   →  /* forge-start
           format: managed
-          ... format metadata ...
+          version: 1.0
           forge-end */
 
-.json →  first key: { "__forge__": { "format": "schema", ... } }
+.json →  { "__forge__": { "format": "schema", "version": "1.0" }, ... }
 ```
 
-The metadata block contains:
+The metadata block content is YAML (key: value pairs). It contains:
 - `format` — mandatory; identifies the format of this file
 - Any additional metadata the format needs — version, checksums, etc. — entirely managed by Forge; only `format` is read at dispatch
 
-`forge_create(path, format)` writes the metadata block with the format declaration and any format-specific metadata.
+`forge_create(path, format)` writes the metadata block and the format skeleton.
 
 ### Format grammar
 
 A format is declared in the format registry. Every format has a `type` — either `primitive` or `sequence`.
 
-**Primitive formats** are terminals — they carry no structure, only a type annotation. The handler of the parent format is responsible for reading and writing primitive values.
+**Primitive formats** are terminals — they carry no structure, only a type annotation. The handler of the parent format is responsible for reading and writing primitive values. Each handler manages its own serialization — there is no shared primitive encoding.
 
 ```json
 { "text":    { "type": "primitive" } },
@@ -137,14 +137,17 @@ All primitive values are serialized as strings in the JSON payload — `"effort"
 ```json
 {
   "type": "sequence",
-  "handler": "<handler-name>",
+  "extension": "<ext>",
+  "handler": "<handler-path>",
   "description": "Human-readable description for the LLM.",
-  "ordered": true,
   "sections": [
     { "name": "<section-name>", "format": "<format-name>", ...annotations }
   ]
 }
 ```
+
+- `extension` — mandatory for sequence formats; identifies the file extension this format applies to (e.g. `"md"`, `"js"`). The registry uses this to group handlers by extension.
+- `handler` — path to the handler module (relative to `forge-formats.json`). The module exports `initFormat(formatJson)` → run handler.
 
 **Section annotations:**
 
@@ -160,35 +163,15 @@ All primitive values are serialized as strings in the JSON payload — `"effort"
 
 `lazy` + `key` on a repeat section: `forge_read` returns the list of key values only. Each occurrence is accessible via dot-notation: `forge_read(path, "changelog.2026-06-11")`.
 
-**Example — `changelog` format:**
+**Example — `doc` format:**
 
 ```json
 {
-  "changelog-entry": {
-    "type": "sequence",
-    "handler": "md-sequence",
-    "description": "A single changelog entry.",
-    "sections": [
-      { "name": "version", "format": "date",    "pattern": "YYYY-MM-DD" },
-      { "name": "reason",  "format": "text" },
-      { "name": "changes", "format": "text" }
-    ]
-  },
-
-  "changelog": {
-    "type": "sequence",
-    "handler": "md-changelog",
-    "description": "Ordered list of changelog entries, newest first.",
-    "ordered": true,
-    "sections": [
-      { "name": "entry", "format": "changelog-entry", "repeat": true, "key": "version", "lazy": true, "min": 1 }
-    ]
-  },
-
   "doc": {
     "type": "sequence",
-    "handler": "md-doc",
-    "description": "A structured document — Why, What, How.",
+    "extension": "md",
+    "handler": "./handlers/md-sequence.js",
+    "description": "A structured Markdown document — Why, What, How.",
     "sections": [
       { "name": "why",       "format": "text" },
       { "name": "what",      "format": "text" },
@@ -232,10 +215,10 @@ Actions: `update` (implicit), `insert`, `delete`, `reorder`.
 `forge_read(path, query)` addresses any section in the tree, lazy or not:
 
 ```
-forge_read(path)                       → full response (lazy sections: key list only)
-forge_read(path, "changelog")          → changelog key list (lazy)
+forge_read(path)                         → full response (lazy sections: key list only)
+forge_read(path, "changelog")            → changelog key list (lazy)
 forge_read(path, "changelog.2026-06-11") → one changelog entry (full content)
-forge_read(path, "why")               → one named section
+forge_read(path, "why")                  → one named section
 ```
 
 The format declares what is lazy. The query mechanism is the same regardless.
@@ -277,7 +260,7 @@ LLM
   ↓ forge_read / forge_write / forge_create / forge_delete
 Forge (MCP server)
   ├── navigation → rootRegistry (folder operations)
-  └── content   → dispatch by format → Format Registry → handler → rootRegistry
+  └── content   → dispatch by claim → Format Registry → handler → rootRegistry
 rootRegistry
   ↓
 Filesystem
@@ -287,57 +270,62 @@ Forge never calls the filesystem directly. All storage access goes through `root
 
 ### Format registry
 
-The format registry is populated at build time and contains only formats at run time — families are a build-time concept that disappears after initialization.
+The format registry is populated at build time from `forge-formats.json`.
 
 **Structure at run time:**
 ```
 extension
-  ├── native            ← always present; no handler
-  └── <format-name>
-        └── runHandler  ← { read, write, create, describe }
+  ├── <format-name> → runHandler   ← { claim, read, write, create, describe }
+  └── <format-name> → runHandler
+  (native is not stored — it is the registry fallback)
 ```
 
-**Config file** declares both families and direct formats. At build time, Forge reads the config and initializes all formats through two paths:
+**Build time — loading `forge-formats.json`:**
 
-```
-Config
-  ├── family entry  → familyHandler.initFamily(familyJson)
-  │                     → [ (formatName, buildHandler, formatJson?), ... ]
-  │                           ↓ for each triplet
-  │                     buildHandler.initFormat(formatJson)
-  │                           ↓
-  │                     runHandler   registered under formatName
-  │
-  └── format entry  → buildHandler.initFormat(formatJson)
-                            ↓
-                      runHandler   registered under formatName
-```
+For each format entry in `formats`:
+1. Import the handler module at `entry.handler`
+2. Call `handler.initFormat(formatJson)` → `runHandler`
+3. Register `runHandler` under `entry.extension → entry.name`
 
-After initialization, the registry maps `extension → { formatName → runHandler }`. Family entries leave no trace.
+**Build time constraint — name uniqueness per extension:**
+Two formats under the same extension must have different names. A duplicate name is a build error — Forge refuses to start.
+
+**`forge-formats.json` structure:**
+
+```json
+{
+  "primitives": {
+    "text":    { "type": "primitive" },
+    "integer": { "type": "primitive" },
+    "date":    { "type": "primitive" },
+    "boolean": { "type": "primitive" }
+  },
+  "formats": {
+    "doc": {
+      "type": "sequence",
+      "extension": "md",
+      "handler": "./handlers/md-sequence.js",
+      "description": "A structured Markdown document.",
+      "sections": [ ... ]
+    }
+  }
+}
+```
 
 ### Handler interface
 
-A handler is a module. One module may implement any combination of three roles — family handler, build handler, and run handler — by exporting the corresponding methods.
+A handler module exports a build function `initFormat` that returns a run handler.
 
-**Family handler** — `initFamily(familyJson)` — called once per family declaration in the config:
+**Build function** — `initFormat(formatJson)` — called once per format at build time:
 ```js
-// Returns an array of triplets — one per format the family produces
-export async function initFamily(familyJson)
-  // → [ { format, handler, config? }, ... ]
-  // handler = build handler for that format
-  // config  = optional format-level JSON passed to initFormat
-```
-
-**Build handler** — `initFormat(formatJson)` — called once per format, whether from a family triplet or a direct config entry:
-```js
-// Returns the run handler for this format
 export async function initFormat(formatJson)
   // → runHandler
 ```
 
-**Run handler** — object returned by `initFormat`, used at run time for every tool call on this format:
+**Run handler** — object returned by `initFormat`, used at run time:
 ```js
 {
+  async claim(rawContent)                  → boolean,
   async read(path, rootRegistry, query?)   → object,
   async write(path, rootRegistry, payload) → void,
   async create(path, rootRegistry)         → void,
@@ -345,7 +333,58 @@ export async function initFormat(formatJson)
 }
 ```
 
-One module may export all three: `initFamily`, `initFormat`, and the run handler methods. The roles are interfaces, not separate modules.
+`claim(rawContent)` — reads the metadata block from the raw file content and returns `true` if this handler recognizes the file. The registry never reads the metadata block directly — claim is the sole recognition mechanism.
+
+### Sequence handler
+
+The sequence format grammar (sections, repeat, lazy, query, write narrow) is extension-independent. Rather than duplicating this logic in every extension-specific handler (`md-sequence.js`, `json-sequence.js`), a shared `sequence.js` module implements the generic traversal and delegates all syntax concerns to a **SyntaxAdapter**.
+
+```
+sequence.js          ← generic grammar logic (sections, repeat, lazy, query, write narrow)
+    ↑ receives SyntaxAdapter at init
+md-sequence.js       ← initFormat() creates a SyntaxAdapter for .md and passes it to sequence.js
+json-sequence.js     ← initFormat() creates a SyntaxAdapter for .json and passes it to sequence.js
+```
+
+**SyntaxAdapter interface** — what each extension-specific handler provides:
+
+```js
+{
+  // Metadata block
+  parseMetadata(rawContent)              → { format, ...meta } | null,
+  serializeMetadata(meta)                → string,   // returns the block as a string
+
+  // Sections
+  parseSections(rawContent, grammar)     → Section[],
+  serializeSections(sections, rawContent) → string,
+
+  // Skeleton generation for forge_create
+  buildSkeleton(formatJson)              → string,
+}
+```
+
+`parseMetadata` returns `null` if no metadata block is found (native signal).
+
+`Section` is an internal structure used by `sequence.js` — not exposed to the LLM. It carries the section name, raw content, and child sections if any.
+
+**Wiring — build time only.** `md-sequence.js` exports `initFormat(formatJson)` which:
+1. Constructs an `MdSyntaxAdapter` instance at build time — handles `[//]: # (forge-start/end)` blocks and `##` heading separators
+2. Calls `sequence.initSequence(formatJson, adapter)` → returns a run handler with a closure on the adapter
+
+The adapter is instantiated once in `initFormat` and captured by the run handler's closure. It is never passed at run time — all run-time calls (`claim`, `read`, `write`, `create`) use the adapter transparently through the closure.
+
+This pattern means `sequence.js` is never imported directly by the format registry — only extension-specific handlers are referenced in `forge-formats.json`.
+
+### Native format
+
+Native is the fallback format — it applies when no registered handler claims the file. It is hard-coded in the registry, not declared in `forge-formats.json`.
+
+A native file has no metadata block. `forge_read` returns the full raw content as a single `content` field. `forge_write` replaces the full content. There is no structure, no sections, no query support.
+
+```js
+// forge_read on a native file
+{ "format": "md", "content": "# Hello\n..." }
+```
 
 ### rootRegistry interface
 
@@ -359,28 +398,29 @@ rootRegistry.delete(path)          // → void
 rootRegistry.exists(path)          // → boolean
 ```
 
-Paths are standard filesystem paths — no FAL, no special syntax. The rootRegistry resolves them against configured roots.
+Paths are standard filesystem paths — no special syntax. The rootRegistry resolves them against configured roots.
 
 ### Dispatch flow
 
-On `forge_read(path, query?)`:
+**On `forge_read(path, query?)`:**
 1. Read raw file via `rootRegistry.read(path)`
-2. Extract metadata block using family pattern (regexp)
-3. Read `format` field from metadata block → dispatch to handler
-4. If no metadata block → native format → Forge handles directly (full content)
-5. Call `handler.read(path, rootRegistry, query)`
-6. Return JSON to LLM
+2. Determine file extension from path
+3. Call `claim(rawContent)` on each registered handler for that extension, in declaration order
+4. First handler returning `true` → handler retained
+5. No handler claims the file → native fallback
+6. Call `handler.read(path, rootRegistry, query)` (or native read)
+7. Return JSON to LLM
 
-On `forge_write(path, payload)`:
-1. Read raw file → extract metadata block → dispatch to handler (same as read)
+**On `forge_write(path, payload)`:**
+1. Read raw file → run claim loop (same as read) → retain handler
 2. Call `handler.write(path, rootRegistry, payload)`
 
-On `forge_create(path, format)`:
-1. Look up format in registry → get handler
+**On `forge_create(path, format)`:**
+1. Look up format by name in registry → get handler
 2. Call `handler.create(path, rootRegistry)`
 3. Handler writes metadata block + skeleton
 
-On `forge_delete(path)`:
+**On `forge_delete(path)`:**
 1. `rootRegistry.delete(path)`
 2. No handler involved — file deletion is format-agnostic
 
@@ -392,9 +432,9 @@ The format registry is itself a Forge artifact — readable via `forge_read`:
 forge_read("forge://registry")
 → {
     "format": "registry",
-    "families": {
-      "md":  { "formats": { "native": {...}, "todo": {...}, "doc": {...} } },
-      "js":  { "formats": { "native": {...}, "managed": {...} } }
+    "extensions": {
+      "md": { "formats": { "doc": {...}, "todo": {...} } },
+      "js": { "formats": { "managed": {...} } }
     }
   }
 ```
@@ -644,59 +684,63 @@ Each format entry includes `description` and `example` from `handler.describe()`
 
 ## Changelog
 
-### Version 0.5 - Format grammar
+### Version 0.8 - SyntaxAdapter build-time wiring clarified
 **Date:** 2026-06-11
-**Reason:** Format grammar designed and documented — primitive vs sequence, section annotations (optional, repeat, key, lazy, min, max, pattern), handler reference per format, forge_create as write on empty file.
+**Reason:** Spec did not explicitly state that the SyntaxAdapter is instantiated at build time and captured by closure — leaving ambiguity about whether it could be passed at run time.
 
 **Changes:**
-- What / Sections: replaced by `### Format grammar` — full grammar with property table and changelog example
-- What / forge_write payload: rewritten — write is narrow by construction (no grammar annotation needed); forge_create described as write on empty file
-- What / Targeted query: updated examples to match new grammar
+- How / Sequence handler: `Wiring — build time only` paragraph added — adapter instantiated once in initFormat, captured by run handler closure, never passed at run time
+
+---
+
+### Version 0.7 - Sequence handler + SyntaxAdapter
+**Date:** 2026-06-11
+**Reason:** Gap identified during TDD session — sequence grammar logic would be duplicated across every extension-specific handler. Resolved with shared sequence.js + SyntaxAdapter injection pattern.
+
+**Changes:**
+- Keywords: `sequence` and `syntax-adapter` added
+- How / Handler interface: simplified — family handler removed, description tightened
+- How / Sequence handler: new section — sequence.js generic module, SyntaxAdapter interface, md-sequence.js wiring pattern
+- How / Native format: unchanged
+
+---
+
+### Version 0.6 - Claim-based dispatch + extension in formats + native fallback
+**Date:** 2026-06-11
+**Reason:** Gap identified during TDD session — spec described handler dispatch via direct metadata block read by the registry, but did not define how handlers recognize their files, how extension is declared per format, or what native means architecturally. Resolved with claim-based dispatch.
+
+**Changes:**
+- Keywords: `family` removed, `claim` and `native` added
+- What / Formats: last sentence updated — native is the fallback when no handler claims the file
+- What / Metadata block: content clarified as YAML key-value pairs
+- What / Format grammar: `extension` and `handler` fields added to sequence format declaration; example updated to `doc` with explicit `extension` and `handler` path; primitive serialization note added
+- How / Format registry: fully rewritten — build time from `forge-formats.json`, name uniqueness constraint; family references removed
+- How / Handler interface: family handler removed; run handler updated — `claim` added
+- How / Native format: new section
+- How / Dispatch flow: rewritten — claim loop replaces direct metadata block read
+- How / Accessing the registry: `families` → `extensions` in example response
+
+---
+
+### Version 0.5 - Format grammar
+**Date:** 2026-06-11
 
 ---
 
 ### Version 0.4 - Philosophical postulate + forbid/constrain principle + code envelope
 **Date:** 2026-06-11
-**Reason:** Cadrage note from design session — three additions: (1) LLM/human cognitive parallel and division of responsibility as foundational Why; (2) Forbid vs Constrain governance principle in What; (3) clarification that `.js` formats validate a comment envelope, not internal syntax.
-
-**Changes:**
-- Why: opening paragraphs added — postulate (LLMs share human cognitive limits, Forge = missing control layer) and division of responsibility (LLM = content, Forge = form)
-- Why: last sentence of point 2 simplified (mechanical operations list removed — covered by opening)
-- What / Design principles: `Forbid or constrain, never ignore` added
-- What / Formats: `.js` entry expanded — code envelope (`@mcp_metadata`) clarification
 
 ---
 
 ### Version 0.3 - kind removed; leaf/container vocabulary
 **Date:** 2026-06-11
-**Reason:** `kind` concept removed — superseded by the uniform format model. A leaf section's content type is simply its format (named reference or inline). `content section` renamed to `leaf` for consistency with container/leaf tree vocabulary.
-
-**Changes:**
-- What / Design principles: `Container or content` → `Container or leaf`
-- What / Sections: rewritten — kind/catalogue replaced by format reference (named or inline); `content` → `leaf` throughout; examples relabelled
 
 ---
 
 ### Version 0.2 - Navigation tools added; Forge as single access layer
 **Date:** 2026-06-10
-**Reason:** Navigation absorbed into Forge — single access layer. Nine tools total.
-
-**Changes:**
-- Quick Start: rewritten — Forge is single access layer, nine tools listed
-- Why Forge exists: "The end state" corrected — filesystem MCP disabled
-- Minimal friction: tool list updated to nine
-- How / Overview: diagram updated — navigation path bypasses format registry
-- forge_delete: "use filesystem" replaced by "use forge_rmdir"
-- MCP Specs: forge_ls, forge_mkdir, forge_rmdir, forge_move, forge_rename added
 
 ---
 
 ### Version 0.1 - Initial draft
 **Date:** 2026-06-09
-**Reason:** Redesign from first principles.
-
-**Content:**
-- Why: two fundamental limitations restated — access cost and no semantics; read wide write narrow principle
-- What: minimal friction design, format/family model, metadata block, JSON payload structure, dot-notation query, forge_write actions
-- How: format registry two-level structure, handler interface (initFormat/initFamily), rootRegistry, dispatch flow, registry as Forge artifact
-- MCP Specs: forge_read, forge_write, forge_create, forge_delete

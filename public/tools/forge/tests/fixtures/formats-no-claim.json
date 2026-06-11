@@ -1,0 +1,13 @@
+{
+  "primitives": {},
+  "formats": {
+    "doc": {
+      "type": "sequence",
+      "extension": "md",
+      "handler": "./mock-handler.js",
+      "claimResult": false,
+      "description": "Nobody claims this file.",
+      "sections": []
+    }
+  }
+}
