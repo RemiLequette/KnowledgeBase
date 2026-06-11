@@ -4,5 +4,8 @@ export default defineConfig({
   test: {
     include: ['tests/**/*.test.js'],
     environment: 'node',
+    env: {
+      LOG_LEVEL: 'silent',
+    },
   },
 });

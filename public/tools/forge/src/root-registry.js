@@ -2,9 +2,9 @@
 
 // ====[ imports ]====
 
-import pino from 'pino';
+import { getLogger } from './logger.js';
 
-const log = pino({ name: 'forge:root-registry' });
+const log = getLogger('forge:root-registry');
 
 // ====[ class-open ]====
 

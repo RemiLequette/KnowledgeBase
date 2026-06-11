@@ -1,4 +1,9 @@
 {
+  "logging": {
+    "level": "info",
+    "destination": "file",
+    "path": "./forge.log"
+  },
   "roots": [
     {
       "name": "development",
