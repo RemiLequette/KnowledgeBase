@@ -27,10 +27,27 @@ public/
 - **README.md** — human navigation
 - **GLOSSARY.md** — project terminology
 - **TODO.md** — active backlog
+- **Journal.md** — session log
 - **howto/** — practical guides for humans
-- **tests/** — test suites for KB tools (private, not part of the public KB)
-  - **tests/forge/** — test suite for the Forge MCP server (Forge v2)
+- **tests/** — test suites (private, not part of public KB)
+  - **tests/forge/** — fixtures and tests for the Forge tool
 - **tmp/** — temporary working files (not committed)
+
+### Tools — sub-projects hosted in public/tools/
+
+A tool is a self-contained npm package. Typical structure:
+```
+<name>/
+├── src/          ← source code
+├── handlers/     ← type handlers (if applicable)
+├── tests/        ← vitest test suite
+├── package.json
+└── vitest.config.js
+```
+
+| Tool | Path | Role | Spec | Guide |
+|------|------|------|------|-------|
+| Forge | `public/tools/forge/` | MCP server — structured artifact read/write | `public/conventions/forge.md` | `public/guides/working-with-forge.md` |
 
 
 ---
@@ -89,6 +106,16 @@ project, knowledge-base, conventions, workflows, guides, structure, audit, metad
 ---
 
 ## Changelog
+
+### Version 1.8 - Tools sub-section + project files completed
+**Date:** 2026-06-11
+**Reason:** Forge tool location was hard to find — no entry point in PROJECT.md. Added Tools sub-section with generic structure and tool catalogue. Completed Project files list (Journal.md and tests/ were missing).
+
+**Modifications:**
+- Structure / Project files: added Journal.md, tests/, tests/forge/
+- Structure / Tools: new sub-section with generic npm package structure and Forge entry
+
+---
 
 ### Version 1.7 - tests/forge description updated for v2
 **Date:** 2026-06-11
