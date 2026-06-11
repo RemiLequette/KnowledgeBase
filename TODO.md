@@ -53,7 +53,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O48] forge_read batch + sous-arbre | forge_read(fal, blocks=[]) — lire plusieurs blocs en un appel. forge_read(fal, block, depth=∞) — retourner un bloc + tous ses enfants récursivement. Réduit les allers-retours pour les lectures multi-blocs. [effort: M]
 - [ ] [O49] forge_ls récursif avec tailles | forge_ls(fal, depth=N) — arborescence complète jusqu'à profondeur N. Chaque entrée inclut size (caractères ou lignes) pour orienter la lecture sans ouvrir les blocs. [effort: S]
 - [ ] [O51] idea-inbox convention — simplifier et clarifier | Rendre le registre projet plus simple et clair pour utilisation directe par un AI Assistant. Mieux le référencer dans INDEX.md (trigger + description). [effort: S]
-- [ ] [O52] working-with-forge.md — adapt to Forge v2 | Guide describes Forge v1 (FAL, RTFM, Brand, forge_describe). Rewrite for Forge v2: formats, forge_read/write/create with JSON payload, dot-notation query, metadata block, registry. Restore trigger in INDEX.md Decision Layer on completion. [effort: M]
+- [ ] [O52] working-with-forge.md — adapt to Forge v2 | Guide describes Forge v1 (FAL, RTFM, Brand, forge_describe). Rewrite for Forge v2: formats, forge_read/write/create with JSON payload, dot-notation query, metadata block, registry. Restore trigger in INDEX.md Decision Layer on completion. Files also affected: GLOSSARY.md (entries RTFM, Brand, FAL, Constrain Don't Forbid, Fail Fast Fail Clear). [effort: M]
 
 ## Low priority
 
