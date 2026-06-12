@@ -77,7 +77,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## WIP
 
-- [ ] [WIP] [W5] forge-formats.json v1 + handler loader + tests | Grammaire format conçue en session 2026-06-11 (forge.md v0.5) : primitives, séquence, annotations (optional, repeat, key, lazy, min, max, pattern), handler par format. Prochaine session : (1) lire structure projet Forge, (2) générer forge-formats.json v1 avec primitives + changelog + doc, (3) code loader qui instancie les handlers depuis le registre, (4) tests. [effort: M]
+- [ ] [WIP] [W5] forge-formats.json v1 + handler loader + tests | Grammaire format conçue et spécifiée dans forge.md v1.0 (primitive/extends/fileNameExtension, sequence root, reusable types, file formats, SyntaxAdapter injecté par registry). Prochaine session : (1) lire structure projet Forge, (2) générer forge-formats.json v1 avec primitives + formats doc/journal/changelog/log-item + descriptions, (3) code loader dans la registry, (4) tests. [effort: M]
 
 
 ## Done
@@ -107,6 +107,15 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 5.7 - W5 mis à jour — forge.md v1.0
+**Date:** 2026-06-11
+**Reason:** Grammaire format finalisée en session (primitive/extends/fileNameExtension). W5 mis à jour pour refléter la spec v1.0 et les prochaines étapes d'implémentation.
+
+**Modifications:**
+- WIP: W5 description mise à jour
+
+---
 
 ### Version 5.6 - W5 forge-formats.json v1
 **Date:** 2026-06-11

@@ -14,12 +14,13 @@ forge, tests, vitest, coverage, fixtures, gaps, plan
 ## Table of Contents
 
 1. [Strategy](#strategy)
-2. [Structure](#structure)
-3. [Coverage](#coverage)
-4. [Fixtures](#fixtures)
-5. [Conventions](#conventions)
-6. [Gaps](#gaps)
-7. [Changelog](#changelog)
+2. [Unit Tests](#unit-tests)
+3. [Structure](#structure)
+4. [Coverage](#coverage)
+5. [Fixtures](#fixtures)
+6. [Conventions](#conventions)
+7. [Gaps](#gaps)
+8. [Changelog](#changelog)
 
 ---
 
@@ -53,6 +54,136 @@ Filesystem access is confined to `file-root.test.js`, which runs against an isol
 1. Fill unit gaps — repeat section write, lazy key extraction, error message content (see Gaps)
 2. Integration tests — after W5 delivers `forge-formats.json` v1
 3. End-to-end — deferred
+
+---
+
+## Unit Tests
+[up](#table-of-contents)
+
+One table per test file. **✅ existing** — test is present and passing. **⬜ gap** — behaviour identified but not yet covered.
+
+### sequence.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `claim()` returns true — format matches | Metadata format matches handler format name | ✅ |
+| `claim()` returns false — format mismatch | Metadata declares a different format | ✅ |
+| `claim()` returns false — no metadata block | Raw content has no `@@forge` header | ✅ |
+| `read()` returns format name | Response includes `format` field with correct value | ✅ |
+| `read()` returns each section as a field | All sections present in file appear as top-level fields | ✅ |
+| `read()` optional section absent → undefined | Missing optional section is not present in response | ✅ |
+| `read()` does not include metadata | Metadata block content is stripped from response | ✅ |
+| `read()` lazy section returns key list | Lazy repeat section returns array of keys, not full content | ✅ |
+| `read()` query returns only requested section | Dot-notation query filters response to one section | ✅ |
+| `read()` query on lazy entry — full content | `changelog.key` returns full entry content, not just key | ⬜ |
+| `read()` throws on unknown query path | Query for a non-existent section raises a navigation error | ⬜ |
+| `write()` updates a section without touching others | Narrow write leaves untouched sections intact | ✅ |
+| `write()` preserves metadata block | Metadata block survives a write operation | ✅ |
+| `write()` repeat section — full replacement | Payload replaces a repeat section entirely | ⬜ |
+| `write()` repeat section — empty array | Payload with empty array clears all occurrences | ⬜ |
+| `write()` on unknown section — throws | Payload key absent from format grammar is rejected | ⬜ |
+| `create()` writes skeleton with metadata block | Created file contains a valid metadata block | ✅ |
+| `create()` skeleton contains mandatory sections | All non-optional sections present after create | ✅ |
+| `describe()` returns description and example | Return value has both `description` and `example` fields | ✅ |
+| `describe()` description matches format | `description` equals the format's declared description | ✅ |
+
+### format-registry.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `load()` valid config — no error | Valid `forge-formats.json` loads without throwing | ✅ |
+| `load()` registers formats by extension | `formatsForExtension()` returns correct count per extension | ✅ |
+| `load()` unknown extension returns empty array | `formatsForExtension('py')` returns `[]` | ✅ |
+| `load()` throws on duplicate format name | Two formats with same name on same extension is a build error | ✅ |
+| `load()` throws if config file missing | Missing file path raises an error | ✅ |
+| `load()` throws on format without handler | Format with no `handler` and no `extends` chain must fail | ⬜ |
+| `dispatch()` returns first handler with `claim=true` | Claim loop stops at first matching handler | ✅ |
+| `dispatch()` returns null — no handler claims | All handlers return false → null | ✅ |
+| `dispatch()` returns null — unknown extension | Extension not in registry → null | ✅ |
+| `dispatch()` respects declaration order | First handler in declaration order wins | ✅ |
+| `getByName()` returns handler for known format | Named lookup succeeds for registered format | ✅ |
+| `getByName()` works across extensions | Format on `.js` is found by name | ✅ |
+| `getByName()` returns null for unknown name | Unregistered name → null | ✅ |
+| `describe()` returns all extensions and formats | All registered extensions and format names present in output | ✅ |
+| `load()` `optional` combined with explicit `min`/`max` — throws | `optional: true` alongside `min` or `max` is a build error | ⬜ |
+
+### md-extension-handler.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `parseMetadata()` extracts format from valid block | `format` field parsed correctly | ✅ |
+| `parseMetadata()` extracts all YAML fields | Additional fields (e.g. `version`) are present in result | ✅ |
+| `parseMetadata()` returns null — no metadata block | Plain Markdown with no forge block → null | ✅ |
+| `parseMetadata()` returns null — forge-end missing | Incomplete block (no closing marker) → null | ✅ |
+| `serializeMetadata()` produces valid block string | Output contains `forge-start`, `forge-end`, format field | ✅ |
+| `serializeMetadata()` round-trips with `parseMetadata()` | `parse(serialize(meta))` equals original meta | ✅ |
+| `parseSections()` returns one section per `##` heading | Section count matches heading count in file | ✅ |
+| `parseSections()` each section has correct name | Section names match heading text (lowercased) | ✅ |
+| `parseSections()` each section carries trimmed content | Content matches expected text per section | ✅ |
+| `parseSections()` partial file — only present sections returned | Missing sections are absent from result | ✅ |
+| `parseSections()` strips metadata block | No section contains `forge-start` or `format:` | ✅ |
+| `serializeSections()` reconstructs file with metadata + sections | Output contains forge block and all `##` headings | ✅ |
+| `serializeSections()` round-trips with `parseSections()` | Names and content survive a serialize → parse cycle | ✅ |
+| `serializeSections()` updated content reflected in output | Modified section content appears in serialized file | ✅ |
+| `buildSkeleton()` generates metadata block with correct format | `parseMetadata()` on skeleton returns correct format name | ✅ |
+| `buildSkeleton()` generates one heading per section | Each section name produces a `##` heading | ✅ |
+| `buildSkeleton()` sections are empty | All sections have empty content in skeleton | ✅ |
+| `buildSkeleton()` headings are capitalized — contract | Section name `why` produces `## Why` (capitalization is a contract, not an accident) | ⬜ |
+| `serializeMetadata()` ignores unknown fields | Extra keys in meta object do not corrupt the block | ⬜ |
+
+### root-registry.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `rootRefs()` empty when no roots loaded | Empty registry returns `[]` | ✅ |
+| `rootRefs()` returns one ref per root | Ref count matches loaded root count | ✅ |
+| `rootRefs()` each ref has correct shape | Each ref has `root`, `path`, `name`, `type` fields | ✅ |
+| `read()` delegates to root handler | Handler `read()` is called with the urlRef | ✅ |
+| `write()` delegates to root handler | Handler `write()` is called with urlRef and content | ✅ |
+| `create()` delegates to root handler | Handler `create()` is called with the urlRef | ✅ |
+| `delete()` delegates to root handler | Handler `delete()` is called with the urlRef | ✅ |
+| `read()` throws for unknown root | Unknown root name raises an error | ✅ |
+| `write()` throws for unknown root | Unknown root name raises an error | ✅ |
+| `create()` throws for unknown root | Unknown root name raises an error | ✅ |
+| `delete()` throws for unknown root | Unknown root name raises an error | ✅ |
+| `list()` delegates to root handler | Handler `list()` is called and result returned | ✅ |
+| `mkdir()` delegates to root handler | Handler `mkdir()` is called | ✅ |
+| `rmdir()` delegates to root handler | Handler `rmdir()` is called | ✅ |
+| `rndir()` delegates to root handler | Handler `rename()` is called | ✅ |
+| `list()` throws for unknown root | Unknown root name raises an error | ✅ |
+| `mkdir()` throws for unknown root | Unknown root name raises an error | ✅ |
+| `mvdir()` same root — delegates to handler | `move()` called on the root handler | ✅ |
+| `mvdir()` cross-root — throws | Moving across roots raises a specific error | ✅ |
+| `load()` — dynamic handler import | `load()` resolves handler modules from disk and registers roots | ⬜ |
+
+### file-root.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `registerRoot()` — no error | Root registers without throwing | ✅ |
+| `registerRoot()` — with or without trailing slash | Both URL forms accepted | ✅ |
+| `create()` creates an empty file | File exists and is empty after create | ✅ |
+| `create()` throws if file already exists | Duplicate create raises an error | ✅ |
+| `read()` returns file content | Content matches what was written to disk | ✅ |
+| `read()` throws if file missing | Missing file raises an error | ✅ |
+| `write()` replaces file content | File content updated to new value | ✅ |
+| `write()` throws if file missing | Missing file raises an error | ✅ |
+| `delete()` removes the file | File is absent after delete | ✅ |
+| `delete()` throws if file missing | Missing file raises an error | ✅ |
+| `list()` empty folder | Returns `{ folders: [], artifacts: [] }` | ✅ |
+| `list()` files listed as artifacts | File entries appear in `artifacts` with correct names | ✅ |
+| `list()` subdirectories listed as folders | Directory entries appear in `folders` | ✅ |
+| `list()` throws if folder missing | Missing folder raises an error | ✅ |
+| `mkdir()` creates a folder | Directory exists after mkdir | ✅ |
+| `mkdir()` throws if folder already exists | Duplicate mkdir raises an error | ✅ |
+| `rmdir()` removes an empty folder | Directory absent after rmdir | ✅ |
+| `rmdir()` throws if folder missing | Missing folder raises an error | ✅ |
+| `rmdir()` throws if folder not empty | Non-empty folder raises an error | ✅ |
+| `rename()` renames a folder in place | New name exists, old name absent | ✅ |
+| `rename()` throws if target name taken | Existing name at destination raises an error | ✅ |
+| `rename()` throws for invalid name | Name containing `/` raises an error | ✅ |
+| `move()` moves a folder to new path | Destination exists, source absent | ✅ |
+| `move()` throws if destination exists | Existing destination raises an error | ✅ |
 
 ---
 
@@ -166,6 +297,16 @@ The following areas are not yet covered by the test suite.
 ---
 
 ## Changelog
+
+### Version 1.3 - Unit Tests section
+**Date:** 2026-06-11
+**Reason:** Unit test coverage was documented only as a summary table in Coverage. Added a detailed per-test table for all five test files — each test listed with its behaviour and status (existing / gap). Gaps previously listed in Gaps are now also visible inline.
+
+**Modifications:**
+- TOC: `Unit Tests` added as section 2; subsequent sections renumbered
+- `## Unit Tests`: new section — five tables (sequence, format-registry, md-extension-handler, root-registry, file-root)
+
+---
 
 ### Version 1.2 - Strategy section
 **Date:** 2026-06-11
