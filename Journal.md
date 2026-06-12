@@ -58,3 +58,44 @@ Créer `public/guides/editor-tool.md` — guide pour construire des outils HTML 
 
 - `public/guides/editor-tool.md` — créé (v1.0 → v1.4)
 - `Journal.md` — créé
+
+---
+
+## 2026-06-12 — Forge MVP-1 + forge-browser v2
+
+### Objectif
+
+Livrer le Milestone 2 de Forge v2 (MCP tools layer) et adapter forge-browser à l'API v2.
+
+### Livré
+
+- M2 complet — MVP-1 atteint :
+  - 2.1 `forge-tools.json` — 9 tools déclarés
+  - 2.2 `src/mcp-server.js` — McpServer générique + startMcpServer()
+  - 2.3 Navigation handlers (forge_ls/mkdir/rmdir/move/rename) + `src/path-parser.js`
+  - 2.4 Content handlers (forge_read/write/create/delete)
+  - 2.5 `forge.js` entry point mis à jour
+- `forge-browser.html` réécrit pour API v2 (paths MCP, plus de FAL/forge_describe)
+- `local-server.js` mis à jour — proxy Forge v1 remplacé par McpServer v2
+- 56 nouveaux tests, tous verts
+- ROADMAP M2 + MVP-1 : Done
+
+### Décisions
+
+- **Décommissionnement filesystem MCP** : reporté — tester Forge comme MCP server dans les projets Claude d'abord, puis supprimer filesystem une fois validé.
+- **forge-browser lecture seule** pour l'instant — forge_write/create/delete exposés dans le browser en étape suivante.
+- **Block navigator supprimé** de forge-browser — sections = stub M3, pas utile maintenant.
+- **local-server → McpServer** : `reloadForge()` reconstruit McpServer depuis forge-tools.json + forge-formats.json à chaque reload. Handler JS non rechargés (ESM cache).
+
+### Fichiers modifiés
+
+- `public/tools/forge/forge-tools.json` — créé
+- `public/tools/forge/src/mcp-server.js` — créé
+- `public/tools/forge/src/path-parser.js` — créé
+- `public/tools/forge/tool-handlers/` — 9 handlers créés
+- `public/tools/forge/forge.js` — mis à jour (entry point v2)
+- `public/tools/forge/forge-browser.html` — réécrit (v2)
+- `public/tools/local-server.js` — mis à jour (proxy Forge v2)
+- `public/tools/forge/tests/` — 4 nouveaux fichiers de tests
+- `public/tools/forge/ROADMAP.md` — M2 + MVP-1 Done
+- `TODO.md` — W5 mis à jour, versions 5.13→5.15

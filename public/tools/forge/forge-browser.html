@@ -32,77 +32,50 @@
   html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-ui); font-size: 13px; }
 
   /* ── Layout ── */
-  #app     { display: flex; flex-direction: column; height: 100vh; }
-  #header  { display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
-  #main    { display: flex; flex: 1; overflow: hidden; }
+  #app    { display: flex; flex-direction: column; height: 100vh; }
+  #header { display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  #main   { display: flex; flex: 1; overflow: hidden; }
 
   /* Sidebar */
   #sidebar         { width: 300px; min-width: 180px; max-width: 600px; display: flex; flex-direction: column; border-right: 1px solid var(--border); background: var(--surface); overflow: hidden; flex-shrink: 0; }
   #sidebar-toolbar { display: flex; align-items: center; gap: 6px; padding: 6px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
   #sidebar-toolbar span { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; flex: 1; }
-  #tree            { flex: 1; overflow-y: auto; padding: 4px 0; min-height: 60px; }
+  #tree            { flex: 1; overflow-y: auto; padding: 4px 0; }
 
-  /* Vertical resizer */
-  #v-resizer       { height: 4px; cursor: row-resize; background: var(--border); flex-shrink: 0; transition: background .15s; }
-  #v-resizer:hover, #v-resizer.dragging { background: var(--accent); }
-
-  /* Info panel */
-  #info-panel      { flex-shrink: 0; overflow-y: auto; background: var(--bg); padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; min-height: 40px; }
-  #info-fal        { font-family: var(--font-mono); font-size: 11px; color: var(--accent); word-break: break-all; line-height: 1.5; }
-  #info-fal.folder { color: var(--folder); }
-  #info-desc       { font-size: 11px; color: var(--muted); line-height: 1.6; }
-  #info-caps       { display: flex; gap: 5px; flex-wrap: wrap; }
-  .cap-badge       { font-size: 10px; padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border); color: var(--muted); }
-  .cap-badge.on    { border-color: var(--accent2); color: var(--accent2); }
-  #info-empty      { font-size: 11px; color: var(--border); font-style: italic; }
-
-  /* Horizontal resizer */
+  /* Resizer */
   #resizer { width: 4px; cursor: col-resize; background: var(--border); flex-shrink: 0; transition: background .15s; }
   #resizer:hover, #resizer.dragging { background: var(--accent); }
 
   /* Content */
   #content         { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }
   #content-toolbar { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: var(--surface); }
-  #content-fal     { font-family: var(--font-mono); font-size: 11px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  #content-type-tag { font-size: 11px; background: var(--border); padding: 1px 7px; border-radius: 10px; color: var(--text); flex-shrink: 0; display: none; }
+  #content-path    { font-family: var(--font-mono); font-size: 11px; color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #content-tag     { font-size: 11px; background: var(--border); padding: 1px 7px; border-radius: 10px; color: var(--text); flex-shrink: 0; display: none; }
   #content-body    { flex: 1; overflow-y: auto; }
 
   /* Header */
-  #logo        { font-weight: 700; font-size: 15px; color: var(--accent); letter-spacing: .5px; white-space: nowrap; }
-  #fal-display { flex: 1; font-family: var(--font-mono); font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  #status-dot  { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+  #logo         { font-weight: 700; font-size: 15px; color: var(--accent); letter-spacing: .5px; white-space: nowrap; }
+  #path-display { flex: 1; font-family: var(--font-mono); font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #status-dot   { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
   #status-dot.ok    { background: var(--accent2); }
   #status-dot.error { background: var(--error); }
   #status-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
 
-  /* Buttons + custom tooltip */
+  /* Buttons */
   .tb-btn { position: relative; background: none; border: 1px solid var(--border); color: var(--text); border-radius: var(--radius); padding: 2px 8px; font-size: 11px; cursor: pointer; transition: background .15s; white-space: nowrap; }
   .tb-btn:hover    { background: var(--hover); }
   .tb-btn.active   { border-color: var(--accent); color: var(--accent); }
   .tb-btn:disabled { opacity: .45; cursor: default; }
-
-  /* Tooltip */
   .tb-btn[data-tip]::after {
     content: attr(data-tip);
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
-    background: #0d0f14;
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 4px 8px;
-    font-size: 11px;
-    white-space: nowrap;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity .15s;
-    z-index: 200;
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: #0d0f14; color: var(--text); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 4px 8px; font-size: 11px;
+    white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity .15s; z-index: 200;
   }
   .tb-btn[data-tip]:hover::after { opacity: 1; }
 
-  /* Tree rows — shared by file tree and block navigator */
+  /* Tree rows */
   .tree-row    { display: flex; align-items: center; gap: 4px; padding: 3px 8px 3px 0; cursor: pointer; white-space: nowrap; overflow: hidden; }
   .tree-row:hover    { background: var(--hover); }
   .tree-row.selected { background: var(--selected); }
@@ -111,11 +84,6 @@
   .tree-icon   { font-size: 13px; flex-shrink: 0; }
   .tree-label  { overflow: hidden; text-overflow: ellipsis; font-size: 12px; }
   .tree-tag    { font-size: 10px; color: var(--muted); margin-left: 4px; flex-shrink: 0; padding: 0 4px; background: var(--border); border-radius: 3px; }
-
-  /* Block navigator */
-  #block-nav       { width: 220px; min-width: 120px; max-width: 400px; flex-shrink: 0; border-right: 1px solid var(--border); background: var(--surface); overflow-y: auto; padding: 4px 0; }
-  #block-content   { flex: 1; overflow-y: auto; }
-  .content-split   { display: flex; flex: 1; overflow: hidden; }
 
   /* Raw text */
   #content-pre { margin: 0; padding: 18px 20px; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; color: var(--text); white-space: pre-wrap; word-break: break-word; }
@@ -140,6 +108,14 @@
   #content-md blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); margin: .5em 0; }
   #content-md hr { border: none; border-top: 1px solid var(--border); margin: 1em 0; }
   #content-md strong { color: #e0e8ff; }
+
+  /* JSON viewer */
+  .json-view { padding: 18px 20px; font-family: var(--font-mono); font-size: 12px; line-height: 1.7; }
+  .json-key   { color: var(--accent); }
+  .json-str   { color: var(--accent2); }
+  .json-num   { color: var(--file-js); }
+  .json-bool  { color: var(--file-html); }
+  .json-null  { color: var(--muted); }
 
   /* Toast */
   #toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%) translateY(20px);
@@ -168,7 +144,7 @@
 
   <div id="header">
     <span id="logo">⬡ Forge Browser</span>
-    <span id="fal-display">—</span>
+    <span id="path-display">—</span>
     <span id="status-dot"></span>
     <span id="status-label">connecting…</span>
   </div>
@@ -178,26 +154,22 @@
     <div id="sidebar">
       <div id="sidebar-toolbar">
         <span>Navigator</span>
-        <button class="tb-btn" id="btn-reload-registry"
-                data-tip="Reload roots &amp; types from forge.config.json — picks up JSON changes without restarting the server">⟳ Reload</button>
+        <button class="tb-btn" id="btn-reload"
+                data-tip="Reload Forge registries (picks up forge-tools.json / forge-formats.json changes)">⟳ Reload</button>
         <button class="tb-btn" id="btn-refresh"
-                data-tip="Reset the tree and re-fetch all roots from Forge">↺ Reset</button>
+                data-tip="Reset tree and re-fetch all roots">↺ Reset</button>
         <button class="tb-btn" id="btn-raw"
-                data-tip="Toggle between rendered Markdown and raw source text">Raw</button>
+                data-tip="Toggle between rendered Markdown and raw source">Raw</button>
       </div>
       <div id="tree"></div>
-      <div id="v-resizer"></div>
-      <div id="info-panel">
-        <div id="info-empty">— no selection —</div>
-      </div>
     </div>
 
     <div id="resizer"></div>
 
     <div id="content">
       <div id="content-toolbar">
-        <span id="content-fal">—</span>
-        <span id="content-type-tag"></span>
+        <span id="content-path">—</span>
+        <span id="content-tag"></span>
       </div>
       <div id="content-body">
         <div class="state-msg">
@@ -216,7 +188,7 @@
 'use strict';
 
 const SERVER = 'http://localhost:3000';
-const LS_KEY = 'forge-browser-state';
+const LS_KEY = 'forge-browser-v2-state';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PERSISTENCE
@@ -224,8 +196,7 @@ const LS_KEY = 'forge-browser-state';
 
 const Persist = {
   load() {
-    try { return JSON.parse(localStorage.getItem(LS_KEY) || 'null') || {}; }
-    catch { return {}; }
+    try { return JSON.parse(localStorage.getItem(LS_KEY) || 'null') || {}; } catch { return {}; }
   },
   save(patch) {
     try {
@@ -233,23 +204,20 @@ const Persist = {
       localStorage.setItem(LS_KEY, JSON.stringify({ ...cur, ...patch }));
     } catch {}
   },
-  openFolders() {
+  openPaths() {
     const open = [];
-    for (const [fal, node] of tree.entries()) {
-      if (node.entry?.folder === true && node.open) open.push(fal);
+    for (const [p, node] of tree.entries()) {
+      if (node.isFolder && node.open) open.push(p);
     }
     return open;
   }
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FORGE CLIENT
+// FORGE CLIENT (v2)
 // ═══════════════════════════════════════════════════════════════════════════
 
 const Forge = {
-  _described: new Set(),
-  _describeCache: new Map(),
-
   async _call(tool, args = {}) {
     const res  = await fetch(`${SERVER}/forge`, {
       method:  'POST',
@@ -258,63 +226,38 @@ const Forge = {
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    const text = data.content?.[0]?.text ?? JSON.stringify(data);
-    let parsed;
-    try { parsed = JSON.parse(text); } catch { parsed = text; }
-    if (data.isError || (parsed && parsed.error)) throw new Error(parsed?.error ?? text);
-    return parsed;
+    if (data.error) throw new Error(data.error);
+    return data;
   },
 
-  async ping()  { return this._call('forge_ping'); },
-  async lsFolder(fal) { return this._call('forge_ls', fal ? { fal } : {}); },
-
-  async describe(fal) {
-    if (this._describeCache.has(fal)) return this._describeCache.get(fal);
-    const r = await this._call('forge_describe', { fal });
-    this._described.add(_typeOf(fal));
-    this._describeCache.set(fal, r);
-    return r;
+  // forge_ls({ path? }) → { roots } | { entries }
+  async ls(mcpPath) {
+    return this._call('forge_ls', mcpPath ? { path: mcpPath } : {});
   },
 
-  async read(fal) {
-    if (!this._described.has(_typeOf(fal))) await this.describe(fal);
-    const raw = await this._call('forge_read', { fal });
-    return typeof raw === 'string' ? raw : JSON.stringify(raw, null, 2);
+  // forge_read({ path, query? }) → structured JSON or { format, content }
+  async read(mcpPath, query) {
+    return this._call('forge_read', query ? { path: mcpPath, query } : { path: mcpPath });
   },
 
-  async ls(fal, node = '') {
-    if (!fal.endsWith('/') && !this._described.has(_typeOf(fal))) await this.describe(fal);
-    const falWithNode = node ? `${fal}#${node}` : `${fal}#`;
-    const result = await this._call('forge_ls', { fal: falWithNode });
-    return result.entries || [];
-  },
-
-  async reloadRegistry() {
+  async reload() {
     const res  = await fetch(`${SERVER}/forge-reload`, { method: 'POST' });
     const data = await res.json();
     if (!res.ok || data.error) throw new Error(data.error || `HTTP ${res.status}`);
-    this._described.clear();
-    this._describeCache.clear();
     return data;
   }
 };
-
-function _typeOf(fal) {
-  const m = fal.match(/\.([^./#+\s]+)(?:[#/]|$)/);
-  return m ? m[1] : fal;
-}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════════════════
 
 let rawMode      = false;
-let selectedFal  = null;
-let selectedBlock = null; // current block path within the active file
-const tree       = new Map();
-// block navigator state: Map<blockPath, { open, loaded, children }>
-// '' = root of current file
-const blockNav   = new Map();
+let selectedPath = null;
+
+// tree: Map<path, { isFolder, open, loaded, loading, children: path[] }>
+// Root entry: '__roots__'
+const tree = new Map();
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STATUS + TOAST
@@ -335,119 +278,70 @@ function toast(msg, kind = 'ok', ms = 3000) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// INFO PANEL
+// TREE HELPERS
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function updateInfoPanel(fal, type) {
-  const panel = document.getElementById('info-panel');
-  panel.innerHTML = '';
-
-  const falEl = document.createElement('div');
-  falEl.id        = 'info-fal';
-  falEl.className = (!type || type === 'folder') ? 'folder' : '';
-  falEl.textContent = fal;
-  panel.appendChild(falEl);
-
-  if (!type || type === 'folder' || type === 'undefined') return;
-
-  let desc;
-  try { desc = await Forge.describe(fal); }
-  catch { return; }
-
-  if (desc.recognition) {
-    const d = document.createElement('div');
-    d.id = 'info-desc'; d.textContent = desc.recognition;
-    panel.appendChild(d);
-  }
-
-  if (desc.capabilities) {
-    const caps = document.createElement('div');
-    caps.id = 'info-caps';
-    const c = desc.capabilities;
-    [['read', c.read], ['write', c.write], ['blocks', c.blocks]].forEach(([name, on]) => {
-      const b = document.createElement('span');
-      b.className = 'cap-badge' + (on ? ' on' : '');
-      b.textContent = name;
-      caps.appendChild(b);
-    });
-    panel.appendChild(caps);
-  }
-
-  if (desc.usage) {
-    const u = document.createElement('div');
-    u.id = 'info-desc';
-    u.style.color    = 'var(--border)';
-    u.style.fontSize = '10px';
-    u.textContent    = desc.usage;
-    panel.appendChild(u);
-  }
+function extOf(p) {
+  const m = p.match(/\.([^./\\]+)$/);
+  return m ? m[1] : '';
 }
 
-function clearInfoPanel() {
-  document.getElementById('info-panel').innerHTML = '<div id="info-empty">— no selection —</div>';
+function nameOf(p) {
+  return p.replace(/\/$/, '').split('/').pop() || p;
+}
+
+function fileColor(ext) {
+  return { md: 'var(--file-md)', js: 'var(--file-js)', json: 'var(--file-json)', html: 'var(--file-html)' }[ext] || 'var(--file-def)';
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FILE TREE RENDERING
+// TREE RENDERING
 // ═══════════════════════════════════════════════════════════════════════════
-
-function fileIcon(fal, type) {
-  if (type === 'folder') return '📁';
-  return { md:'📄', js:'📜', json:'🔧', html:'🌐', css:'🎨', txt:'📃' }[_typeOf(fal)] || '📃';
-}
-
-function fileColor(fal, type) {
-  if (type === 'folder') return 'var(--folder)';
-  return { md:'var(--file-md)', js:'var(--file-js)', json:'var(--file-json)', html:'var(--file-html)' }[_typeOf(fal)] || 'var(--file-def)';
-}
-
-function shortName(fal) { return fal.replace(/\/$/, '').split('/').pop() || fal; }
 
 function buildTreeDOM(container, parentKey, depth) {
   const parent = tree.get(parentKey);
   if (!parent) return;
-  for (const childFal of parent.children) {
-    const node = tree.get(childFal);
+  for (const childPath of parent.children) {
+    const node = tree.get(childPath);
     if (!node) continue;
-    const { entry } = node;
-    const isFolder  = entry.folder === true;
-    const ext       = isFolder ? '' : _typeOf(childFal);
 
     const row = document.createElement('div');
-    row.className   = 'tree-row' + (childFal === selectedFal ? ' selected' : '');
-    row.dataset.fal = childFal;
+    row.className   = 'tree-row' + (childPath === selectedPath ? ' selected' : '');
+    row.dataset.path = childPath;
 
     const ind = document.createElement('span');
-    ind.className = 'tree-indent';
+    ind.className  = 'tree-indent';
     ind.style.width = (depth * 14 + 6) + 'px';
     row.appendChild(ind);
 
     const tog = document.createElement('span');
     tog.className   = 'tree-toggle';
-    tog.textContent = isFolder ? (node.open ? '▾' : '▸') : '';
+    tog.textContent = node.isFolder ? (node.open ? '▾' : '▸') : '';
     row.appendChild(tog);
 
     const ico = document.createElement('span');
     ico.className   = 'tree-icon';
-    ico.textContent = node.loading ? '⏳' : (isFolder ? '📁' : '📄');
+    ico.textContent = node.loading ? '⏳' : (node.isFolder ? '📁' : '📄');
     row.appendChild(ico);
 
     const lbl = document.createElement('span');
     lbl.className   = 'tree-label';
-    lbl.textContent = shortName(childFal);
-    lbl.style.color = isFolder ? 'var(--folder)' : (fileColor(childFal, entry.type));
+    lbl.textContent = nameOf(childPath);
+    lbl.style.color = node.isFolder ? 'var(--folder)' : fileColor(extOf(childPath));
     row.appendChild(lbl);
 
-    if (!isFolder && ext && ext !== 'undefined') {
+    const ext = extOf(childPath);
+    if (!node.isFolder && ext) {
       const tag = document.createElement('span');
       tag.className   = 'tree-tag';
       tag.textContent = ext;
       row.appendChild(tag);
     }
 
-    row.addEventListener('click', () => onRowClick(childFal));
+    row.addEventListener('click', () => onRowClick(childPath));
     container.appendChild(row);
-    if (isFolder && node.open) buildTreeDOM(container, childFal, depth + 1);
+
+    if (node.isFolder && node.open) buildTreeDOM(container, childPath, depth + 1);
   }
 }
 
@@ -458,49 +352,56 @@ function renderTree() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FILE TREE LOADING
+// TREE LOADING
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function loadRoots() {
-  const data  = await Forge.lsFolder();
+  const data = await Forge.ls();
   const roots = data.roots || [];
-  tree.set('__roots__', { children: [] });
-  for (const r of roots) {
-    const fal = r.fal;
-    tree.set(fal, { entry: { fal, folder: true }, open: false, loaded: false, loading: false, children: [] });
-    tree.get('__roots__').children.push(fal);
+  tree.set('__roots__', { isFolder: true, open: true, loaded: true, loading: false, children: [] });
+  for (const rootName of roots) {
+    const p = rootName + '/';
+    tree.set(p, { isFolder: true, open: false, loaded: false, loading: false, children: [] });
+    tree.get('__roots__').children.push(p);
   }
   renderTree();
 }
 
-async function loadChildren(fal) {
-  const node = tree.get(fal);
+async function loadChildren(folderPath) {
+  const node = tree.get(folderPath);
   if (!node) return;
   node.loading = true; renderTree();
   try {
-    const data    = await Forge.lsFolder(fal);
+    const data    = await Forge.ls(folderPath);
     const entries = data.entries || [];
     node.children = [];
     for (const e of entries) {
-      if (!tree.has(e.fal)) tree.set(e.fal, { entry: e, open: false, loaded: false, loading: false, children: [] });
-      node.children.push(e.fal);
+      const childPath = e.path;
+      if (!tree.has(childPath)) {
+        tree.set(childPath, {
+          isFolder: e.type === 'folder',
+          open: false, loaded: false, loading: false, children: []
+        });
+      }
+      node.children.push(childPath);
     }
     node.loaded = true;
   } catch (err) {
     node.open = false;
-    showMsg('⚠', escHtml(err.message), 'err');
     toast(err.message, 'err', 6000);
-  } finally { node.loading = false; renderTree(); }
+  } finally {
+    node.loading = false;
+    renderTree();
+  }
 }
 
-async function restoreOpenFolders(openFals) {
-  for (const fal of openFals) {
-    const node = tree.get(fal);
-    if (!node || node.entry.folder !== true) continue;
+async function restoreOpenFolders(openPaths) {
+  for (const p of openPaths) {
+    const node = tree.get(p);
+    if (!node || !node.isFolder) continue;
     node.open = true;
     if (!node.loaded) {
-      try { await loadChildren(fal); }
-      catch { node.open = false; }
+      try { await loadChildren(p); } catch { node.open = false; }
     }
   }
   renderTree();
@@ -510,23 +411,22 @@ async function restoreOpenFolders(openFals) {
 // ROW CLICK
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function onRowClick(fal) {
-  const node = tree.get(fal);
+async function onRowClick(p) {
+  const node = tree.get(p);
   if (!node) return;
-  selectedFal = fal;
-  document.getElementById('fal-display').textContent = fal;
-  updateInfoPanel(fal, node.entry.type);
-  if (node.entry.folder === true) {
+  selectedPath = p;
+  document.getElementById('path-display').textContent = p;
+
+  if (node.isFolder) {
     node.open = !node.open;
     if (node.open && !node.loaded) {
-      try { await loadChildren(fal); }
-      catch (err) { node.open = false; renderTree(); return; }
+      try { await loadChildren(p); } catch { node.open = false; renderTree(); return; }
     } else { renderTree(); }
-    Persist.save({ openFolders: Persist.openFolders() });
+    Persist.save({ openPaths: Persist.openPaths() });
   } else {
     renderTree();
-    Persist.save({ selectedFal: fal, openFolders: Persist.openFolders() });
-    await showFile(fal, node.entry.type);
+    Persist.save({ selectedPath: p, openPaths: Persist.openPaths() });
+    await showFile(p);
   }
 }
 
@@ -534,186 +434,116 @@ async function onRowClick(fal) {
 // CONTENT PANEL
 // ═══════════════════════════════════════════════════════════════════════════
 
-function setContentHeader(fal, type) {
-  document.getElementById('content-fal').textContent = fal;
-  const tag = document.getElementById('content-type-tag');
-  if (type && type !== 'folder' && type !== 'undefined') { tag.textContent = type; tag.style.display = ''; }
+function setContentHeader(p) {
+  document.getElementById('content-path').textContent = p || '—';
+  const tag = document.getElementById('content-tag');
+  const ext = extOf(p || '');
+  if (ext) { tag.textContent = ext; tag.style.display = ''; }
   else tag.style.display = 'none';
 }
 
 function setBody(html) { document.getElementById('content-body').innerHTML = html; }
 function showSpinner()  { setBody('<div class="state-msg"><div class="spinner"></div><span>Loading…</span></div>'); }
-function showMsg(icon, text, cls = '') { setBody(`<div class="state-msg ${cls}"><span class="icon">${icon}</span><span>${text}</span></div>`); }
+function showErr(msg)   { setBody(`<div class="state-msg err"><span class="icon">⚠</span><span>${escHtml(msg)}</span></div>`); }
 
-async function showFile(fal, type) {
-  setContentHeader(fal, type);
-  selectedBlock = null;
-
-  if (type === 'undefined') { showMsg('🚫', 'Type <em>undefined</em> — no handler for this artifact.'); return; }
-
+async function showFile(p) {
+  setContentHeader(p);
   showSpinner();
 
-  // Check capabilities
-  let desc;
-  try { desc = await Forge.describe(fal); }
-  catch (err) { showMsg('⚠', escHtml(err.message), 'err'); return; }
-
-  if (desc.capabilities?.blocks) {
-    await showBlockNavigator(fal);
-  } else {
-    await showRawContent(fal, type);
-  }
-}
-
-// ─── Block navigator ───────────────────────────────────────────────────────
-
-async function showBlockNavigator(fal) {
-  blockNav.clear();
-  blockNav.set('', { open: true, loaded: false, loading: false, children: [] });
-
-  const body = document.getElementById('content-body');
-  body.innerHTML = '';
-
-  const split = document.createElement('div');
-  split.className = 'content-split';
-
-  const nav = document.createElement('div');
-  nav.id = 'block-nav';
-
-  const blockContent = document.createElement('div');
-  blockContent.id = 'block-content';
-  blockContent.innerHTML = '<div class="state-msg"><span class="icon">⬡</span><span>Select a block</span></div>';
-
-  split.appendChild(nav);
-  split.appendChild(blockContent);
-  body.appendChild(split);
-
-  await loadBlockChildren(fal, '');
-  renderBlockNav(fal, nav);
-}
-
-async function loadBlockChildren(fal, blockPath) {
-  const node = blockNav.get(blockPath);
-  if (!node) return;
-  node.loading = true;
-  renderBlockNav(fal, document.getElementById('block-nav'));
+  let result;
   try {
-    const falWithNode = blockPath ? `${fal}#${blockPath}` : `${fal}#`;
-    const children = await Forge.ls(fal, blockPath);
-    node.children = children.map(e => e.name);
-    node.loaded   = true;
+    result = await Forge.read(p);
   } catch (err) {
-    node.open = false;
-    toast(err.message, 'err', 5000);
-  } finally {
-    node.loading = false;
-    renderBlockNav(fal, document.getElementById('block-nav'));
+    showErr(err.message);
+    return;
   }
-}
 
-function renderBlockNav(fal, container) {
-  if (!container) return;
-  container.innerHTML = '';
-  buildBlockNavDOM(fal, container, '', 0);
-}
+  const ext = extOf(p);
 
-function buildBlockNavDOM(fal, container, parentPath, depth) {
-  const parent = blockNav.get(parentPath);
-  if (!parent || !parent.children) return;
+  // Native fallback — { format, content: string }
+  if (typeof result.content === 'string') {
+    renderText(result.content, ext);
+    return;
+  }
 
-  for (const child of parent.children) {
-    const blockPath = parentPath ? `${parentPath}/${child}` : child;
-    if (!blockNav.has(blockPath)) {
-      blockNav.set(blockPath, { open: false, loaded: false, loading: false, children: [] });
+  // Structured JSON result
+  if (!rawMode && ext === 'md') {
+    // Try to extract Markdown content from structured result
+    const mdContent = extractMarkdown(result);
+    if (mdContent !== null) {
+      renderMarkdownView(mdContent);
+      return;
     }
-    const childNode = blockNav.get(blockPath);
-
-    const row = document.createElement('div');
-    row.className = 'tree-row' + (blockPath === selectedBlock ? ' selected' : '');
-
-    const ind = document.createElement('span');
-    ind.className  = 'tree-indent';
-    ind.style.width = (depth * 14 + 6) + 'px';
-    row.appendChild(ind);
-
-    const tog = document.createElement('span');
-    tog.className   = 'tree-toggle';
-    const hasOrMayHaveChildren = !childNode.loaded || childNode.children.length > 0;
-    tog.textContent = hasOrMayHaveChildren ? (childNode.open ? '▾' : '▸') : '';
-    row.appendChild(tog);
-
-    const ico = document.createElement('span');
-    ico.className   = 'tree-icon';
-    ico.textContent = childNode.loading ? '⏳' : '⬡';
-    ico.style.color = 'var(--accent)';
-    row.appendChild(ico);
-
-    const lbl = document.createElement('span');
-    lbl.className   = 'tree-label';
-    lbl.textContent = child;
-    lbl.style.color = 'var(--text)';
-    row.appendChild(lbl);
-
-    row.addEventListener('click', () => onBlockClick(fal, blockPath));
-    container.appendChild(row);
-
-    if (childNode.open) buildBlockNavDOM(fal, container, blockPath, depth + 1);
   }
+
+  // Default: formatted JSON
+  renderJson(result);
 }
 
-async function onBlockClick(fal, blockPath) {
-  if (!blockNav.has(blockPath)) {
-    blockNav.set(blockPath, { open: false, loaded: false, loading: false, children: [] });
-  }
-  const navNode = blockNav.get(blockPath);
-
-  selectedBlock = blockPath;
-
-  navNode.open = !navNode.open;
-  if (navNode.open && !navNode.loaded) {
-    await loadBlockChildren(fal, blockPath);
-  } else {
-    renderBlockNav(fal, document.getElementById('block-nav'));
-  }
-
-  // Always read and display block content
-  const falWithBlock = `${fal}#${blockPath}`;
-  setContentHeader(falWithBlock, _typeOf(fal));
-
-  const blockContent = document.getElementById('block-content');
-  if (!blockContent) return;
-  blockContent.innerHTML = '<div class="state-msg"><div class="spinner"></div><span>Loading…</span></div>';
-
-  try {
-    const raw  = await Forge.read(falWithBlock);
-    const text = raw.replace(/^\[fal:[^\]]*\]\n/, '');
-    const pre  = document.createElement('pre');
-    pre.id          = 'content-pre';
-    pre.textContent = text;
-    blockContent.innerHTML = '';
-    blockContent.appendChild(pre);
-  } catch (err) {
-    blockContent.innerHTML = `<div class="state-msg err"><span class="icon">⚠</span><span>${escHtml(err.message)}</span></div>`;
-  }
+function extractMarkdown(result) {
+  // If there's a single "content" string field alongside "format", use it
+  const keys = Object.keys(result).filter(k => k !== 'format');
+  if (keys.length === 1 && typeof result[keys[0]] === 'string') return result[keys[0]];
+  return null;
 }
 
-// ─── Raw / Markdown content ────────────────────────────────────────────────
-
-async function showRawContent(fal, type) {
-  let raw;
-  try { raw = await Forge.read(fal); }
-  catch (err) { showMsg('⚠', escHtml(err.message), 'err'); return; }
-  const text = raw.replace(/^\[fal:[^\]]*\]\n/, '');
+function renderText(text, ext) {
   const body = document.getElementById('content-body');
-  if (!rawMode && type === 'md') {
+  if (!rawMode && ext === 'md') {
     const div = document.createElement('div');
-    div.id = 'content-md'; div.innerHTML = renderMarkdown(text);
-    body.innerHTML = ''; body.appendChild(div);
+    div.id = 'content-md';
+    div.innerHTML = renderMarkdown(text);
+    body.innerHTML = '';
+    body.appendChild(div);
   } else {
     const pre = document.createElement('pre');
-    pre.id = 'content-pre'; pre.textContent = text;
-    body.innerHTML = ''; body.appendChild(pre);
+    pre.id = 'content-pre';
+    pre.textContent = text;
+    body.innerHTML = '';
+    body.appendChild(pre);
   }
+}
+
+function renderMarkdownView(text) {
+  const body = document.getElementById('content-body');
+  const div = document.createElement('div');
+  div.id = 'content-md';
+  div.innerHTML = renderMarkdown(text);
+  body.innerHTML = '';
+  body.appendChild(div);
+}
+
+function renderJson(obj) {
+  const body = document.getElementById('content-body');
+  const div  = document.createElement('div');
+  div.className = 'json-view';
+  div.innerHTML = syntaxHighlightJson(JSON.stringify(obj, null, 2));
+  body.innerHTML = '';
+  body.appendChild(div);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// JSON SYNTAX HIGHLIGHT
+// ═══════════════════════════════════════════════════════════════════════════
+
+function syntaxHighlightJson(json) {
+  const escaped = escHtml(json);
+  return escaped.replace(
+    /(&quot;)(.*?)(&quot;)\s*:/g,
+    '<span class="json-key">$1$2$3</span>:'
+  ).replace(
+    /:\s*(&quot;)(.*?)(&quot;)/g,
+    ': <span class="json-str">$1$2$3</span>'
+  ).replace(
+    /:\s*(\d+\.?\d*)/g,
+    ': <span class="json-num">$1</span>'
+  ).replace(
+    /:\s*(true|false)/g,
+    ': <span class="json-bool">$1</span>'
+  ).replace(
+    /:\s*(null)/g,
+    ': <span class="json-null">$1</span>'
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -765,8 +595,9 @@ function renderMarkdown(src) {
       while (i < lines.length && (/^(\s*)[-*]\s/.test(lines[i]) || /^\d+\.\s/.test(lines[i]))) {
         const t = lines[i].replace(/^(\s*)[-*]\s+/,'').replace(/^\d+\.\s+/,'');
         const ck = t.match(/^\[([ x])\]\s+(.*)/i);
-        items.push(ck ? `<li style="list-style:none">${ck[1]==='x'?'✅':'☐'} ${inlineMarkdown(ck[2])}</li>`
-                      : `<li>${inlineMarkdown(t)}</li>`);
+        items.push(ck
+          ? `<li style="list-style:none">${ck[1]==='x'?'✅':'☐'} ${inlineMarkdown(ck[2])}</li>`
+          : `<li>${inlineMarkdown(t)}</li>`);
         i++;
       }
       out.push(`<${ord?'ol':'ul'}>${items.join('')}</${ord?'ol':'ul'}>`); continue;
@@ -780,85 +611,61 @@ function renderMarkdown(src) {
 function inlineMarkdown(s) {
   let t = escHtml(s);
   t = t.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
-  t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  t = t.replace(/__(.+?)__/g,     '<strong>$1</strong>');
-  t = t.replace(/\*(.+?)\*/g,     '<em>$1</em>');
-  t = t.replace(/_([^_]+)_/g,     '<em>$1</em>');
-  t = t.replace(/`([^`]+)`/g,     '<code>$1</code>');
-  t = t.replace(/~~(.+?)~~/g,     '<del>$1</del>');
+  t = t.replace(/\*\*(.+?)\*\*/g,     '<strong>$1</strong>');
+  t = t.replace(/__(.+?)__/g,          '<strong>$1</strong>');
+  t = t.replace(/\*(.+?)\*/g,          '<em>$1</em>');
+  t = t.replace(/_([^_]+)_/g,          '<em>$1</em>');
+  t = t.replace(/`([^`]+)`/g,          '<code>$1</code>');
+  t = t.replace(/~~(.+?)~~/g,          '<del>$1</del>');
   t = t.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
   return t;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// RESIZERS
+// RESIZER
 // ═══════════════════════════════════════════════════════════════════════════
 
-(function initResizers() {
-  const saved = Persist.load();
-
-  // Horizontal
-  const hResizer = document.getElementById('resizer');
-  const sidebar  = document.getElementById('sidebar');
+(function initResizer() {
+  const saved   = Persist.load();
+  const resizer = document.getElementById('resizer');
+  const sidebar = document.getElementById('sidebar');
   if (saved.sidebarWidth) sidebar.style.width = saved.sidebarWidth + 'px';
-  let hDrag = false, hX0 = 0, hW0 = 0;
-  hResizer.addEventListener('mousedown', e => {
-    hDrag = true; hX0 = e.clientX; hW0 = sidebar.offsetWidth;
-    hResizer.classList.add('dragging');
+  let drag = false, x0 = 0, w0 = 0;
+  resizer.addEventListener('mousedown', e => {
+    drag = true; x0 = e.clientX; w0 = sidebar.offsetWidth;
+    resizer.classList.add('dragging');
     document.body.style.cssText += 'cursor:col-resize;user-select:none';
   });
   document.addEventListener('mousemove', e => {
-    if (!hDrag) return;
-    sidebar.style.width = Math.max(180, Math.min(600, hW0 + e.clientX - hX0)) + 'px';
+    if (!drag) return;
+    sidebar.style.width = Math.max(180, Math.min(600, w0 + e.clientX - x0)) + 'px';
   });
   document.addEventListener('mouseup', () => {
-    if (!hDrag) return;
-    hDrag = false; hResizer.classList.remove('dragging');
+    if (!drag) return;
+    drag = false; resizer.classList.remove('dragging');
     document.body.style.cursor = ''; document.body.style.userSelect = '';
     Persist.save({ sidebarWidth: sidebar.offsetWidth });
-  });
-
-  // Vertical
-  const vResizer  = document.getElementById('v-resizer');
-  const infoPanel = document.getElementById('info-panel');
-  infoPanel.style.height = (saved.infoPanelHeight || 120) + 'px';
-  let vDrag = false, vY0 = 0, vH0 = 0;
-  vResizer.addEventListener('mousedown', e => {
-    vDrag = true; vY0 = e.clientY; vH0 = infoPanel.offsetHeight;
-    vResizer.classList.add('dragging');
-    document.body.style.cssText += 'cursor:row-resize;user-select:none';
-  });
-  document.addEventListener('mousemove', e => {
-    if (!vDrag) return;
-    infoPanel.style.height = Math.max(40, Math.min(400, vH0 - (e.clientY - vY0))) + 'px';
-  });
-  document.addEventListener('mouseup', () => {
-    if (!vDrag) return;
-    vDrag = false; vResizer.classList.remove('dragging');
-    document.body.style.cursor = ''; document.body.style.userSelect = '';
-    Persist.save({ infoPanelHeight: infoPanel.offsetHeight });
   });
 })();
 
 // ═══════════════════════════════════════════════════════════════════════════
-// TOOLBAR BUTTONS
+// TOOLBAR
 // ═══════════════════════════════════════════════════════════════════════════
 
-document.getElementById('btn-reload-registry').addEventListener('click', async function () {
+document.getElementById('btn-reload').addEventListener('click', async function () {
   const btn = this;
   btn.disabled = true; btn.textContent = '⟳ …';
-  setStatus('', 'reloading registry…');
+  setStatus('', 'reloading…');
   try {
-    const result = await Forge.reloadRegistry();
-    tree.clear(); selectedFal = null; selectedBlock = null;
-    document.getElementById('fal-display').textContent = '—';
-    setContentHeader('—', null);
-    showMsg('⬡', 'Select a file in the navigator');
-    clearInfoPanel();
-    Persist.save({ openFolders: [], selectedFal: null });
+    const result = await Forge.reload();
+    tree.clear(); selectedPath = null;
+    document.getElementById('path-display').textContent = '—';
+    setContentHeader('');
+    setBody('<div class="state-msg"><span class="icon">⬡</span><span>Select a file in the navigator</span></div>');
+    Persist.save({ openPaths: [], selectedPath: null });
     await loadRoots();
     setStatus('ok', 'Forge ready');
-    toast(`Registry reloaded — ${result.roots.length} root(s), ${result.types.length} type(s)`, 'ok');
+    toast(`Reloaded — ${result.roots.length} root(s), ${result.tools.length} tool(s)`, 'ok');
   } catch (err) {
     setStatus('error', 'Reload failed');
     toast(`Reload failed: ${err.message}`, 'err', 5000);
@@ -868,13 +675,11 @@ document.getElementById('btn-reload-registry').addEventListener('click', async f
 });
 
 document.getElementById('btn-refresh').addEventListener('click', async () => {
-  tree.clear(); Forge._described.clear(); Forge._describeCache.clear();
-  selectedFal = null; selectedBlock = null;
-  document.getElementById('fal-display').textContent = '—';
-  setContentHeader('—', null);
-  showMsg('⬡', 'Select a file in the navigator');
-  clearInfoPanel();
-  Persist.save({ openFolders: [], selectedFal: null });
+  tree.clear(); selectedPath = null;
+  document.getElementById('path-display').textContent = '—';
+  setContentHeader('');
+  setBody('<div class="state-msg"><span class="icon">⬡</span><span>Select a file in the navigator</span></div>');
+  Persist.save({ openPaths: [], selectedPath: null });
   try {
     setStatus('', 'refreshing…');
     await loadRoots();
@@ -886,14 +691,12 @@ document.getElementById('btn-raw').addEventListener('click', async () => {
   rawMode = !rawMode;
   const btn = document.getElementById('btn-raw');
   btn.textContent = rawMode ? 'Rendered' : 'Raw';
-  btn.setAttribute('data-tip', rawMode
-    ? 'Switch back to rendered Markdown view'
-    : 'Toggle between rendered Markdown and raw source text');
+  btn.setAttribute('data-tip', rawMode ? 'Switch to rendered Markdown' : 'Toggle raw source view');
   btn.classList.toggle('active', rawMode);
   Persist.save({ rawMode });
-  if (selectedFal) {
-    const node = tree.get(selectedFal);
-    if (node && !node.entry.folder) await showFile(selectedFal, node.entry.type);
+  if (selectedPath) {
+    const node = tree.get(selectedPath);
+    if (node && !node.isFolder) await showFile(selectedPath);
   }
 });
 
@@ -905,13 +708,7 @@ async function boot() {
   try { await fetch(`${SERVER}/ping`); }
   catch {
     setStatus('error', 'Server unreachable');
-    showMsg('⚠', 'Local server not running.<br>Start: <code>node tools/local-server.js &lt;root&gt;</code>', 'err');
-    return;
-  }
-  try { await Forge.ping(); setStatus('ok', 'Forge ready'); }
-  catch (err) {
-    setStatus('error', 'Forge proxy unavailable');
-    showMsg('⚠', `Forge proxy error: ${escHtml(err.message)}`, 'err');
+    setBody('<div class="state-msg err"><span class="icon">⚠</span><span>Local server not running.<br>Start: <code>node tools/local-server.js &lt;root&gt;</code></span></div>');
     return;
   }
 
@@ -920,26 +717,29 @@ async function boot() {
     rawMode = true;
     const btn = document.getElementById('btn-raw');
     btn.textContent = 'Rendered';
-    btn.setAttribute('data-tip', 'Switch back to rendered Markdown view');
+    btn.setAttribute('data-tip', 'Switch to rendered Markdown');
     btn.classList.add('active');
   }
 
   try {
+    setStatus('', 'loading…');
     await loadRoots();
-    if (saved.openFolders?.length) await restoreOpenFolders(saved.openFolders);
-    if (saved.selectedFal) {
-      const node = tree.get(saved.selectedFal);
-      if (node && !node.entry.folder) {
-        selectedFal = saved.selectedFal;
-        document.getElementById('fal-display').textContent = selectedFal;
+    setStatus('ok', 'Forge ready');
+
+    if (saved.openPaths?.length) await restoreOpenFolders(saved.openPaths);
+
+    if (saved.selectedPath) {
+      const node = tree.get(saved.selectedPath);
+      if (node && !node.isFolder) {
+        selectedPath = saved.selectedPath;
+        document.getElementById('path-display').textContent = selectedPath;
         renderTree();
-        updateInfoPanel(selectedFal, node.entry.type);
-        await showFile(selectedFal, node.entry.type);
+        await showFile(selectedPath);
       }
     }
   } catch (err) {
     setStatus('error', 'Failed to load roots');
-    showMsg('⚠', escHtml(err.message), 'err');
+    setBody(`<div class="state-msg err"><span class="icon">⚠</span><span>${escHtml(err.message)}</span></div>`);
   }
 }
 

@@ -1,17 +1,23 @@
 /**
- * forge.js — MCP server entry point (stub)
+ * forge.js — MCP server entry point
  *
- * Minimal stub to keep the MCP server alive while Forge v2 is being built.
- * Declares no tools. Replace with full implementation once ready.
+ * Loads the three config files, wires the registries, and starts the MCP server.
+ *
+ * Config files:
+ *   - forge.config.json     — root registry (where artifacts live)
+ *   - forge-formats.json    — format registry (how artifacts are structured)
+ *   - forge-tools.json      — MCP tool registry (which tools are exposed)
+ *
+ * References:
+ *   - ROADMAP.md [Milestone 2]
+ *   - conventions/forge.md [How — Architecture]
  */
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { startMcpServer } from './src/mcp-server.js';
 
-const server = new McpServer({
-  name: 'forge',
-  version: '0.0.1-stub',
-});
+const __dirname  = path.dirname(fileURLToPath(import.meta.url));
+const toolsConfig = path.join(__dirname, 'forge-tools.json');
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
+await startMcpServer(toolsConfig);

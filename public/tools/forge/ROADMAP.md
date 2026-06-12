@@ -24,6 +24,7 @@ forge, roadmap, milestones, plan, development, handlers, formats
 
 ### Milestone 2 — MCP tools layer
 *Goal: a generic, configurable MCP server loads tools from `forge-tools.json` and dispatches calls to tool handlers. Native format active. MVP-1 reached on completion.*
+*Status: Done*
 
 **Architecture — three config files, three responsibilities:**
 - `forge.config.json` — root registry (where artifacts live)
@@ -69,6 +70,7 @@ forge, roadmap, milestones, plan, development, handlers, formats
 
 ### — MVP-1 — Native format for .md and .js
 *Goal: forge_read / forge_write work on any .md or .js file via native format. No structured handler required. KB file access can switch to Forge.*
+*Status: Done*
 
 - Milestone 1 complete — format registry loads v2 grammar, handlers injected dynamically
 - Milestone 2 complete — MCP tools layer, native fallback active
@@ -107,6 +109,16 @@ forge, roadmap, milestones, plan, development, handlers, formats
 ---
 
 ## Changelog
+
+### Version 1.4 - M2 done — MVP-1 reached
+**Date:** 2026-06-12
+**Reason:** All M2 steps delivered: forge-tools.json (2.1), mcp-server.js generic server (2.2), navigation tool handlers (2.3), content tool handlers (2.4), forge.js entry point updated (2.5). Native format active. MVP-1 reached.
+
+**Changes:**
+- Milestone 2: status WIP → Done
+- MVP-1: status added — Done
+
+---
 
 ### Version 1.3 - Milestone 2 — generic MCP server architecture
 **Date:** 2026-06-12

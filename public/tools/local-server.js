@@ -5,15 +5,14 @@
  * No business logic — reads, writes, deletes, and lists files only.
  *
  * Also exposes:
- *   POST /forge        — proxy to the Forge MCP dispatcher
- *   POST /forge-reload — hot-reload Forge registries from JSON config
+ *   POST /forge        — proxy to the Forge MCP server (v2)
+ *   POST /forge-reload — hot-reload Forge tool + format registries
  *
- * Forge is loaded via dynamic import() at startup (forge.js is ESM).
- * createSession() comes from forge-api.js — builds a ForgeSession directly.
- * dispatch() is imported from src/mcp-tools.js.
- * Hot-reload calls createSession() again — reconstructs a fresh ForgeSession
- * from the JSON config files. Handler JS modules are NOT reloaded (ESM cache)
- * — only registry JSON changes are picked up.
+ * Forge v2 uses McpServer from forge/src/mcp-server.js.
+ * dispatch(tool, args) routes calls to the registered tool handlers.
+ * Hot-reload rebuilds McpServer from forge-tools.json + forge-formats.json
+ * — handler JS modules are NOT reloaded (ESM cache), only JSON config changes
+ * are picked up.
  *
  * Usage:
  *   node tools/local-server.js <root1> [<root2> ...] [--port <port>]
@@ -95,56 +94,64 @@ function readBody(req) {
 }
 
 // ---------------------------------------------------------------------------
-// Forge proxy
-// forgeCtx = { session: ForgeSession, dispatch, config }
-// Replaced on every reload.
+// Forge proxy (v2) — McpServer from forge/src/mcp-server.js
+// forgeServer = McpServer instance, replaced on every reload.
 // ---------------------------------------------------------------------------
 
-let forgeCtx      = null;
-let forgeApiMod   = null; // { createSession } from forge-api.js
-let forgeDispatch = null; // dispatch() from src/mcp-tools.js
-let forgeConfigPath = null;
+let forgeServer    = null; // McpServer instance
+let forgeMcpMod    = null; // { McpServer } from forge/src/mcp-server.js
+let forgeToolsPath = null; // absolute path to forge-tools.json
 
-async function loadForgeMods() {
-  if (forgeApiMod && forgeDispatch) return;
-
+async function loadForgeMod() {
+  if (forgeMcpMod) return;
   const forgeDir    = path.resolve(__dirname, 'forge');
-  const forgeApiUrl = 'file:///' + path.join(forgeDir, 'src', 'forge-api.js').replace(/\\/g, '/');
-  const mcpToolsUrl = 'file:///' + path.join(forgeDir, 'src', 'mcp-tools.js').replace(/\\/g, '/');
-
-  const [apiMod, toolsMod] = await Promise.all([
-    import(forgeApiUrl),
-    import(mcpToolsUrl)
-  ]);
-
-  forgeApiMod     = apiMod;            // .createSession
-  forgeDispatch   = toolsMod.dispatch;
-  forgeConfigPath = path.join(forgeDir, 'forge.config.json');
+  const mcpServerUrl = 'file:///' + path.join(forgeDir, 'src', 'mcp-server.js').replace(/\\/g, '/');
+  forgeMcpMod    = await import(mcpServerUrl);
+  forgeToolsPath = path.join(forgeDir, 'forge-tools.json');
 }
 
 async function reloadForge() {
   const fs = require('fs');
+  await loadForgeMod();
 
-  await loadForgeMods();
-
-  if (!fs.existsSync(forgeConfigPath)) {
-    throw new Error(`forge.config.json not found at ${forgeConfigPath}`);
+  if (!fs.existsSync(forgeToolsPath)) {
+    throw new Error(`forge-tools.json not found at ${forgeToolsPath}`);
   }
 
-  const config  = JSON.parse(fs.readFileSync(forgeConfigPath, 'utf8'));
-  const session = await forgeApiMod.createSession(config);
+  const server = new forgeMcpMod.McpServer();
 
-  forgeCtx = { session, dispatch: forgeDispatch, config };
+  // Build context — load registries the same way startMcpServer() does
+  const forgeDir      = path.dirname(forgeToolsPath);
+  const forgeConfigUrl = 'file:///' + path.join(forgeDir, 'forge.config.json').replace(/\\/g, '/');
+  const rootRegUrl     = 'file:///' + path.join(forgeDir, 'src', 'root-registry.js').replace(/\\/g, '/');
+  const fmtRegUrl      = 'file:///' + path.join(forgeDir, 'src', 'format-registry.js').replace(/\\/g, '/');
 
-  const types = [...session.typeRegistry.handlers.keys()];
-  const roots = config.roots.map(r => r.name);
-  return { types, roots };
+  const [{ RootRegistry }, { FormatRegistry }] = await Promise.all([
+    import(rootRegUrl),
+    import(fmtRegUrl),
+  ]);
+
+  const forgeConfig  = JSON.parse(fs.readFileSync(path.join(forgeDir, 'forge.config.json'), 'utf8'));
+  const rootRegistry = new RootRegistry();
+  await rootRegistry.load(forgeConfig.roots);
+
+  const formatRegistry = new FormatRegistry();
+  const formatsPath    = path.join(forgeDir, 'forge-formats.json');
+  if (fs.existsSync(formatsPath)) await formatRegistry.load(formatsPath);
+
+  await server.loadTools(forgeToolsPath, { rootRegistry, formatRegistry });
+
+  forgeServer = server;
+
+  const roots = forgeConfig.roots.map(r => r.name);
+  const tools = server.toolNames();
+  return { roots, tools };
 }
 
 async function initForge() {
   try {
-    const { types, roots } = await reloadForge();
-    console.log(`[forge] Forge proxy ready — ${roots.length} root(s): ${roots.join(', ')} — ${types.length} type(s): ${types.join(', ')}`);
+    const { roots, tools } = await reloadForge();
+    console.log(`[forge] Forge v2 ready — ${roots.length} root(s): ${roots.join(', ')} — ${tools.length} tool(s)`);
   } catch (err) {
     console.warn('[forge] Could not initialise Forge proxy: ' + err.message);
   }
@@ -171,9 +178,9 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true });
   }
 
-  // POST /forge — Forge tool proxy
+  // POST /forge — Forge v2 tool proxy
   if (method === 'POST' && pathname === '/forge') {
-    if (!forgeCtx) {
+    if (!forgeServer) {
       return send(res, 503, { error: 'Forge proxy not available' });
     }
     let body;
@@ -187,19 +194,19 @@ const server = http.createServer(async (req, res) => {
       return send(res, 400, { error: 'Missing field: tool' });
     }
     try {
-      const result = await forgeCtx.dispatch(tool, toolArgs, forgeCtx.session);
+      const result = await forgeServer.dispatch(tool, toolArgs);
       return send(res, 200, result);
     } catch (err) {
       return send(res, 500, { error: err.message });
     }
   }
 
-  // POST /forge-reload — hot-reload Forge registries from JSON
+  // POST /forge-reload — hot-reload Forge tool + format registries
   if (method === 'POST' && pathname === '/forge-reload') {
     try {
-      const { types, roots } = await reloadForge();
-      console.log(`[forge] Reloaded — ${roots.length} root(s), ${types.length} type(s)`);
-      return send(res, 200, { ok: true, roots, types });
+      const { roots, tools } = await reloadForge();
+      console.log(`[forge] Reloaded — ${roots.length} root(s), ${tools.length} tool(s)`);
+      return send(res, 200, { ok: true, roots, tools });
     } catch (err) {
       console.warn('[forge] Reload failed: ' + err.message);
       return send(res, 500, { error: err.message });

@@ -75,7 +75,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## WIP
 
-- [ ] [WIP] [W5] Forge v2 — voir ROADMAP.md | Milestone actif : M2 — MCP tools layer. M1 (format registry) livré. Prochaine étape : forge-tools.json v1 + mcp-server.js générique. [effort: M]
+- [ ] [WIP] [W5] Forge v2 — voir ROADMAP.md | M2 livré — MVP-1 atteint. Prochaines étapes : 2.5 forge.js entry point, puis 2.6/2.7/2.8 extensions. [effort: M]
 
 
 ## Done
@@ -105,6 +105,33 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 5.15 - M2 : 2.4 livré — MVP-1 atteint
+**Date:** 2026-06-12
+**Reason:** Content tool handlers implémentés (forge_read/write/create/delete). M2 complet = MVP-1. W5 mis à jour.
+
+**Modifications:**
+- WIP: W5 mis à jour — MVP-1 atteint, prochaine étape 2.5 + extensions
+
+---
+
+### Version 5.14 - M2 : 2.3 livré
+**Date:** 2026-06-12
+**Reason:** Navigation tool handlers implémentés (forge_ls/mkdir/rmdir/move/rename) + path-parser.js. W5 mis à jour.
+
+**Modifications:**
+- WIP: W5 mis à jour — 2.3 livré, prochaine étape 2.4
+
+---
+
+### Version 5.13 - M2 : 2.1 + 2.2 livrés
+**Date:** 2026-06-12
+**Reason:** forge-tools.json (9 tools) + mcp-server.js (McpServer générique) livrés avec tests. W5 mis à jour.
+
+**Modifications:**
+- WIP: W5 mis à jour — 2.1 + 2.2 livrés, prochaine étape 2.3
+
+---
 
 ### Version 5.12 - M1 done, M2 actif + O54
 **Date:** 2026-06-12

@@ -156,6 +156,82 @@ One table per test file. **✅ existing** — test is present and passing. **⬜
 | `mvdir()` cross-root — throws | Moving across roots raises a specific error | ✅ |
 | `load()` — dynamic handler import | `load()` resolves handler modules from disk and registers roots | ⬜ |
 
+### content-handlers.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `forge_read` reads file via rootRegistry | `rootRegistry.read()` called | ✅ |
+| `forge_read` dispatches claim and calls handler.read | `formatRegistry.dispatch()` + `handler.read()` called | ✅ |
+| `forge_read` native fallback — no handler claims | Returns `{ format, content }` raw | ✅ |
+| `forge_read` passes query to handler.read | `query` arg transmitted correctly | ✅ |
+| `forge_read` throws when path missing | Missing `path` raises an error | ✅ |
+| `forge_write` reads file then calls handler.write | Claim loop + `handler.write()` with payload | ✅ |
+| `forge_write` native fallback — writes raw content | No handler → `rootRegistry.write()` called | ✅ |
+| `forge_write` throws when path missing | Missing `path` raises an error | ✅ |
+| `forge_write` throws when payload missing | Missing `payload` raises an error | ✅ |
+| `forge_create` looks up format and calls handler.create | `formatRegistry.getByName()` + `handler.create()` | ✅ |
+| `forge_create` throws for unknown format name | Unregistered format name raises an error | ✅ |
+| `forge_create` throws when path missing | Missing `path` raises an error | ✅ |
+| `forge_create` throws when format missing | Missing `format` raises an error | ✅ |
+| `forge_delete` calls rootRegistry.delete | `rootRegistry.delete()` called with ref | ✅ |
+| `forge_delete` throws when path missing | Missing `path` raises an error | ✅ |
+
+### path-parser.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `parsePath()` file — root + path + name + extension | Full file path parses to correct ref fields | ✅ |
+| `parsePath()` file — root level (no subdirectory) | File at root produces empty `path` | ✅ |
+| `parsePath()` file — deeply nested | Multi-level path populates `path` correctly | ✅ |
+| `parsePath()` file — no extension | File without extension produces empty `extension` | ✅ |
+| `parsePath()` folder — trailing slash | Path ending with `/` produces folder ref | ✅ |
+| `parsePath()` folder — root folder | `rootName/` produces empty `path` folder ref | ✅ |
+| `parsePath()` folder — root name only | No slash → root-level folder ref | ✅ |
+| `parsePath()` folder — hint forces folder | `hint='folder'` overrides missing trailing slash | ✅ |
+| `parsePath()` folder — nested with trailing slash | Multi-level folder path parsed correctly | ✅ |
+| `parsePath()` throws on empty string | Empty input raises an error | ✅ |
+| `parsePath()` normalizes backslashes | Windows separators converted to forward slashes | ✅ |
+| `serializePath()` file ref | Ref serializes to `root/path/name.ext` | ✅ |
+| `serializePath()` file ref no extension | No extension → no trailing dot | ✅ |
+| `serializePath()` folder ref | Folder ref serializes with trailing slash | ✅ |
+| `serializePath()` root folder ref | Root folder produces `root/` | ✅ |
+| `serializePath()` round-trip file | `serialize(parse(path))` equals original | ✅ |
+| `serializePath()` round-trip folder | `serialize(parse(path))` equals original | ✅ |
+
+### navigation-handlers.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `forge_ls` no path — returns root names | `rootRefs()` called, result lists root names | ✅ |
+| `forge_ls` folder path — calls list() and returns entries | `list()` called, entries typed as folder/file | ✅ |
+| `forge_ls` no rootRegistry — stub result | Missing context returns `not implemented` | ✅ |
+| `forge_mkdir` calls mkdir with folder ref | `rootRegistry.mkdir()` called with correct ref | ✅ |
+| `forge_mkdir` throws when path missing | Missing `path` raises an error | ✅ |
+| `forge_mkdir` no rootRegistry — stub result | Missing context returns `not implemented` | ✅ |
+| `forge_rmdir` calls rmdir with folder ref | `rootRegistry.rmdir()` called with correct ref | ✅ |
+| `forge_rmdir` throws when path missing | Missing `path` raises an error | ✅ |
+| `forge_move` same-root folder move | `rootRegistry.mvdir()` called | ✅ |
+| `forge_move` throws on cross-root move | Different roots raises an error | ✅ |
+| `forge_move` throws when path missing | Missing `path` raises an error | ✅ |
+| `forge_move` throws when target missing | Missing `target` raises an error | ✅ |
+| `forge_rename` calls rndir with ref and name | `rootRegistry.rndir()` called with correct args | ✅ |
+| `forge_rename` throws when path missing | Missing `path` raises an error | ✅ |
+| `forge_rename` throws when name missing | Missing `name` raises an error | ✅ |
+
+### mcp-server.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| `loadTools()` valid config — no error | Valid `forge-tools.json` loads without throwing | ✅ |
+| `loadTools()` registers all declared tools | `toolNames()` count and names match config entries | ✅ |
+| `loadTools()` throws if config file missing | Missing file path raises an error | ✅ |
+| `loadTools()` throws if handler path cannot be resolved | Unresolvable handler path raises an error | ✅ |
+| `dispatch()` calls the correct handler | Tool call is routed to the registered handler | ✅ |
+| `dispatch()` passes input to handler | Input payload is transmitted to `execute()` | ✅ |
+| `dispatch()` returns handler result | Handler return value is forwarded to caller | ✅ |
+| `dispatch()` throws for unknown tool name | Unregistered tool name raises a clear error | ✅ |
+| `dispatch()` propagates handler errors | Error thrown by handler propagates to caller | ✅ |
+
 ### file-root.test.js
 
 | Test | Behaviour | Status |
@@ -193,21 +269,29 @@ One table per test file. **✅ existing** — test is present and passing. **⬜
 ```
 tests/
 ├── README.md                      ← this file
+├── content-handlers.test.js      ← forge_read/write/create/delete tool handlers
 ├── file-root.test.js              ← filesystem root handler
 ├── format-registry.test.js        ← format registry
+├── mcp-server.test.js             ← generic MCP server (loadTools + dispatch)
 ├── md-extension-handler.test.js   ← Markdown syntax adapter
+├── navigation-handlers.test.js    ← forge_ls/mkdir/rmdir/move/rename tool handlers
+├── path-parser.test.js            ← MCP path → RootRegistry ref parser
 ├── root-registry.test.js          ← root registry (IRootRegistry + folder ops)
 ├── sequence.test.js               ← generic sequence handler
 └── fixtures/
-    ├── formats-basic.json         ← valid registry config (3 formats: doc, todo, managed)
-    ├── formats-duplicate.json     ← invalid config — duplicate format name, triggers error
-    ├── formats-no-claim.json      ← valid config — all handlers return claim=false
-    ├── md-doc-full.md             ← full Markdown artifact (metadata + 3 sections)
-    ├── md-doc-partial.md          ← partial Markdown artifact (metadata + 1 section)
-    ├── md-native.md               ← plain Markdown, no metadata block
-    ├── mock-handler.js            ← configurable initFormat() — claimResult controlled by config
-    ├── shim-syntax-adapter.js     ← minimal SyntaxAdapter for sequence.js isolation tests
-    └── sandbox/                   ← runtime directory for file-root tests (created/destroyed per run)
+    ├── forge-tools-bad-handler.json  ← invalid tools config — handler path unresolvable
+    ├── forge-tools-test.json         ← valid tools config (3 tools via mock-tool-handler.js)
+    ├── forge-tools-throwing.json     ← valid tools config — execute() throws
+    ├── formats-basic.json            ← valid registry config (3 formats: doc, todo, managed)
+    ├── formats-duplicate.json        ← invalid config — duplicate format name, triggers error
+    ├── formats-no-claim.json         ← valid config — all handlers return claim=false
+    ├── md-doc-full.md                ← full Markdown artifact (metadata + 3 sections)
+    ├── md-doc-partial.md             ← partial Markdown artifact (metadata + 1 section)
+    ├── md-native.md                  ← plain Markdown, no metadata block
+    ├── mock-handler.js               ← configurable initFormat() — claimResult controlled by config
+    ├── mock-tool-handler.js          ← configurable initTool() — result and throw controlled by config
+    ├── shim-syntax-adapter.js        ← minimal SyntaxAdapter for sequence.js isolation tests
+    └── sandbox/                      ← runtime directory for file-root tests (created/destroyed per run)
 ```
 
 Source modules under test:
@@ -215,6 +299,7 @@ Source modules under test:
 ```
 src/
 ├── format-registry.js    ← FormatRegistry class
+├── mcp-server.js         ← McpServer class (loadTools + dispatch)
 ├── root-registry.js      ← RootRegistry class
 ├── sequence.js           ← initSequence() — generic sequence handler
 └── logger.js             ← (not tested directly)
@@ -222,6 +307,21 @@ src/
 handlers/
 ├── file-root.js          ← filesystem root handler
 └── md-extension-handler.js  ← MdSyntaxAdapter — Markdown syntax adapter
+
+tool-handlers/            ← MCP tool handlers
+├── forge-ls.js           ← implemented (2.3)
+├── forge-mkdir.js        ← implemented (2.3)
+├── forge-rmdir.js        ← implemented (2.3)
+├── forge-move.js         ← implemented (2.3)
+├── forge-rename.js       ← implemented (2.3)
+├── forge-read.js         ← implemented (2.4)
+├── forge-write.js        ← implemented (2.4)
+├── forge-create.js       ← implemented (2.4)
+└── forge-delete.js       ← implemented (2.4)
+
+src/
+├── path-parser.js        ← MCP path string → RootRegistry ref
+...
 ```
 
 ---
@@ -235,6 +335,10 @@ handlers/
 | `src/format-registry.js` | `format-registry.test.js` | `load()` (valid, duplicate, missing file), `dispatch()` (claim loop, unknown ext, no claim), `getByName()`, `describe()` |
 | `handlers/md-extension-handler.js` | `md-extension-handler.test.js` | `parseMetadata()`, `serializeMetadata()`, `parseSections()`, `serializeSections()`, `buildSkeleton()` |
 | `src/root-registry.js` | `root-registry.test.js` | `rootRefs()`, `read/write/create/delete()` delegation, unknown root errors, `list/mkdir/rmdir/rndir()`, `mvdir()` same-root and cross-root |
+| `src/mcp-server.js` | `mcp-server.test.js` | `loadTools()` (valid, missing file, bad handler), `toolNames()`, `dispatch()` (routing, input pass-through, result, unknown tool, handler error) |
+| `src/path-parser.js` | `path-parser.test.js` | `parsePath()` (file, folder, root, hint, backslash, empty), `serializePath()` (file, folder, round-trips) |
+| `tool-handlers/forge-{ls,mkdir,rmdir,move,rename}.js` | `navigation-handlers.test.js` | execute() delegation to rootRegistry, input validation, missing context stub |
+| `tool-handlers/forge-{read,write,create,delete}.js` | `content-handlers.test.js` | claim loop dispatch, handler delegation, native fallback, input validation |
 | `src/sequence.js` | `sequence.test.js` | `claim()`, `read()` (basic, lazy, dot-notation query), `write()` (narrow update, metadata preserved), `create()` (skeleton), `describe()` |
 
 ---
@@ -254,7 +358,15 @@ handlers/
 
 **`md-native.md`** — Plain Markdown with no forge metadata block. `parseMetadata()` must return null.
 
+**`forge-tools-test.json`** — valid tools config. Three tools (`forge_read`, `forge_write`, `forge_ls`) all pointing to `mock-tool-handler.js`. Used by most mcp-server tests.
+
+**`forge-tools-bad-handler.json`** — one tool pointing to `./nonexistent-handler.js`. `loadTools()` must throw.
+
+**`forge-tools-throwing.json`** — one tool with `shouldThrow: true`. `execute()` throws `'mock-tool-error'`. Tests error propagation in `dispatch()`.
+
 **`mock-handler.js`** — Implements `initFormat(formatJson)`. `claim()` returns `formatJson.claimResult` (default: false). Used in format registry fixtures to control dispatch order without real syntax parsing.
+
+**`mock-tool-handler.js`** — Implements `initTool(toolJson)`. `execute()` returns `toolJson.result` (default: `{ ok: 'mock' }`) or throws if `toolJson.shouldThrow` is true. Used in tools config fixtures.
 
 **`shim-syntax-adapter.js`** — Minimal `SyntaxAdapter` using a fictional `@@forge` / `@@section` syntax. Isolates `sequence.js` from Markdown parsing. All sequence tests run against this adapter.
 
@@ -271,7 +383,9 @@ handlers/
 
 **Sandbox lifecycle** — `file-root.test.js` creates a per-test-run sandbox directory. `beforeAll` creates it, `afterAll` destroys it, `beforeEach` empties it. Tests are fully isolated and leave no artifacts on disk.
 
-**No mcp-tools at the test boundary** — tests import source modules directly. MCP tool wiring (`mcp-tools.js`) is not tested here; it is thin glue and is covered by integration-level testing (see Gaps).
+**Mock tool handler controls execute** — mcp-server tests need predictable dispatch results. `result` and `shouldThrow` in the fixture JSON are the single control points — no real tool logic involved.
+
+**No SDK wiring at the test boundary** — `McpServer` (loadTools + dispatch) is tested in isolation. `startMcpServer()` wires the SDK transport and is not tested at unit level — it is thin glue covered by end-to-end testing.
 
 **All values are strings** — sequence payloads and read results use string values throughout, consistent with the forge.md convention.
 
@@ -286,7 +400,8 @@ The following areas are not yet covered by the test suite.
 |---|---|
 | `forge-formats.json` v1 | The real registry config does not exist yet (W5). Tests use fixture configs only. |
 | `initFormat()` via `sequence.js` + `MdSyntaxAdapter` | Integration path: real Markdown file → `FormatRegistry.dispatch()` → `initSequence()` + `MdSyntaxAdapter`. Not tested end-to-end. |
-| `mcp-tools.js` | MCP tool layer not tested. Covers tool dispatch and error serialization. |
+| `forge_ls` file path — section listing | Section listing deferred to M3 format layer. Returns stub note for now. |
+| `forge_write` native fallback — payload validation | Native write accepts any `payload.content`; no schema enforcement. |
 | `RootRegistry.load()` | `load()` imports handlers dynamically — not tested (requires real handler files on disk). |
 | `forge_write` on non-existent section | Behavior when payload names a section absent from the file is not explicitly covered. |
 | `sequence.js` — repeat section write | `write()` replaces repeat sections in full. Edge cases (empty array, mixed update) not tested. |
@@ -297,6 +412,44 @@ The following areas are not yet covered by the test suite.
 ---
 
 ## Changelog
+
+### Version 1.6 - 2.4 content handlers
+**Date:** 2026-06-12
+**Reason:** Content tool handlers implemented (forge_read/write/create/delete). `content-handlers.test.js` added (15 tests, all ✅).
+
+**Modifications:**
+- Unit Tests: `content-handlers.test.js` table added (15 tests)
+- Structure: test file added, `tool-handlers/` all entries marked implemented
+- Coverage: content handlers row added
+- Gaps: stubs entry removed; `startMcpServer()` entry removed (covered); native fallback note added
+
+---
+
+### Version 1.5 - 2.3 navigation handlers + path-parser
+**Date:** 2026-06-12
+**Reason:** Navigation tool handlers implemented (forge_ls/mkdir/rmdir/move/rename). `path-parser.js` added as shared MCP path → ref converter. Two new test files (17 + 15 tests, all ✅).
+
+**Modifications:**
+- Unit Tests: `path-parser.test.js` table added (17 tests), `navigation-handlers.test.js` table added (15 tests)
+- Structure: both test files + `src/path-parser.js` + `tool-handlers/` status updated
+- Coverage: `path-parser.js` + navigation handlers rows added
+- Gaps: tool handlers entry updated — only content handlers (2.4) remain as stubs; `forge_ls` file path note added
+
+---
+
+### Version 1.4 - mcp-server.test.js added
+**Date:** 2026-06-12
+**Reason:** `McpServer` (`src/mcp-server.js`) added in M2 — 9 unit tests covering `loadTools()` and `dispatch()`. Three new fixtures (`forge-tools-test.json`, `forge-tools-bad-handler.json`, `forge-tools-throwing.json`) + `mock-tool-handler.js`.
+
+**Modifications:**
+- Unit Tests: `mcp-server.test.js` table added (9 tests, all ✅)
+- Structure: `mcp-server.test.js` + 3 fixtures + `mock-tool-handler.js` + `tool-handlers/` added
+- Coverage: `src/mcp-server.js` row added
+- Fixtures: 3 new fixture descriptions + `mock-tool-handler.js` added
+- Conventions: `mock-handler` note replaced by two notes (mock-tool-handler + no SDK wiring)
+- Gaps: `mcp-tools.js` entry replaced by tool handlers + `startMcpServer()` entries
+
+---
 
 ### Version 1.3 - Unit Tests section
 **Date:** 2026-06-11

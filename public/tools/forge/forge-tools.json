@@ -1,0 +1,151 @@
+{
+  "tools": [
+    {
+      "name": "forge_ls",
+      "description": "List roots, folder contents, or a file's sections. No argument: list roots. Folder path (ending with /): list subfolders and files. File path: list top-level sections.",
+      "handler": "./tool-handlers/forge-ls.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Optional. Omit to list roots. Folder path (ending with /) to list its contents. File path to list its sections."
+          }
+        },
+        "required": []
+      }
+    },
+    {
+      "name": "forge_mkdir",
+      "description": "Create a folder. Error if it already exists.",
+      "handler": "./tool-handlers/forge-mkdir.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Folder path. Must end with /."
+          }
+        },
+        "required": ["path"]
+      }
+    },
+    {
+      "name": "forge_rmdir",
+      "description": "Delete a folder. Error if not empty.",
+      "handler": "./tool-handlers/forge-rmdir.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Folder path. Must end with /."
+          }
+        },
+        "required": ["path"]
+      }
+    },
+    {
+      "name": "forge_move",
+      "description": "Move a file or folder to a new path. Error if destination already exists. Moving across roots is not supported.",
+      "handler": "./tool-handlers/forge-move.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path":   { "type": "string", "description": "Source path — file or folder." },
+          "target": { "type": "string", "description": "Destination path. Must be within the same root." }
+        },
+        "required": ["path", "target"]
+      }
+    },
+    {
+      "name": "forge_rename",
+      "description": "Rename a file or folder in place.",
+      "handler": "./tool-handlers/forge-rename.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string", "description": "Path of the file or folder to rename." },
+          "name": { "type": "string", "description": "New name (not a full path — name only)." }
+        },
+        "required": ["path", "name"]
+      }
+    },
+    {
+      "name": "forge_read",
+      "description": "Read a file's content as structured JSON. Strips boilerplate. Large rarely-needed sections (changelog, history) return headers only by default — use the query parameter to load their content. Returns a format field identifying the file's format; native files return format: \"<extension>\".",
+      "handler": "./tool-handlers/forge-read.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path. Standard filesystem path or forge:// URI."
+          },
+          "query": {
+            "type": "string",
+            "description": "Optional. Dot-notation path to a specific section. Examples: 'changelog', 'changelog.20260112', 'why'. If omitted, returns full content with lazy sections as headers only."
+          }
+        },
+        "required": ["path"]
+      }
+    },
+    {
+      "name": "forge_write",
+      "description": "Write changes to an existing file. Send only what changed — the rest is untouched. Use _action to insert, delete, or reorder sections and records.",
+      "handler": "./tool-handlers/forge-write.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path. The file must already exist — use forge_create first."
+          },
+          "payload": {
+            "type": "object",
+            "description": "Partial JSON matching the structure returned by forge_read. Only included sections are modified. Use _action for structural operations: insert, delete, reorder."
+          }
+        },
+        "required": ["path", "payload"]
+      }
+    },
+    {
+      "name": "forge_create",
+      "description": "Create a new file with the specified format. Writes the metadata block and an empty skeleton. To know available formats, read forge://registry.",
+      "handler": "./tool-handlers/forge-create.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path. Error if the file already exists."
+          },
+          "format": {
+            "type": "string",
+            "description": "Format name from the registry. Use the native format name (extension) for unstructured files. Consult forge_read('forge://registry') first if the format is not already known from context."
+          },
+          "payload": {
+            "type": "object",
+            "description": "Optional. Initial content to populate the skeleton. Must contain only implicit update actions."
+          }
+        },
+        "required": ["path", "format"]
+      }
+    },
+    {
+      "name": "forge_delete",
+      "description": "Delete a file. Irreversible. To delete folders, use forge_rmdir.",
+      "handler": "./tool-handlers/forge-delete.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "File path. Error if the file does not exist."
+          }
+        },
+        "required": ["path"]
+      }
+    }
+  ]
+}
