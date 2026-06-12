@@ -1,0 +1,16 @@
+{
+  "tools": [
+    {
+      "name": "forge_read",
+      "description": "Read a file.",
+      "handler": "./mock-tool-handler.js",
+      "shouldThrow": true,
+      "errorMessage": "mock-tool-error",
+      "inputSchema": {
+        "type": "object",
+        "properties": { "path": { "type": "string" } },
+        "required": ["path"]
+      }
+    }
+  ]
+}

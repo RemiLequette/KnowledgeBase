@@ -21,6 +21,43 @@ async function loadRegistry(jsonFile) {
 }
 
 // ---------------------------------------------------------------------------
+// load() — v2 grammar
+// ---------------------------------------------------------------------------
+
+describe('load() — v2 grammar', () => {
+  it('ignores primitive formats — not registered as handlers', async () => {
+    const registry = await loadRegistry('formats-v2-primitives.json');
+    expect(registry.formatsForExtension('text')).toHaveLength(0);
+    expect(registry.formatsForExtension('date')).toHaveLength(0);
+  });
+
+  it('registers non-primitive file formats normally', async () => {
+    const registry = await loadRegistry('formats-v2-primitives.json');
+    expect(registry.formatsForExtension('js')).toHaveLength(1);
+  });
+
+  it('reusable types (no fileNameExtension) — not registered by extension', async () => {
+    const registry = await loadRegistry('formats-v2-reusable.json');
+    expect(registry.formatsForExtension('md')).toHaveLength(0);
+  });
+
+  it('format with both extends and handler — build error', async () => {
+    await expect(loadRegistry('formats-v2-extends-handler.json')).rejects.toThrow();
+  });
+
+  it('loads extensions and injects adapter into initFormat', async () => {
+    const registry = await loadRegistry('formats-v2-extensions.json');
+    const [{ runHandler }] = registry.formatsForExtension('md');
+    expect(runHandler._adapter).toBeDefined();
+    expect(runHandler._adapter._name).toBe('mock-adapter');
+  });
+
+  it('file format referencing undeclared extension — build error', async () => {
+    await expect(loadRegistry('formats-v2-undeclared-ext.json')).rejects.toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
 // load() — build time
 // ---------------------------------------------------------------------------
 

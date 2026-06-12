@@ -1,0 +1,7 @@
+{
+  "formats": {
+    "text":      { "primitive": true, "description": "Plain text." },
+    "log-item":  { "extends": "sequence", "description": "A log entry." },
+    "changelog": { "extends": "sequence", "description": "A list of log entries." }
+  }
+}

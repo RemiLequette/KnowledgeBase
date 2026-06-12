@@ -1,0 +1,15 @@
+{
+  "extensions": {
+    "js": { "syntaxAdapter": "./mock-adapter.js" }
+  },
+  "formats": {
+    "text":    { "primitive": true, "description": "Plain text value." },
+    "date":    { "primitive": true, "description": "ISO date string." },
+    "managed": {
+      "fileNameExtension": "js",
+      "handler": "./mock-handler.js",
+      "claimResult": true,
+      "description": "A managed JS file."
+    }
+  }
+}

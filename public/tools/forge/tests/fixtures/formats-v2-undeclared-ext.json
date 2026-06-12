@@ -1,0 +1,10 @@
+{
+  "extensions": {},
+  "formats": {
+    "doc": {
+      "fileNameExtension": "md",
+      "handler": "./mock-handler-with-adapter.js",
+      "description": "References md — not declared in extensions."
+    }
+  }
+}

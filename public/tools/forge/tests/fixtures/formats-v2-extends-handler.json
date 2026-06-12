@@ -3,12 +3,11 @@
     "md": { "syntaxAdapter": "./mock-adapter.js" }
   },
   "formats": {
-    "doc": {
+    "bad-format": {
+      "extends": "sequence",
       "fileNameExtension": "md",
       "handler": "./mock-handler.js",
-      "claimResult": false,
-      "description": "Nobody claims this file.",
-      "sections": []
+      "description": "Illegal — extends + handler declared together."
     }
   }
 }

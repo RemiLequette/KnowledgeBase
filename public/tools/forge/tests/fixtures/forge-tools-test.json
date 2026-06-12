@@ -1,0 +1,42 @@
+{
+  "tools": [
+    {
+      "name": "forge_read",
+      "description": "Read a file's content as structured JSON.",
+      "handler": "./mock-tool-handler.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path":  { "type": "string" },
+          "query": { "type": "string" }
+        },
+        "required": ["path"]
+      }
+    },
+    {
+      "name": "forge_write",
+      "description": "Write changes to an existing file.",
+      "handler": "./mock-tool-handler.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path":    { "type": "string" },
+          "payload": { "type": "object" }
+        },
+        "required": ["path", "payload"]
+      }
+    },
+    {
+      "name": "forge_ls",
+      "description": "List roots or folder contents.",
+      "handler": "./mock-tool-handler.js",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "path": { "type": "string" }
+        },
+        "required": []
+      }
+    }
+  ]
+}

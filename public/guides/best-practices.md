@@ -20,6 +20,7 @@ Load when auditing a project or setting up a new one.
 7. [Documentation: Brief, Actionable](#7-documentation-brief-actionable)
 8. [Project Naming & Transportability](#8-project-naming--transportability)
 9. [Documentation Convention](#9-documentation-convention)
+10. [Testing — TDD and debug distinction](#10-testing--tdd-and-debug-distinction)
 - [Guide Maintenance Standards](#guide-maintenance-standards)
 - [Quick Checklist](#quick-checklist)
 - [Index](#index)
@@ -276,6 +277,28 @@ WHY: A single convention makes all files auditable and consistent across project
 
 ---
 
+## 10. Testing — TDD and debug distinction
+[up](#table-of-contents)
+
+**Principle:** In TDD, write the test and the implementation together — no need to witness the red state. Only run tests once, to confirm green. Reserve the red→green cycle for bug fixes.
+
+**New feature (TDD) ✔**
+1. Write the test
+2. Write the implementation
+3. Run — confirm green
+
+**Bug fix ✔**
+1. Write a test that reproduces the bug — confirm red
+2. Fix the implementation
+3. Run — confirm green
+
+WHY: Witnessing red on a new feature adds no value — the code does not exist yet, of course it fails. The red→green discipline matters for bugs: it proves the test actually caught the regression before the fix.
+
+**Anti-pattern ❌**
+Running tests after writing only the test, before writing the implementation, for every new feature. This wastes a round trip and adds no signal.
+
+---
+
 ## Guide Maintenance Standards
 [up](#table-of-contents)
 
@@ -301,6 +324,7 @@ Required for every modification to any guide: update TOC and Changelog.
 - [ ] No absolute paths inside the project?
 - [ ] Project name not scattered through content?
 - [ ] All Markdown files follow `conventions/documentation.md`?
+- [ ] Tests follow TDD discipline — run once to confirm green; red→green only for bug fixes?
 
 ---
 
@@ -312,6 +336,17 @@ Required for every modification to any guide: update TOC and Changelog.
 ---
 
 ## Changelog
+
+### Version 1.9 — BP#10 Testing TDD and debug distinction
+**Date:** 2026-06-12
+**Reason:** Session observation — red state on new features adds no value. Captured the distinction between TDD (test + impl together, run once) and bug fix (red→green proves the test catches the regression).
+
+**Changes:**
+- TOC: BP#10 added
+- Content: `## 10. Testing — TDD and debug distinction` added
+- Quick Checklist: TDD item added
+
+---
 
 ### Version 1.8 — Refactoring complet
 **Date:** 2026-05-31

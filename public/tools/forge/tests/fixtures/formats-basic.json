@@ -1,14 +1,11 @@
 {
-  "primitives": {
-    "text":    { "type": "primitive" },
-    "integer": { "type": "primitive" },
-    "date":    { "type": "primitive" },
-    "boolean": { "type": "primitive" }
+  "extensions": {
+    "md": { "syntaxAdapter": "./mock-adapter.js" },
+    "js": { "syntaxAdapter": "./mock-adapter.js" }
   },
   "formats": {
     "doc": {
-      "type": "sequence",
-      "extension": "md",
+      "fileNameExtension": "md",
       "handler": "./mock-handler.js",
       "claimResult": false,
       "description": "A structured Markdown document.",
@@ -19,8 +16,7 @@
       ]
     },
     "todo": {
-      "type": "sequence",
-      "extension": "md",
+      "fileNameExtension": "md",
       "handler": "./mock-handler.js",
       "claimResult": true,
       "description": "A Markdown backlog.",
@@ -29,8 +25,7 @@
       ]
     },
     "managed": {
-      "type": "sequence",
-      "extension": "js",
+      "fileNameExtension": "js",
       "handler": "./mock-handler.js",
       "claimResult": true,
       "description": "A managed JS file.",

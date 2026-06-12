@@ -1,17 +1,17 @@
 {
-  "primitives": {},
+  "extensions": {
+    "md": { "syntaxAdapter": "./mock-adapter.js" }
+  },
   "formats": {
     "doc": {
-      "type": "sequence",
-      "extension": "md",
+      "fileNameExtension": "md",
       "handler": "./mock-handler.js",
       "claimResult": false,
       "description": "First doc.",
       "sections": []
     },
     "doc-duplicate": {
-      "type": "sequence",
-      "extension": "md",
+      "fileNameExtension": "md",
       "name": "doc",
       "handler": "./mock-handler.js",
       "claimResult": false,

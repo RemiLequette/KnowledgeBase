@@ -336,6 +336,7 @@ All build-time rules run when `forge-formats.json` is loaded. Any failure is a c
 
 **Format table**
 - Uniqueness: two file formats cannot share the same name for the same `fileNameExtension`.
+- Extension declared: a file format's `fileNameExtension` must be declared in the `extensions` block — build error otherwise. An extension not declared in `extensions` is native-only: no structured format can target it.
 - Inheritance resolution: every format declaring `extends` must point to an existing format. Cycles (`A extends B extends A`) are forbidden.
 - Handler resolution: every non-primitive format must have a handler — declared explicitly via `handler`, or inherited by walking the `extends` chain. If no handler is found, the build fails.
 
@@ -433,10 +434,14 @@ Forge never calls the filesystem directly. All storage access goes through `root
 
 The format registry is populated at build time from `forge-formats.json`.
 
-**`forge-formats.json` structure — single `formats` object:**
+**`forge-formats.json` structure — `extensions` + `formats`:**
 
 ```json
 {
+  "extensions": {
+    "md": { "syntaxAdapter": "./adapters/md-adapter.js" },
+    "js": { "syntaxAdapter": "./adapters/js-adapter.js" }
+  },
   "formats": {
     "sequence": { "handler": "./handlers/sequence.js", "description": "..." },
     "text":     { "primitive": true, "description": "..." },
@@ -453,6 +458,8 @@ The format registry is populated at build time from `forge-formats.json`.
 }
 ```
 
+The `extensions` block declares which extensions are supported with structured formats. Each entry points to a SyntaxAdapter module. An extension not declared here has no SyntaxAdapter — only the native format applies to its files.
+
 **Structure at run time:**
 ```
 extension
@@ -464,12 +471,16 @@ Only file formats (those with `fileNameExtension`) are registered at the top lev
 
 **Build time — loading `forge-formats.json`:**
 
-For each format entry in `formats`:
-1. Skip primitives (`primitive: true`) — no handler to load.
-2. Identify handler: the format must declare a `handler` directly (formats with `extends` never declare a handler — build error if they do). Load the handler module.
-3. If `fileNameExtension` present: inject SyntaxAdapter for that extension; validate `optional` not combined with explicit `min`/`max` — build error if so.
-4. Call `handler.initFormat(formatJson, adapter?)` — the handler receives the raw format JSON, including `extends` if present, and resolves the inheritance chain itself by calling `registry.getFormat()`. Returns a runHandler.
-5. If `fileNameExtension` present: register `runHandler` under `extension -> name`.
+1. Load `extensions` block — for each entry, load the SyntaxAdapter module and instantiate it. Store adapters by extension name.
+2. For each format entry in `formats`:
+   - Skip primitives (`primitive: true`) — no handler to load.
+   - Skip reusable types (no `fileNameExtension`) — stored as raw descriptors for inheritance resolution; not registered by extension.
+   - Build error if format declares both `extends` and `handler`.
+   - Build error if `fileNameExtension` is not declared in the `extensions` block.
+   - Load the handler module (declared directly on the format or inherited via `extends` chain).
+   - Inject the SyntaxAdapter for the declared extension.
+   - Call `handler.initFormat(formatJson, adapter)` — the handler receives the raw format JSON, including `extends` if present, and resolves the inheritance chain itself by calling `registry.getFormat()`. Returns a runHandler.
+   - Register `runHandler` under `extension → name`.
 
 **Build time constraint — name uniqueness per extension:**
 Two file formats under the same extension must have different names. A duplicate name is a build error — Forge refuses to start.
@@ -858,6 +869,17 @@ Each format entry includes `description` and `example` from `handler.describe()`
 ---
 
 ## Changelog
+
+### Version 1.6 - extensions block + SyntaxAdapter declaration
+**Date:** 2026-06-12
+**Reason:** SyntaxAdapters were injected by the registry but their source was unspecified. Added `extensions` block to `forge-formats.json` — each extension declares its SyntaxAdapter module. Consequence: file formats must reference a declared extension (build error otherwise), and undeclared extensions are native-only.
+
+**Changes:**
+- How / Format registry / `forge-formats.json` structure: `extensions` block added to JSON example; explanatory paragraph added
+- How / Format registry / Build time: step 1 added (load extensions + adapters); steps renumbered; reusable types skip rule made explicit; extension-declared build error added
+- What / Validation rules / Build time / Format table: `Extension declared` rule added
+
+---
 
 ### Version 1.5 - Format inheritance rewritten
 **Date:** 2026-06-11

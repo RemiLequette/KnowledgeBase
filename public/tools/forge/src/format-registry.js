@@ -40,11 +40,38 @@ export class FormatRegistry {
     const config = JSON.parse(raw);
     const dir    = path.dirname(configPath);
 
-    for (const [formatKey, entry] of Object.entries(config.formats ?? {})) {
-      const formatName = entry.name ?? formatKey;
-      const ext        = entry.extension;
+    // F5: load extensions — instantiate SyntaxAdapters
+    const adapters = new Map();
+    for (const [ext, entry] of Object.entries(config.extensions ?? {})) {
+      if (!entry.syntaxAdapter) throw new Error(`Extension "${ext}" is missing required field "syntaxAdapter"`);
+      const adapterUrl = pathToFileURL(path.resolve(dir, entry.syntaxAdapter)).href;
+      const mod        = await import(adapterUrl);
+      if (typeof mod.initAdapter !== 'function') {
+        throw new Error(`SyntaxAdapter for "${ext}" does not export initAdapter()`);
+      }
+      adapters.set(ext, await mod.initAdapter());
+    }
 
-      if (!ext) throw new Error(`Format "${formatKey}" is missing required field "extension"`);
+    for (const [formatKey, entry] of Object.entries(config.formats ?? {})) {
+      // F1: skip primitives — no handler, not registered
+      if (entry.primitive) continue;
+
+      const formatName = entry.name ?? formatKey;
+      const ext        = entry.fileNameExtension;
+
+      // F3: skip reusable types — no fileNameExtension, not registered by extension
+      if (!ext) continue;
+
+      // F4: formats with extends must not declare a handler — build error
+      if (entry.extends && entry.handler) {
+        throw new Error(`Format "${formatKey}" declares both "extends" and "handler" — handlers are inherited, not declared on derived formats`);
+      }
+
+      // F6: fileNameExtension must be declared in extensions block
+      if (!adapters.has(ext)) {
+        throw new Error(`Format "${formatKey}" references extension "${ext}" which is not declared in the extensions block`);
+      }
+
       if (!entry.handler) throw new Error(`Format "${formatKey}" is missing required field "handler"`);
 
       // Duplicate name check within same extension
@@ -60,7 +87,7 @@ export class FormatRegistry {
         throw new Error(`Handler for "${formatKey}" does not export initFormat()`);
       }
 
-      const runHandler = await mod.initFormat({ ...entry, name: formatName });
+      const runHandler = await mod.initFormat({ ...entry, name: formatName }, adapters.get(ext));
 
       // Register by extension (declaration order)
       if (!this.byExtension.has(ext)) this.byExtension.set(ext, []);

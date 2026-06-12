@@ -5,10 +5,8 @@
   "formats": {
     "doc": {
       "fileNameExtension": "md",
-      "handler": "./mock-handler.js",
-      "claimResult": false,
-      "description": "Nobody claims this file.",
-      "sections": []
+      "handler": "./mock-handler-with-adapter.js",
+      "description": "A structured doc."
     }
   }
 }

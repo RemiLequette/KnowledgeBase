@@ -32,8 +32,6 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O6] Convention self-reference in artifacts | An AI reading a project file directly (e.g. `TODO.md`, `GLOSSARY.md`) without going through `INDEX.md` has no signal to load the relevant convention. Explore a lightweight mechanism for files to reference their own governing convention — e.g. a standard comment header, a frontmatter field, or a convention pointer in the file's Quick Start. Constaté sur guideIA 2026-06-05.
 - [ ] [O9] specs/ document type | Distinguer conventions opérationnelles (chargées par trigger) et specs descriptives (chargées explicitement). Créer `public/specs/`, migrer `forge.md`. Ajouter type Spec dans `documentation-style.md`. Ajouter section `specs/` dans INDEX.md. Litmus test : une spec n'a rien à auditer. [effort: M]
 - [ ] [O11] guide-maintenance.md conformance | Non-compliant: French content, obsolete reference to Claude.md, informal structure. Bring into line with documentation.md before next audit. [effort: S]
-- [ ] [O50] writeBlock leaf-only rule | Only leaf blocks (no children) have text content. A parent block is a container — like a folder, it holds child blocks, not text. readBlock/writeBlock on a parent block → throw. writeBlock("") on a type with blockGrammar → throw (root is always a parent). Implement in structured-text.js + tests + update forge.md. [effort: M]
-- [ ] [O43] forge Brand registry | Session-scoped in-memory set of issued FALs. Brand gate on forge_read/forge_write — rejects FALs not issued by Forge with hint. FALs registered by forge_ls and forge_mkdir. → **Specced in forge.md v7.0 — implement in forge.js** [effort: S]
 
 ## Normal
 
@@ -47,13 +45,12 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O24] md-doc handler | Type handler Forge pour fichiers Markdown structurés. Chaque section devient un bloc nommé. Remplace l'outil md-doc actuel et son protocole JSON. Gain token maximal — tous les fichiers KB. [effort: L]
 - [ ] [O27] Extend maintenance rules beyond guides | guide-maintenance.md covers guides only. Conventions and tools also need maintenance rules. Consider convention-maintenance.md + tool-maintenance.md, or extend guide-maintenance.md to cover all three. [effort: S]
 - [ ] [O28] Best practices → todo.md reference | Vérifier que guides/best-practices.md référence la convention todo.md.
-- [ ] [O37] Spec forge_write — vérification bloc | Documenter dans forge.md : (1) tout handler doit vérifier l'existence du bloc avant writeBlock et lever une erreur si absent ; (2) un AI Assistant doit appeler listBlocks avant tout forge_write sur un bloc nommé. [effort: S]
 - [ ] [O40] gitignore logs dans project-structure.md | Ajouter dans `conventions/project-structure.md` la règle : tout projet inclut un `.gitignore` avec `*.log`. Auditable en regardant le .gitignore — c'est une convention.
-- [ ] [O47] Convention structured-text.md | Documenter le mécanisme générique structured-text.js : matchName, grammaire blocks.separators, repeat, récursion, template, createArtifact squelette. Inclure les types instanciés dans la KB (js-managed, md-structured, doc-todolist) avec leur descripteur JSON et leur grammaire expliquée. Ajouter trigger dans INDEX.md. [effort: M]
-- [ ] [O48] forge_read batch + sous-arbre | forge_read(fal, blocks=[]) — lire plusieurs blocs en un appel. forge_read(fal, block, depth=∞) — retourner un bloc + tous ses enfants récursivement. Réduit les allers-retours pour les lectures multi-blocs. [effort: M]
+- [ ] [O48] forge_read batch query | forge_read(path, queries=[]) — plusieurs dot-notation queries en un appel. Réduit les allers-retours pour les lectures multi-sections. Distinct de O53 (multi-fichiers). [effort: S]
 - [ ] [O49] forge_ls récursif avec tailles | forge_ls(fal, depth=N) — arborescence complète jusqu'à profondeur N. Chaque entrée inclut size (caractères ou lignes) pour orienter la lecture sans ouvrir les blocs. [effort: S]
 - [ ] [O51] idea-inbox convention — simplifier et clarifier | Rendre le registre projet plus simple et clair pour utilisation directe par un AI Assistant. Mieux le référencer dans INDEX.md (trigger + description). [effort: S]
 - [ ] [O52] working-with-forge.md — adapt to Forge v2 | Guide describes Forge v1 (FAL, RTFM, Brand, forge_describe). Rewrite for Forge v2: formats, forge_read/write/create with JSON payload, dot-notation query, metadata block, registry. Restore trigger in INDEX.md Decision Layer on completion. Files also affected: GLOSSARY.md (entries RTFM, Brand, FAL, Constrain Don't Forbid, Fail Fast Fail Clear). [effort: M]
+- [ ] [O53] forge_read multi-fichiers | forge_read(paths=[]) — lire plusieurs fichiers en un seul appel (analogue à filesystem:read_multiple_files). Réduit les allers-retours lors du bootstrap et de la navigation multi-fichiers. Distinct de O48 (batch intra-artifact). [effort: S]
 
 ## Low priority
 
@@ -74,10 +71,11 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O42] Separate KB public/ to own repo | Move public/ to a standalone repository, independent from the KB Maintenance project. [effort: L]
 - [ ] [O45] Forge editor — rename forge-browser.html | Rename `forge-browser.html` to `forge-editor.html` to reflect its expanded role. [effort: XS]
 - [ ] [O46] Forge editor — add forge_create | Add artifact creation (forge_create) to the Forge editor tool. [effort: S]
+- [ ] [O54] Generic configurable MCP server — document as convention or guide | Pattern identified in Forge M2: a `*-tools.json` declares tools + handler paths; `mcp-server.js` is a reusable runner independent of any tool domain. Extract from Forge and document for reuse across projects. [effort: M]
 
 ## WIP
 
-- [ ] [WIP] [W5] forge-formats.json v1 + handler loader + tests | Grammaire format conçue et spécifiée dans forge.md v1.0 (primitive/extends/fileNameExtension, sequence root, reusable types, file formats, SyntaxAdapter injecté par registry). Prochaine session : (1) lire structure projet Forge, (2) générer forge-formats.json v1 avec primitives + formats doc/journal/changelog/log-item + descriptions, (3) code loader dans la registry, (4) tests. [effort: M]
+- [ ] [WIP] [W5] Forge v2 — voir ROADMAP.md | Milestone actif : M2 — MCP tools layer. M1 (format registry) livré. Prochaine étape : forge-tools.json v1 + mcp-server.js générique. [effort: M]
 
 
 ## Done
@@ -107,6 +105,55 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 5.12 - M1 done, M2 actif + O54
+**Date:** 2026-06-12
+**Reason:** Milestone 1 livré en session. W5 mis à jour vers M2. O54 ajouté — pattern MCP générique à documenter plus tard.
+
+**Modifications:**
+- WIP: W5 mis à jour — M2 actif, prochaine étape mcp-server.js
+- Low priority: O54 ajouté
+
+---
+
+### Version 5.11 - W5 pointe sur ROADMAP.md
+**Date:** 2026-06-12
+**Reason:** WIP ne duplique plus le détail de la spec — pointe sur ROADMAP.md + milestone actif.
+
+**Modifications:**
+- WIP: W5 réécrit comme pointeur roadmap
+
+---
+
+### Version 5.10 - O48 réécrit v2 + O43/O50/O37/O47 archivés
+**Date:** 2026-06-12
+**Reason:** O48 réécrit pour Forge v2 (dot-notation queries, plus de FAL/blocks). O43/O50/O37/O47 retirés du backlog et archivés dans TODO-archive.md.
+
+**Modifications:**
+- Normal: O48 description mise à jour (v2)
+- High priority + Normal: O43, O50, O37, O47 retirés
+- TODO-archive.md: O43, O50, O37, O47 ajoutés (archived-from: open)
+
+---
+
+### Version 5.9 - Roadmap Forge + items v1 superseded
+**Date:** 2026-06-12
+**Reason:** ROADMAP.md créé dans public/tools/forge/. Items Forge v1 obsolètes marqués done : O43 (Brand), O50 (writeBlock), O37 (forge_write bloc), O47 (structured-text.md).
+
+**Modifications:**
+- High priority: O50, O43 → done (superseded v1)
+- Normal: O37, O47 → done (superseded v1)
+
+---
+
+### Version 5.8 - O53 forge_read multi-fichiers
+**Date:** 2026-06-12
+**Reason:** Besoin identifié en session : lire plusieurs fichiers en un appel, analogue à filesystem:read_multiple_files. Distinct de O48 (batch intra-artifact).
+
+**Modifications:**
+- Normal: O53 ajouté
+
+---
 
 ### Version 5.7 - W5 mis à jour — forge.md v1.0
 **Date:** 2026-06-11
