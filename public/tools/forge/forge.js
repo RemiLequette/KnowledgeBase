@@ -20,4 +20,7 @@ import { startMcpServer } from './src/mcp-server.js';
 const __dirname  = path.dirname(fileURLToPath(import.meta.url));
 const toolsConfig = path.join(__dirname, 'forge-tools.json');
 
-await startMcpServer(toolsConfig);
+await startMcpServer(toolsConfig).catch(err => {
+  process.stderr.write(`[forge] Fatal error: ${err.stack ?? err.message}\n`);
+  process.exit(1);
+});

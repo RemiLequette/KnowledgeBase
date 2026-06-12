@@ -96,7 +96,6 @@ export class McpServer {
 export async function startMcpServer(toolsConfigPath) {
   const { McpServer: SdkMcpServer } = await import('@modelcontextprotocol/sdk/server/mcp.js');
   const { StdioServerTransport }    = await import('@modelcontextprotocol/sdk/server/stdio.js');
-  const { z }                       = await import('zod');
 
   // Load root registry from forge.config.json
   const configDir    = path.dirname(toolsConfigPath);
@@ -117,15 +116,20 @@ export async function startMcpServer(toolsConfigPath) {
   const sdkServer = new SdkMcpServer({ name: 'forge', version: '2.0.0' });
 
   for (const [name, { toolJson }] of forge.tools) {
-    // Register each tool with the SDK using its declared inputSchema.
-    // Input validation is delegated to the SDK via zod passthrough —
-    // handler-level validation is the handler's responsibility.
-    sdkServer.tool(name, toolJson.description ?? '', z.object({}).passthrough(), async (input) => {
+    // Register each tool with the SDK.
+    // Pass an empty raw shape {} — the SDK v1.29 accepts it and skips schema enforcement.
+    // Input validation is the handler's responsibility.
+    sdkServer.tool(name, toolJson.description ?? '', {}, async (input) => {
       const result = await forge.dispatch(name, input);
       return { content: [{ type: 'text', text: JSON.stringify(result) }] };
     });
   }
 
   const transport = new StdioServerTransport();
-  await sdkServer.connect(transport);
+  try {
+    await sdkServer.connect(transport);
+  } catch (err) {
+    process.stderr.write(`[forge] Fatal startup error: ${err.stack ?? err.message}\n`);
+    process.exit(1);
+  }
 }

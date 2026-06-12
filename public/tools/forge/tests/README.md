@@ -232,6 +232,14 @@ One table per test file. **✅ existing** — test is present and passing. **⬜
 | `dispatch()` throws for unknown tool name | Unregistered tool name raises a clear error | ✅ |
 | `dispatch()` propagates handler errors | Error thrown by handler propagates to caller | ✅ |
 
+### startup.test.js
+
+| Test | Behaviour | Status |
+|---|---|---|
+| loads all real tool handlers without error | Real `forge-tools.json` + real context loads without throwing | ✅ |
+| registers all 9 tools declared in forge-tools.json | All 9 production tools registered after load | ✅ |
+| `forge_ls` with no path returns configured roots | Real `forge_ls` dispatch returns roots from `forge.config.json` | ✅ |
+
 ### file-root.test.js
 
 | Test | Behaviour | Status |
@@ -278,6 +286,7 @@ tests/
 ├── path-parser.test.js            ← MCP path → RootRegistry ref parser
 ├── root-registry.test.js          ← root registry (IRootRegistry + folder ops)
 ├── sequence.test.js               ← generic sequence handler
+├── startup.test.js                ← startup smoke test — real config + real handlers, no mocks
 └── fixtures/
     ├── forge-tools-bad-handler.json  ← invalid tools config — handler path unresolvable
     ├── forge-tools-test.json         ← valid tools config (3 tools via mock-tool-handler.js)
@@ -336,6 +345,7 @@ src/
 | `handlers/md-extension-handler.js` | `md-extension-handler.test.js` | `parseMetadata()`, `serializeMetadata()`, `parseSections()`, `serializeSections()`, `buildSkeleton()` |
 | `src/root-registry.js` | `root-registry.test.js` | `rootRefs()`, `read/write/create/delete()` delegation, unknown root errors, `list/mkdir/rmdir/rndir()`, `mvdir()` same-root and cross-root |
 | `src/mcp-server.js` | `mcp-server.test.js` | `loadTools()` (valid, missing file, bad handler), `toolNames()`, `dispatch()` (routing, input pass-through, result, unknown tool, handler error) |
+| startup (integration) | `startup.test.js` | `McpServer.loadTools()` with real `forge-tools.json` + real `RootRegistry` + `FormatRegistry` — full startup path without MCP transport |
 | `src/path-parser.js` | `path-parser.test.js` | `parsePath()` (file, folder, root, hint, backslash, empty), `serializePath()` (file, folder, round-trips) |
 | `tool-handlers/forge-{ls,mkdir,rmdir,move,rename}.js` | `navigation-handlers.test.js` | execute() delegation to rootRegistry, input validation, missing context stub |
 | `tool-handlers/forge-{read,write,create,delete}.js` | `content-handlers.test.js` | claim loop dispatch, handler delegation, native fallback, input validation |
@@ -385,7 +395,7 @@ src/
 
 **Mock tool handler controls execute** — mcp-server tests need predictable dispatch results. `result` and `shouldThrow` in the fixture JSON are the single control points — no real tool logic involved.
 
-**No SDK wiring at the test boundary** — `McpServer` (loadTools + dispatch) is tested in isolation. `startMcpServer()` wires the SDK transport and is not tested at unit level — it is thin glue covered by end-to-end testing.
+**No SDK wiring at the test boundary** — `McpServer` (loadTools + dispatch) is tested in isolation. `startMcpServer()` wires the SDK transport and is not tested at unit level. The startup path up to `sdkServer.connect()` is covered by `startup.test.js` (real config, real handlers, no mocks).
 
 **All values are strings** — sequence payloads and read results use string values throughout, consistent with the forge.md convention.
 
@@ -402,7 +412,7 @@ The following areas are not yet covered by the test suite.
 | `initFormat()` via `sequence.js` + `MdSyntaxAdapter` | Integration path: real Markdown file → `FormatRegistry.dispatch()` → `initSequence()` + `MdSyntaxAdapter`. Not tested end-to-end. |
 | `forge_ls` file path — section listing | Section listing deferred to M3 format layer. Returns stub note for now. |
 | `forge_write` native fallback — payload validation | Native write accepts any `payload.content`; no schema enforcement. |
-| `RootRegistry.load()` | `load()` imports handlers dynamically — not tested (requires real handler files on disk). |
+| `RootRegistry.load()` | `load()` imports handlers dynamically — covered indirectly by `startup.test.js` (real handler files on disk). Direct unit test still absent. |
 | `forge_write` on non-existent section | Behavior when payload names a section absent from the file is not explicitly covered. |
 | `sequence.js` — repeat section write | `write()` replaces repeat sections in full. Edge cases (empty array, mixed update) not tested. |
 | `sequence.js` — lazy key extraction | `read()` lazy mode returns first line as key when no `key` field is set. Edge cases not tested. |
@@ -412,6 +422,19 @@ The following areas are not yet covered by the test suite.
 ---
 
 ## Changelog
+
+### Version 1.7 - startup.test.js — MCP server startup smoke test
+**Date:** 2026-06-12
+**Reason:** No test reproduced the MCP server crash (forge.js exits immediately at startup). Added `startup.test.js` — 3 integration tests that load the real `forge-tools.json`, build a real `RootRegistry` + `FormatRegistry`, and call `McpServer.loadTools()` without mocks. Covers the full startup path up to the SDK transport. All 3 pass — confirms crash is in `StdioServerTransport` wiring, not in tool loading.
+
+**Modifications:**
+- Unit Tests: `startup.test.js` table added (3 tests, all ✅)
+- Structure: `startup.test.js` added to file tree
+- Coverage: startup integration row added
+- Gaps: `RootRegistry.load()` entry updated — covered indirectly by startup.test.js
+- Conventions: SDK wiring note updated
+
+---
 
 ### Version 1.6 - 2.4 content handlers
 **Date:** 2026-06-12
