@@ -593,6 +593,11 @@ Paths are standard filesystem paths — no special syntax. The rootRegistry reso
 6. Call `handler.read(path, rootRegistry, query)` (or native read)
 7. Return JSON to LLM
 
+**On `forge_read(paths[], query?)`:**
+1. For each path in `paths`, execute the single-file flow above independently
+2. Errors are caught per entry — a failing read does not abort the batch
+3. Return `{ results: [ { path, format, content } | { path, error } ] }` in input order
+
 **On `forge_write(path, payload)`:**
 1. Read raw file — run claim loop (same as read) — retain handler
 2. Call `handler.write(path, rootRegistry, payload)`
@@ -630,7 +635,7 @@ Each format entry includes `description` and `example` from `handler.describe()`
 
 ### forge_read
 
-**Description:** Read a file's content as structured JSON. Strips boilerplate. Large rarely-needed sections (changelog, history) return headers only by default — use the `query` parameter to load their content. Returns `format` section identifying the file's format; native files return `format: "<extension>"`.
+**Description:** Read one or more files as structured JSON. Strips boilerplate. Large rarely-needed sections (changelog, history) return headers only by default — use the `query` parameter to load their content. Returns `format` identifying the file's format; native files return `format: "<extension>"`. Use `paths` to read multiple files in a single call — results are returned in order, individual errors do not abort the batch.
 
 **Input schema:**
 ```json
@@ -639,18 +644,23 @@ Each format entry includes `description` and `example` from `handler.describe()`
   "properties": {
     "path": {
       "type": "string",
-      "description": "File path. Standard filesystem path or forge:// URI."
+      "description": "Single file path. Standard filesystem path or forge:// URI. Mutually exclusive with paths."
+    },
+    "paths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Multiple file paths. Returns a results array in the same order. Mutually exclusive with path. Individual read errors are captured per entry and do not abort the batch."
     },
     "query": {
       "type": "string",
-      "description": "Optional. Dot-notation path to a specific section. Examples: 'changelog', 'changelog.20260112', 'sections.key-concepts'. If omitted, returns full content with lazy sections as headers only."
+      "description": "Optional. Dot-notation path to a specific section. Applied to all files. Examples: 'changelog', 'changelog.20260112', 'why'. If omitted, returns full content with lazy sections as headers only."
     }
   },
-  "required": ["path"]
+  "required": []
 }
 ```
 
-**Output schema:**
+**Output schema — single file (`path`):**
 ```json
 {
   "type": "object",
@@ -662,6 +672,28 @@ Each format entry includes `description` and `example` from `handler.describe()`
   },
   "additionalProperties": true,
   "description": "Structured JSON representation of the file content. Shape depends on the format — read forge://registry for format descriptions and examples."
+}
+```
+
+**Output schema — multiple files (`paths`):**
+```json
+{
+  "type": "object",
+  "properties": {
+    "results": {
+      "type": "array",
+      "description": "One entry per path, in input order.",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path":    { "type": "string", "description": "The input path." },
+          "format":  { "type": "string", "description": "Format of the file. Present on success only." },
+          "content": { "description": "File content (native) or structured sections (structured format). Present on success only." },
+          "error":   { "type": "string", "description": "Error message. Present on failure only." }
+        }
+      }
+    }
+  }
 }
 ```
 
@@ -869,6 +901,16 @@ Each format entry includes `description` and `example` from `handler.describe()`
 ---
 
 ## Changelog
+
+### Version 1.7 - forge_read multi-file (O53)
+**Date:** 2026-06-14
+**Reason:** forge_read ne supportait qu'un seul fichier — coût élevé au bootstrap KB (5 appels séquentiels). Ajout de `paths: string[]` pour lire plusieurs fichiers en un appel. Résultats en ordre, erreurs individuelles capturées sans interrompre le batch.
+
+**Changes:**
+- MCP Specs / forge_read: description mise à jour ; `paths` ajouté au schema input ; `path` rendu non-required ; deux output schemas (single/batch) ; note `query` appliqué à tous les fichiers
+- How / Dispatch flow: cas `forge_read(paths[])` ajouté
+
+---
 
 ### Version 1.6 - extensions block + SyntaxAdapter declaration
 **Date:** 2026-06-12

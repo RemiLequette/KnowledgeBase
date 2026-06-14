@@ -15,9 +15,15 @@ export async function initTool(_toolJson, { rootRegistry, formatRegistry } = {})
       if (!formatName)  throw new Error('forge_create: "format" is required');
 
       const handler = formatRegistry.getByName(formatName);
-      if (!handler) throw new Error(`forge_create: unknown format "${formatName}" — consult forge_read("forge://registry")`);
 
       const ref = parsePath(mcpPath);
+
+      if (!handler) {
+        // Native fallback — create an empty file directly (MVP-1: .md and .js have no structured handler)
+        await rootRegistry.create(ref);
+        return { ok: `Created: ${mcpPath}`, path: mcpPath };
+      }
+
       await handler.create(ref, rootRegistry, payload);
       return { ok: `Created: ${mcpPath}`, path: mcpPath };
     }

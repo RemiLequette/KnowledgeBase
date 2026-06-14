@@ -48,10 +48,9 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O40] gitignore logs dans project-structure.md | Ajouter dans `conventions/project-structure.md` la règle : tout projet inclut un `.gitignore` avec `*.log`. Auditable en regardant le .gitignore — c'est une convention.
 - [ ] [O48] forge_read batch query | forge_read(path, queries=[]) — plusieurs dot-notation queries en un appel. Réduit les allers-retours pour les lectures multi-sections. Distinct de O53 (multi-fichiers). [effort: S]
 - [ ] [O49] forge_ls récursif avec tailles | forge_ls(fal, depth=N) — arborescence complète jusqu'à profondeur N. Chaque entrée inclut size (caractères ou lignes) pour orienter la lecture sans ouvrir les blocs. [effort: S]
+- [ ] [O55] Decision Layer séparé — ressources externes (SDK, libraries, frameworks) | Créer une section dédiée dans `INDEX.md` pour isoler le knowledge des dépendances externes utilisées par les outils KB. Principe : avant de modifier du code qui dépend d'un package, lire ce qui est installé, pas ce qu'on croit savoir. Exemple concret : SDK MCP `@modelcontextprotocol/sdk` v1.29.0 — `McpServer.tool()` exige un Zod schema (pas un JSON Schema brut) ; solution = `Server` low-level avec `setRequestHandler(ListToolsRequestSchema, ...)` + `setRequestHandler(CallToolRequestSchema, ...)` depuis `@modelcontextprotocol/sdk/server/index.js` et `@modelcontextprotocol/sdk/types.js`. Source de vérité : `node_modules/<sdk>/package.json` (version) + `.d.ts` (API). [effort: M]
 - [ ] [O51] idea-inbox convention — simplifier et clarifier | Rendre le registre projet plus simple et clair pour utilisation directe par un AI Assistant. Mieux le référencer dans INDEX.md (trigger + description). [effort: S]
 - [ ] [O52] working-with-forge.md — adapt to Forge v2 | Guide describes Forge v1 (FAL, RTFM, Brand, forge_describe). Rewrite for Forge v2: formats, forge_read/write/create with JSON payload, dot-notation query, metadata block, registry. Restore trigger in INDEX.md Decision Layer on completion. Files also affected: GLOSSARY.md (entries RTFM, Brand, FAL, Constrain Don't Forbid, Fail Fast Fail Clear). [effort: M]
-- [ ] [O53] forge_read multi-fichiers | forge_read(paths=[]) — lire plusieurs fichiers en un seul appel (analogue à filesystem:read_multiple_files). Réduit les allers-retours lors du bootstrap et de la navigation multi-fichiers. Distinct de O48 (batch intra-artifact). [effort: S]
-
 ## Low priority
 
 - [ ] [O1] Premature drafting anti-pattern | Drafting final wording before the concept is stable anchors the conversation too early and forces rewrites. Sharper rule: discuss the idea first, draft only when the shape is clear. Refine "Validate before acting" in Phase 1 or add as a new anti-pattern in how-to-get-things-done.md.
@@ -75,7 +74,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ## WIP
 
-- [ ] [WIP] [W5] Forge v2 — voir ROADMAP.md | M2 livré — MVP-1 atteint. Prochaines étapes : 2.5 forge.js entry point, puis 2.6/2.7/2.8 extensions. [effort: M]
+- [ ] [WIP] [W5] Forge v2 — voir ROADMAP.md | MVP-1 livré, O53 livré. Prochaines étapes : 2.6/2.7/2.8 extensions. [effort: M]
+- [ ] [WIP] [W6] Validation bascule Forge — test MCP en conditions réelles | Redémarrer Forge après le fix `toolJson.inputSchema ?? {}` (mcp-server.js). Vérifier que descriptions et inputSchemas sont bien transmis via MCP : appeler `forge_mkdir({ path: ... })`, `forge_create({ path: ..., format: 'md' })`, `forge_read({ path: ... })` depuis Claude — si les paramètres passent, le fix est validé. Si `"path" is required` revient malgré le param fourni, le SDK bloque encore. Ensuite exécuter le cycle complet create → read → write → delete sur fichiers dummy .md et .js dans le sandbox (MCP_PREFIX: `development/with-claude/knowledgebase/public/tools/forge/tests/fixtures/sandbox/dummy/`). Croiser avec filesystem pour vérifier sur disque. [effort: S]
 
 
 ## Done
@@ -98,6 +98,7 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [x] [D16] Tests consolidés + O8 forge_read header | Tests migrés dans knowledgebase/tests/forge/. forge-testable.js déprécié. parseFAL unifié. Gates Brand+RTFM dans TypeRegistry. discover filtre par extension. forge-run.js + CLI + REPL. O8 implémenté.
 - [x] [D17] O23 forge_describe | forge_describe implémenté dans mcp-tools.js. TypeRegistry.describe() gère default + described flag. Testé.
 - [x] [D18] structured-text.js v3.0 — grammaire blocs | matchName, blocks.separators (regex, repeat, récursion, template), listBlocks, readBlock/writeBlock nommés, createArtifact squelette. forge-types.json v0.8.0. O44 couvert par le mécanisme générique.
+- [x] [D19] O53 forge_read multi-fichiers | `paths[]` implémenté dans forge-read.js. forge-tools.json mis à jour. Tests unit + integration (forge-read-multi.test.js). forge.md v1.7 + dispatch flow mis à jour.
 
 ## Index
 
@@ -105,6 +106,26 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 5.17 - O55 Decision Layer ressources externes
+**Date:** 2026-06-14
+**Reason:** Pattern identifié en session : travailler sur du code qui dépend d'un SDK sans lire ce qui est installé. O55 capture le principe + l'exemple concret SDK MCP v1.29.0.
+
+**Modifications:**
+- Normal: O55 ajouté
+
+---
+
+### Version 5.16 - Session validation bascule Forge MVP-1
+**Date:** 2026-06-14
+**Reason:** Session dédiée à la validation de la bascule Forge. Bugs identifiés et corrigés (inputSchema vide, forge_create natif). O53 implémenté. W6 ajouté pour la validation MCP en conditions réelles (prochaine session).
+
+**Modifications:**
+- WIP: W5 mis à jour — MVP-1 + O53 livrés ; W6 ajouté — validation bascule MCP
+- Done: D19 ajouté — O53 forge_read multi-fichiers
+- Normal: O53 retiré (livré)
+
+---
 
 ### Version 5.15 - M2 : 2.4 livré — MVP-1 atteint
 **Date:** 2026-06-12

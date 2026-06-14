@@ -73,21 +73,26 @@
     },
     {
       "name": "forge_read",
-      "description": "Read a file's content as structured JSON. Strips boilerplate. Large rarely-needed sections (changelog, history) return headers only by default — use the query parameter to load their content. Returns a format field identifying the file's format; native files return format: \"<extension>\".",
+      "description": "Read one or more files as structured JSON. Strips boilerplate. Large rarely-needed sections (changelog, history) return headers only by default — use the query parameter to load their content. Use path for a single file, paths[] for a batch — results in order, individual errors do not abort the batch.",
       "handler": "./tool-handlers/forge-read.js",
       "inputSchema": {
         "type": "object",
         "properties": {
           "path": {
             "type": "string",
-            "description": "File path. Standard filesystem path or forge:// URI."
+            "description": "Single file path. Standard filesystem path or forge:// URI. Mutually exclusive with paths."
+          },
+          "paths": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Multiple file paths. Returns a results array in the same order. Mutually exclusive with path."
           },
           "query": {
             "type": "string",
-            "description": "Optional. Dot-notation path to a specific section. Examples: 'changelog', 'changelog.20260112', 'why'. If omitted, returns full content with lazy sections as headers only."
+            "description": "Optional. Dot-notation path to a specific section. Applied to all files when using paths."
           }
         },
-        "required": ["path"]
+        "required": []
       }
     },
     {

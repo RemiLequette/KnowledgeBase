@@ -287,6 +287,9 @@ tests/
 ├── root-registry.test.js          ← root registry (IRootRegistry + folder ops)
 ├── sequence.test.js               ← generic sequence handler
 ├── startup.test.js                ← startup smoke test — real config + real handlers, no mocks
+├── forge-create-native.test.js  ← forge_create native fallback (.md, .js sans handler enregistré)
+├── forge-read-multi.test.js      ← forge_read paths[] — unit + integration (O53)
+├── mvp1-integration.test.js      ← MVP-1 cycle complet create/read/write/delete sur sandbox réel
 └── fixtures/
     ├── forge-tools-bad-handler.json  ← invalid tools config — handler path unresolvable
     ├── forge-tools-test.json         ← valid tools config (3 tools via mock-tool-handler.js)

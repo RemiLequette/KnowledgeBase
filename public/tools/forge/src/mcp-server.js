@@ -94,8 +94,9 @@ export class McpServer {
 // ---------------------------------------------------------------------------
 
 export async function startMcpServer(toolsConfigPath) {
-  const { McpServer: SdkMcpServer } = await import('@modelcontextprotocol/sdk/server/mcp.js');
-  const { StdioServerTransport }    = await import('@modelcontextprotocol/sdk/server/stdio.js');
+  const { Server: SdkServer }     = await import('@modelcontextprotocol/sdk/server/index.js');
+  const { StdioServerTransport }   = await import('@modelcontextprotocol/sdk/server/stdio.js');
+  const { ListToolsRequestSchema, CallToolRequestSchema } = await import('@modelcontextprotocol/sdk/types.js');
 
   // Load root registry from forge.config.json
   const configDir    = path.dirname(toolsConfigPath);
@@ -113,17 +114,25 @@ export async function startMcpServer(toolsConfigPath) {
   const forge  = new McpServer();
   await forge.loadTools(toolsConfigPath, context);
 
-  const sdkServer = new SdkMcpServer({ name: 'forge', version: '2.0.0' });
+  // Use the low-level Server to avoid McpServer.tool() requiring a Zod schema.
+  // JSON Schema objects from forge-tools.json are passed through directly.
+  const sdkServer = new SdkServer(
+    { name: 'forge', version: '2.0.0' },
+    { capabilities: { tools: {} } }
+  );
 
-  for (const [name, { toolJson }] of forge.tools) {
-    // Register each tool with the SDK.
-    // Pass an empty raw shape {} — the SDK v1.29 accepts it and skips schema enforcement.
-    // Input validation is the handler's responsibility.
-    sdkServer.tool(name, toolJson.description ?? '', {}, async (input) => {
-      const result = await forge.dispatch(name, input);
-      return { content: [{ type: 'text', text: JSON.stringify(result) }] };
-    });
-  }
+  sdkServer.setRequestHandler(ListToolsRequestSchema, () => ({
+    tools: [...forge.tools.entries()].map(([name, { toolJson }]) => ({
+      name,
+      description: toolJson.description ?? '',
+      inputSchema: toolJson.inputSchema ?? { type: 'object', properties: {} },
+    })),
+  }));
+
+  sdkServer.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const result = await forge.dispatch(request.params.name, request.params.arguments ?? {});
+    return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+  });
 
   const transport = new StdioServerTransport();
   try {

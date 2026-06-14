@@ -15,6 +15,7 @@ See `conventions/project-registry.md` for posting format and triage rules.
 inbox, ideas, cross-project, triage, posting
 
 ## Ideas
+- `guide-ia` | Principe ceinture et bretelles — quand deux mécanismes de sécurité se renforcent mutuellement, les deux valent mieux qu'un seul. Exemple : un header dans le code source qui pointe vers ce qu'il faut lire (A) + un trigger dans le Decision Layer qui charge la même règle au moment où la tâche est formulée (B). Ni l'un ni l'autre seul n'est suffisant — l'un peut être sauté, l'autre peut ne pas être lu. Les deux ensemble ferment la brèche. [effort: XS] [date: 2026-06-14]
 
 - `kb-maintenance/conventions` | Mettre à jour la description de `filesystem.md` dans `INDEX.md` — refléter l'ajout de la règle "large file generation via container + download" (keywords `download`, `present_files`, `large-files`). [effort: XS] [date: 2026-06-06]
 - `kb-maintenance/conventions` | Nouvelle convention : "Artefact + outil de maintenance co-généré" — pattern à formaliser. Idée centrale : tout artefact volumineux à structure connue (HTML, JSON, Markdown long) devrait être accompagné dès sa création d'un outil de maintenance dédié (script Node.js ou Python) qui expose des opérations structurées sur ses sections : lire un bout, écrire un bout, lister des éléments. Claude invoque l'outil via `commands` MCP (zéro tokens), jamais le fichier brut. Analogie : c'est un "MCP local co-généré" — même philosophie qu'un vrai MCP (interface structurée, pas d'accès aux entrailles), mais spécifique à l'artefact, vivant dans le projet, sans serveur. Exemple existant dans guideIA : `guide-parser.js` + `plan-editor.html` jouent ce rôle pour `Plan.md` et `GuideIA.md`. Questions à trancher en session : nommage du pattern, structure minimale d'un outil de maintenance (interface CLI standard ?), quand le co-générer (toujours ? seulement au-delà d'un seuil ?), lien avec `conventions/tools.md` et `conventions/artifact.md`. [effort: M] [date: 2026-06-06]
@@ -34,6 +35,15 @@ inbox, ideas, cross-project, triage, posting
 - `guide-ia` | Droit à l'oubli — quand et comment retirer un concept périmé de la documentation d'un projet IA : signaux d'obsolescence, isolation préventive, nettoyage en session dédiée. [effort: S] [date: 2026-06-11]
 
 ## Changelog
+
+### Version 2.4 - Principe ceinture et bretelles pour GuideIA
+**Date:** 2026-06-14
+**Reason:** Principe identifié en session KB — deux mécanismes de sécurité complémentaires valent mieux qu'un seul.
+
+**Modifications:**
+- Ideas: entrée `guide-ia` ajoutée
+
+---
 
 ### Version 2.3 - Droit à l'oubli — kb-maintenance + guide-ia
 **Date:** 2026-06-11

@@ -146,10 +146,13 @@ describe('forge_create', () => {
     expect(result.path).toBe('dev/new.md');
   });
 
-  it('throws for unknown format name', async () => {
+  it('native fallback for unknown format name — creates file via rootRegistry', async () => {
     formatRegistry.getByName.mockReturnValue(null);
-    await expect(tool.execute({ path: 'dev/new.md', format: 'ghost' }))
-      .rejects.toThrow('ghost');
+    const result = await tool.execute({ path: 'dev/new.md', format: 'md' });
+    expect(rootRegistry.create).toHaveBeenCalled();
+    expect(formatRegistry._handler.create).not.toHaveBeenCalled();
+    expect(result.ok).toBeDefined();
+    expect(result.path).toBe('dev/new.md');
   });
 
   it('throws when path is missing', async () => {
