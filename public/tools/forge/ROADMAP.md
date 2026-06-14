@@ -59,10 +59,11 @@ forge, roadmap, milestones, plan, development, handlers, formats
 *Goal: all KB file types readable and writable via Forge.*
 
 - 3.1 `md` — SyntaxAdapter + sequence, native fallback for plain Markdown
-- 3.2 `doc` — extends md, Why/What/How structure
-- 3.3 `todo-list` — extends doc, priority sections, item repeat
-- 3.4 `changelog` / `log-item` — reusable types, lazy entries, dot-notation access
-- 3.5 `js-clean` — structured JS files, shebang claim, function blocks
+- 3.2 `changelog-doc` — extends sequence, carries lazy changelog at end; base for all KB document formats
+- 3.3 `doc` — extends changelog-doc, Why/What/How sections inserted `_before: changelog`
+- 3.4 `todo-list` — extends md, composes changelog directly; priority sections, item repeat
+- 3.5 `changelog` / `log-item` — reusable types, lazy entries, dot-notation access
+- 3.6 `js-clean` — structured JS files, shebang claim, function blocks
 
 *Ref TODO: O24, O25*
 
@@ -82,9 +83,52 @@ forge, roadmap, milestones, plan, development, handlers, formats
 ### — MVP-2 — Structured formats: changelog, todo, js-clean
 *Goal: token savings on the most-used KB file types. Lazy sections, dot-notation queries, write narrow.*
 
-- Milestone 3 complete (handlers: doc, todo-list, changelog/log-item, js-clean)
-- extends resolution (Sprint extends) complete
+- Sprint extends complete — `_before`/`_after` positioning, override vs insertion rules
+- Milestone 3 complete (handlers: changelog-doc, doc, todo-list, changelog/log-item, js-clean)
 - MdSyntaxAdapter complete
+
+---
+
+### Sprint extends — Positional inheritance
+*Goal: child formats can control where their sections are inserted relative to inherited sections.*
+*Status: Designed, pending implementation*
+
+**Design decisions (session 2026-06-14):**
+
+Two kinds of sections in a child format:
+
+- **Override** — same name as a section anywhere in the ancestor hierarchy → replaces content, inherits position. `_before`/`_after` forbidden on overrides (build error).
+- **Insertion** — new name → must declare `_before` or `_after` referencing any section in the fully resolved ancestor hierarchy. Multiple insertions at the same anchor resolve in declaration order.
+
+`_before`/`_after` are build-time only — consumed by `sequence.initFormat`, absent from the flat run-handler grammar.
+
+**Motivating case:** `changelog-doc` carries a `changelog` section at the end. `doc` extends it and inserts `why`, `what`, `how` before the changelog — impossible with the old "parent first, child after" model.
+
+```json
+"changelog-doc": {
+  "extends": "sequence",
+  "changelog": { "extends": "changelog", "optional": true, "lazy": true }
+},
+"doc": {
+  "extends": "changelog-doc",
+  "fileNameExtension": "md",
+  "why":  { "extends": "text", "_before": "changelog" },
+  "what": { "extends": "text", "_before": "changelog" },
+  "how":  { "extends": "text", "_before": "changelog" }
+}
+// flat grammar: why, what, how, changelog
+```
+
+**Build errors:**
+- New section without `_before`/`_after` — position ambiguous
+- Override with `_before`/`_after` — displacement forbidden
+- `_before`/`_after` referencing a section not in the ancestor hierarchy — invalid anchor
+
+**Steps:**
+- E.1 `sequence.initFormat` — implement override detection and `_before`/`_after` insertion algorithm
+- E.2 Build-time validation — three new error cases
+- E.3 Unit tests — override, single insertion, multiple insertions at same anchor, deep chain
+- E.4 `forge-formats.json` — add `changelog-doc`; migrate `doc` and `journal` to extend it with `_before: changelog`
 
 ---
 
@@ -109,6 +153,17 @@ forge, roadmap, milestones, plan, development, handlers, formats
 ---
 
 ## Changelog
+
+### Version 1.5 - Sprint extends designed + MVP-2 updated
+**Date:** 2026-06-14
+**Reason:** Format inheritance model was unsatisfactory: child sections always appended after parent sections, making changelog-last ancestor formats unusable. Session design decision: override vs insertion with `_before`/`_after` positioning. `changelog-doc` introduced as the shared ancestor for all KB document formats.
+
+**Changes:**
+- Sprint extends: new section added — design decisions, motivating example, build errors, implementation steps (E.1–E.4)
+- MVP-2: description updated — Sprint extends added as prerequisite; handler list updated to include `changelog-doc` and revised order
+- Milestone 3: steps reordered — `changelog-doc` (3.2) before `doc` (3.3); `changelog`/`log-item` moved to 3.5
+
+---
 
 ### Version 1.4 - M2 done — MVP-1 reached
 **Date:** 2026-06-12

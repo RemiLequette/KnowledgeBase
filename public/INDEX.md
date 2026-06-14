@@ -128,7 +128,6 @@ Step-by-step processes for specific operations. A guide leaves a trace in the pr
 | guide-maintenance.md | Standards for maintaining all guides: update Table of Contents and Changelog with every modification. Required for all guides (project-setup, best-practices, audit-process). | maintenance, guides, documentation, changelog, discoverability, traceability, standards |
 | how-to-get-things-done.md | Practical framework for running effective AI-assisted working sessions — session model (chat = session), three phases (scoping, execution, closure), anti-patterns. | working-session, productivity, scoping, closure, WIP, todo, chat, log |
 | todo-tool.md | Guide for the HTML tool that reads and writes TODO.md via the local server — rationale, conceptual model, architecture (bootstrap, transaction model, file access). | todo-tool, HTML, local-server, bootstrap, transaction, synchronization, todo |
-| working-with-forge.md | Operational guide for AI Assistants using Forge — tool reference, common patterns. | forge, forge_read, forge_write, AI-assistant, session |
 
 ---
 
@@ -152,6 +151,15 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 
 ## Changelog
 
+### Version 3.6 - working-with-forge.md supprimé de la table guides/
+**Date:** 2026-06-14
+**Reason:** Décision session : les MCP tool describes doivent se suffire à eux-mêmes — pas de guide opérationnel séparé. Le trigger avait déjà été retiré en v3.4. Entrée de table retirée. Voir TODO O52 pour la suppression du fichier et l'amélioration des describes.
+
+**Modifications:**
+- Table guides/: entrée `working-with-forge.md` retirée
+
+---
+
 ### Version 3.5 - FAL removed
 **Date:** 2026-06-11
 **Reason:** FAL is a concept from Forge v1 — not present in the current codebase or spec.
@@ -174,236 +182,122 @@ index, conventions, workflows, guides, navigation, discoverability, knowledge-ba
 
 ### Version 3.3 - Streisand Effect applied to forge.md entry
 **Date:** 2026-06-07
-**Reason:** forge.md summary contained "For developers maintaining Forge, not for AI Assistants using it" — Streisand Effect. Removed the second sentence.
-
-**Modifications:**
-- Table conventions/: `forge.md` summary — second sentence removed
 
 ---
 
 ### Version 3.2 - working-with-forge.md + forge.md clarified
 **Date:** 2026-06-07
-**Reason:** New guide `working-with-forge.md` created — operational entry point for AI Assistants using Forge. Trigger added to Decision Layer. forge.md entry in conventions/ updated to clarify it is an internal spec, not for AI Assistants.
-
-**Modifications:**
-- Decision Layer: trigger `Using Forge to read or write artifacts, first session with Forge` added
-- Table conventions/: `forge.md` entry updated — summary clarified as internal spec
-- Table guides/: `working-with-forge.md` entry added
 
 ---
 
 ### Version 3.1 - Decision Layer litmus test + Forge vocabulary
 **Date:** 2026-07-07
-**Reason:** Decision Layer intro rewritten — litmus test convention/guide added, "load" replaced by "read", Forge mentioned as the tool to read KB documents.
-
-**Modifications:**
-- `## Decision Layer`: renamed to `What to read`; intro rewritten with litmus test and Forge reference
 
 ---
 
 ### Version 3.0 - backlog alias in Decision Layer
 **Date:** 2026-06-06
-**Reason:** "backlog" is a common alias for TODO — adding it to the trigger ensures the convention is loaded when the term is used.
-
-**Modifications:**
-- Decision Layer: `Creating or managing a TODO.md` → `Creating or managing a TODO.md or backlog`
 
 ---
 
 ### Version 2.9 - project-registry.md added
 **Date:** 2026-06-06
-**Reason:** New convention `project-registry.md` created — centralized project directory and cross-project idea inbox.
-
-**Modifications:**
-- Decision Layer: trigger `Registering a project, querying project dependencies, or posting a cross-project idea` added
-- Table conventions/: `project-registry.md` entry added
 
 ---
 
 ### Version 2.8 - tools section, convention-guide distinction, documentation-style alignment
 **Date:** 2026-06-06
-**Reason:** Multiple improvements in same session: tools/ section added; foundational distinction between conventions and guides formalized; documentation-style.md aligned to reference INDEX as source of truth for Convention and Guide definitions; Session Bootstrap refined (todo-list.md added, circular step removed, greeting added, KB read-only clarified); Quick Start updated to mention three catalogues.
-
-**Modifications:**
-- `## tools/`: new section added after guides/ table
-- `## conventions/`: definition enriched with auditability principle
-- `## guides/`: definition enriched with log/auditability principle
-- `## Quick Start`: What updated to mention tools/ alongside conventions/ and guides/
-- `## Session Bootstrap`: step 2 added (todo-list.md); step 4 removed (circular); step 6 updated to greeting; Scope Rule exception clarified as read-only
 
 ---
 
 ### Version 2.7 - Quick Start WWH, Session Bootstrap, section intros
 **Date:** 2026-06-06
-**Reason:** INDEX lacked practical guidance on how to use the KB. Quick Start restated with Why-What-How structure. Session Bootstrap section added (was documented in Changelog but absent from file). Section introductions for conventions/ and guides/ rewritten to be actionable.
-
-**Modifications:**
-- `## Quick Start`: rewritten with WWH structure — why this file exists, what it contains, how to use it
-- `## Session Bootstrap`: added — 5-step sequence for session start
-- `## conventions/`: intro rewritten — actionable, references Decision Layer
-- `## guides/`: intro rewritten — actionable, load on demand
 
 ---
 
 ### Version 2.6 - how-to-get-things-done.md added
 **Date:** 2026-06-06
-**Reason:** New guide `how-to-get-things-done.md` created — practical framework for effective AI-assisted working sessions.
-
-**Modifications:**
-- Table guides/: `how-to-get-things-done.md` entry added
 
 ---
 
 ### Version 2.5 - local-server.md added
 **Date:** 2026-06-04
-**Reason:** New convention `local-server.md` created — shared local HTTP server for all projects.
-
-**Modifications:**
-- Decision Layer: trigger `Setting up or using the local development server` added
-- Table conventions/: `local-server.md` entry added
 
 ---
 
 ### Version 2.4 - idea-inbox.md + documentation-style au trigger md
 **Date:** 2026-06-04
-**Reason:** Nouvelle convention `idea-inbox.md` créée — pattern générique pour les canaux d'import d'idées. Correction du trigger `Creating or editing a .md file` pour inclure `documentation-style.md`.
-
-**Modifications:**
-- Decision Layer : trigger `Creating or editing a .md file` mis à jour — ajout de `conventions/documentation-style.md`
-- Decision Layer : trigger `Project uses input channels to import ideas` ajouté
-- Table conventions/ : entrée `idea-inbox.md` ajoutée
 
 ---
 
 ### Version 2.3 - artifact.md added
 **Date:** 2026-06-04
-**Reason:** New convention `artifact.md` created — generic pattern for time-tracked structured datasets.
-
-**Modifications:**
-- Decision Layer: trigger `Architecture of a time-tracked structured dataset (artifact)` added
-- Table conventions/: `artifact.md` entry added
 
 ---
 
 ### Version 2.2 - documentation-style.md added
 **Date:** 2026-06-03
-**Reason:** New convention `documentation-style.md` created — document type taxonomy and Why-What-How content hierarchy.
-
-**Modifications:**
-- Decision Layer: trigger `Declaring a document type, auditing content style` added
-- Table conventions/: `documentation-style.md` entry added
 
 ---
 
 ### Version 2.1 - Decision Layer trigger md-doc removed
 **Date:** 2026-05-31
-**Reason:** Trigger redundant — md-doc-usage.md is now loaded unconditionally at bootstrap (step 4).
-
-**Modifications :**
-- Decision Layer : trigger `Reading or writing a .md file via md-doc` removed
 
 ---
 
 ### Version 2.0 - Documentation conventions loaded at every session
 **Date:** 2026-05-31
-**Reason:** Most sessions touch documentation files. Loading documentation.md and md-doc-usage.md unconditionally at bootstrap avoids relying on the Decision Layer trigger.
-
-**Modifications :**
-- Session Bootstrap : step 4 added — load `conventions/documentation.md` and `conventions/md-doc-usage.md`
-- Step numbering updated (State the project is now step 5)
 
 ---
 
 ### Version 1.9 - md-doc-usage.md referenced
 **Date:** 2026-05-31
-**Raison:** Convention md-doc-usage.md ajoutee dans la table conventions/ et dans le Decision Layer.
-
-**Modifications :**
-- Decision Layer : ajout du trigger `Reading or writing a .md file via md-doc` -> `conventions/md-doc-usage.md`
-- Table conventions/ : ajout de `md-doc-usage.md`
 
 ---
 
 ### Version 1.8 - Scope Rule + suppression Claude.md + dossier public/
 **Date:** 2026-05-31
-**Raison:** Restructuration KB — contenu public deplace dans public/. Suppression de Claude.md comme fichier de bootstrap projet (remplace par PROJECT.md). Ajout de la Scope Rule pour controler l'acces aux fichiers hors projet actif.
-
-**Modifications :**
-- Session Bootstrap step 3 : `Claude.md` remplace par `PROJECT.md`
-- Session Bootstrap : message d'erreur mis a jour (`PROJECT.md` au lieu de `Claude.md`)
-- Ajout de `## Scope Rule` dans la section AI Agents
-- Keywords : ajout de `scope`
 
 ---
 
 ### Version 1.7 - Ajout project-structure.md
 **Date:** 2026-05-31
-**Raison:** Nouvelle convention project-structure.md creee — source de verite pour la structure de projet et le template des instructions Claude.
-
-**Modifications :**
-- Ajout de `project-structure.md` dans la table conventions/
-- Ajout du trigger correspondant dans le Decision Layer
 
 ---
 
 ### Version 1.6 - Ajout todo.md
 **Date:** 2026-05-31
-**Raison:** Convention todo.md existante non referencee dans l'INDEX.
-
-**Modifications :**
-- Ajout de `todo.md` dans la table conventions/
-- Ajout du trigger `Creating or managing a TODO.md` dans le Decision Layer
 
 ---
 
 ### Version 1.5 - Session Bootstrap + AI Agents
 **Date:** 2026-05-31
-**Raison:** Fusion de KNOWLEDGEBASE.md et Claude.md dans INDEX.md. Elimination des fichiers relais et des allers-retours LLM inutiles.
-
-**Modifications :**
-- Ajout de `## Session Bootstrap` — instructions de demarrage de session (ancien KNOWLEDGEBASE.md)
-- Ajout de `## AI Agents` — specificites par agent IA (remplace Claude.md)
-- KNOWLEDGEBASE.md et Claude.md supprimes
 
 ---
 
 ### Version 1.4 - Suppression workflows/
 **Date:** 2026-05-31
-**Raison:** Dossier workflows/ vide apres suppression de session-startup.md — concept supprime.
-
-**Modifications :**
-- Suppression de la section `## workflows/`
-- Suppression du trigger `Starting a new session` dans le Decision Layer
 
 ---
 
 ### Version 1.3 - Decision layer + maintenance separation
 **Date:** 2026-05-31
-**Raison:** Refactoring de l'INDEX pour separer navigation (INDEX.md) et maintenance (PROJECT.md). Ajout du decision layer explicite.
 
-**Modifications :**
-- Suppression du bloc "About this knowledge base" (migre vers PROJECT.md ## KB Maintenance)
-- Ajout de `## Decision Layer` — mapping situation -> fichier a charger
-- Reformulation du Quick Start
-- Ajout du keyword `decision-layer`
+---
 
 ### Version 1.2 - Tools convention
 **Date:** 2026-05-30
-**Raison:** Ajout de la convention tools.md et du dossier tools/.
 
-**Modifications :**
-- Ajout de `tools.md` dans la table conventions/
+---
 
 ### Version 1.1 - Glossaire
 **Date:** 2026-05-30
-**Raison:** Ajout de la convention glossary.md.
 
-**Modifications :**
-- Ajout de `glossary.md` dans la table conventions/
+---
 
 ### Version 1.0 - Creation
 **Date:** 2026-05-30
-**Raison:** Index de la knowledge base — point d'entree pour toutes les sessions.
+**Raison:** Index de la knowledge base — point d'entrée pour toutes les sessions.
 
 **Contenu initial :**
 - Table conventions/ avec keywords

@@ -12,7 +12,7 @@ Forge is the single access layer for all file operations — navigation and cont
 Nine tools: `forge_ls`, `forge_mkdir`, `forge_rmdir`, `forge_move`, `forge_rename` for navigation; `forge_read`, `forge_write`, `forge_create`, `forge_delete` for content.
 
 ## Keywords
-forge, MCP, format, registry, metadata-block, read-wide-write-narrow, lazy, claim, native, sequence, syntax-adapter, rootRegistry, primitive, extends, fileNameExtension
+forge, MCP, format, registry, metadata-block, read-wide-write-narrow, lazy, claim, native, sequence, syntax-adapter, rootRegistry, primitive, extends, fileNameExtension, _before, _after
 
 ## Table of Contents
 
@@ -164,36 +164,54 @@ Inheritance is a **build-time concept** — a mechanism for reusing format defin
 
 Resolution is the **handler's responsibility**, not the registry's. When `initFormat` is called with a format that has `extends`, the handler receives the raw format JSON — including the `extends` key. It is the handler's job to query the registry for the parent descriptor and merge the grammars. The registry passes the format JSON and the SyntaxAdapter; it does not pre-resolve the chain.
 
+**Section positioning — override vs insertion:**
+
+A child format can declare two kinds of sections:
+
+- **Override** — the section name matches a section anywhere in the ancestor hierarchy (the fully resolved chain). The child declaration replaces the ancestor's entirely — all annotations included. Position is inherited unchanged. `_before`/`_after` are forbidden on an override — build error.
+- **Insertion** — the section name is new. The child must declare `_before` or `_after` referencing any section present in the fully resolved ancestor hierarchy. Declaring a new section without `_before` or `_after` is a build error (position ambiguous). When multiple insertions target the same anchor point, their relative order follows their declaration order in the format JSON.
+
+`_before` and `_after` are build-time annotations consumed by `sequence.initFormat` — they are not present in the flat grammar produced for the run handler.
+
 **How `sequence` resolves inheritance:**
 1. On `initFormat`, inspect the format JSON. If `extends` is present, call `registry.getFormat(extends)` to retrieve the parent descriptor.
-2. Merge sections: parent sections first, child sections follow.
-3. Override: if the child declares a section with the same name as a parent section, the child declaration replaces the parent's entirely — all annotations included.
-4. Recurse if the parent itself has `extends`, until a format with no `extends` is reached.
-5. Produce a single flat grammar. Discard all `extends` references — the runHandler has no knowledge of the inheritance chain.
+2. Recurse if the parent itself has `extends`, until a format with no `extends` is reached. Build the fully resolved ancestor section list.
+3. For each section in the child format: if the name matches a section in the resolved ancestor list → override (replace in place, same position). If the name is new → insertion (position determined by `_before`/`_after`).
+4. Apply insertions: for each `_before: X`, insert the new section immediately before X in the flat list; for each `_after: X`, insert immediately after X. Multiple insertions at the same anchor point are applied in declaration order.
+5. Produce a single flat grammar. Discard all `extends`, `_before`, `_after` references — the runHandler has no knowledge of the inheritance chain.
 
 ```json
-// parent
-"doc": {
+// ancestor — carries changelog at the end
+"changelog-doc": {
   "extends": "sequence",
-  "fileNameExtension": "md",
-  "why":       { "extends": "text" },
-  "what":      { "extends": "text" },
-  "how":       { "extends": "text" },
   "changelog": { "extends": "changelog", "optional": true, "lazy": true }
 }
 
-// child — adds sections, overrides changelog
+// child — inserts its sections BEFORE changelog
+"doc": {
+  "extends": "changelog-doc",
+  "fileNameExtension": "md",
+  "why":  { "extends": "text", "_before": "changelog" },
+  "what": { "extends": "text", "_before": "changelog" },
+  "how":  { "extends": "text", "_before": "changelog" }
+}
+
+// flat grammar produced by sequence.initFormat for doc
+// sections in order: why, what, how, changelog
+// no trace of extends, _before, _after in the runHandler
+```
+
+```json
+// further child — overrides changelog (adds min: 1), inserts new sections before it
 "decision-log": {
   "extends": "doc",
   "fileNameExtension": "md",
-  "decision":  { "extends": "text" },
-  "status":    { "extends": "text" },
+  "decision": { "extends": "text", "_before": "changelog" },
+  "status":   { "extends": "text", "_before": "changelog" },
   "changelog": { "extends": "changelog", "optional": true, "lazy": true, "min": 1 }
 }
 
-// flat grammar produced by sequence.initFormat for decision-log
-// sections in order: why, what, how, changelog (child override), decision, status
-// no trace of extends in the runHandler
+// flat grammar: why, what, how, decision, status, changelog
 ```
 
 ### Metadata block
@@ -250,7 +268,9 @@ All formats are declared in a single `formats` object in `forge-formats.json`. T
     "min":     "Minimum occurrences (repeat only). Default: 0 when repeat is true.",
     "max":     "Maximum occurrences (repeat only). No default (unbounded).",
     "optional":"Shorthand for min: 0, max: 1. Resolved to min/max at build time by initFormat. Cannot be combined with explicit min or max.",
-    "pattern": "Validation pattern for primitive values (string). Applied by the handler on read and write."
+    "pattern": "Validation pattern for primitive values (string). Applied by the handler on read and write.",
+    "_before": "Build-time positioning annotation. New section only — build error on an override. References a section name present anywhere in the resolved ancestor hierarchy. The new section is inserted immediately before the referenced section in the flat grammar. Consumed by sequence.initFormat; absent from the run handler.",
+    "_after":  "Build-time positioning annotation. New section only — build error on an override. References a section name present anywhere in the resolved ancestor hierarchy. The new section is inserted immediately after the referenced section in the flat grammar. Consumed by sequence.initFormat; absent from the run handler."
   }
 }
 ```
@@ -278,21 +298,24 @@ All formats are declared in a single `formats` object in `forge-formats.json`. T
 **File formats** — formats with `fileNameExtension`. Instantiable as files on disk. The registry injects the SyntaxAdapter for the declared extension when initializing the handler.
 
 ```json
-"journal": {
+"changelog-doc": {
   "extends": "sequence",
+  "description": "Base format for all KB documents — carries a lazy changelog at the end.",
+  "changelog": { "extends": "changelog", "optional": true, "lazy": true }
+},
+"journal": {
+  "extends": "changelog-doc",
   "fileNameExtension": "md",
   "description": "A journal file — header and changelog entries.",
-  "header":    { "extends": "text" },
-  "changelog": { "extends": "changelog" }
+  "header": { "extends": "text", "_before": "changelog" }
 },
 "doc": {
-  "extends": "sequence",
+  "extends": "changelog-doc",
   "fileNameExtension": "md",
   "description": "A structured Markdown document — Why, What, How.",
-  "why":       { "extends": "text" },
-  "what":      { "extends": "text" },
-  "how":       { "extends": "text" },
-  "changelog": { "extends": "changelog", "optional": true, "lazy": true }
+  "why":  { "extends": "text", "_before": "changelog" },
+  "what": { "extends": "text", "_before": "changelog" },
+  "how":  { "extends": "text", "_before": "changelog" }
 }
 ```
 
@@ -349,6 +372,11 @@ All build-time rules run when `forge-formats.json` is loaded. Any failure is a c
 
 **Grammar — patterns**
 - Every `pattern` attribute defined on a primitive section must be a valid, compilable JavaScript regular expression.
+
+**Grammar — section positioning**
+- A new section (name not present in the ancestor hierarchy) without `_before` or `_after` — build error (position ambiguous).
+- `_before` or `_after` on an override section (name already present in the ancestor hierarchy) — build error (position is inherited, displacement forbidden).
+- `_before` or `_after` referencing a section name not present in the resolved ancestor hierarchy — build error (invalid anchor).
 
 #### Run time
 
@@ -408,7 +436,7 @@ A registry combines two things:
 Forge maintains two registries:
 
 | Registry | Purpose | Used by |
-|----------|---------|---------|
+|----------|---------|---------| 
 | Root registry | Knows where artifacts live | All tools — every storage access goes through it |
 | Format registry | Knows how artifacts are structured | Content tools — `forge_read`, `forge_write`, `forge_create`, `forge_delete` |
 
@@ -449,11 +477,12 @@ The format registry is populated at build time from `forge-formats.json`.
     "boolean":  { "primitive": true, "description": "..." },
     "integer":  { "primitive": true, "description": "..." },
 
-    "log-item":  { "extends": "sequence", "...": "..." },
-    "changelog": { "extends": "sequence", "...": "..." },
+    "log-item":      { "extends": "sequence", "...": "..." },
+    "changelog":     { "extends": "sequence", "...": "..." },
+    "changelog-doc": { "extends": "sequence", "...": "..." },
 
-    "doc":     { "extends": "sequence", "fileNameExtension": "md", "...": "..." },
-    "journal": { "extends": "sequence", "fileNameExtension": "md", "...": "..." }
+    "doc":     { "extends": "changelog-doc", "fileNameExtension": "md", "...": "..." },
+    "journal": { "extends": "changelog-doc", "fileNameExtension": "md", "...": "..." }
   }
 }
 ```
@@ -901,6 +930,20 @@ Each format entry includes `description` and `example` from `handler.describe()`
 ---
 
 ## Changelog
+
+### Version 1.8 - Format inheritance rewritten — _before/_after positioning
+**Date:** 2026-06-14
+**Reason:** Previous inheritance model merged sections in a fixed order (parent first, child after) with no way to control the position of new sections relative to inherited ones. This made changelog-last ancestor formats unusable — child sections were always appended after the changelog. New model: override (same name, position inherited) vs insertion (new name, `_before`/`_after` required). Multiple insertions at the same anchor resolve by declaration order. `changelog-doc` introduced as the shared ancestor for all KB document formats.
+
+**Changes:**
+- What / Format inheritance: fully rewritten — override vs insertion distinction, `_before`/`_after` rules, updated sequence resolution algorithm (5 steps), two examples (`changelog-doc → doc`, `doc → decision-log`)
+- What / Format grammar / `sequence._annotations`: `_before` and `_after` added
+- What / Format grammar / File formats: `changelog-doc` added; `journal` and `doc` updated to extend it with `_before: changelog`
+- How / Format registry / `forge-formats.json`: `changelog-doc` added to example
+- What / Validation rules / Build time: `Grammar — section positioning` block added (3 build errors)
+- Keywords: `_before`, `_after` added
+
+---
 
 ### Version 1.7 - forge_read multi-file (O53)
 **Date:** 2026-06-14

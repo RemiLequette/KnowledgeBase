@@ -50,7 +50,8 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 - [ ] [O49] forge_ls récursif avec tailles | forge_ls(fal, depth=N) — arborescence complète jusqu'à profondeur N. Chaque entrée inclut size (caractères ou lignes) pour orienter la lecture sans ouvrir les blocs. [effort: S]
 - [ ] [O55] Decision Layer séparé — ressources externes (SDK, libraries, frameworks) | Créer une section dédiée dans `INDEX.md` pour isoler le knowledge des dépendances externes utilisées par les outils KB. Principe : avant de modifier du code qui dépend d'un package, lire ce qui est installé, pas ce qu'on croit savoir. Exemple concret : SDK MCP `@modelcontextprotocol/sdk` v1.29.0 — `McpServer.tool()` exige un Zod schema (pas un JSON Schema brut) ; solution = `Server` low-level avec `setRequestHandler(ListToolsRequestSchema, ...)` + `setRequestHandler(CallToolRequestSchema, ...)` depuis `@modelcontextprotocol/sdk/server/index.js` et `@modelcontextprotocol/sdk/types.js`. Source de vérité : `node_modules/<sdk>/package.json` (version) + `.d.ts` (API). [effort: M]
 - [ ] [O51] idea-inbox convention — simplifier et clarifier | Rendre le registre projet plus simple et clair pour utilisation directe par un AI Assistant. Mieux le référencer dans INDEX.md (trigger + description). [effort: S]
-- [ ] [O52] working-with-forge.md — adapt to Forge v2 | Guide describes Forge v1 (FAL, RTFM, Brand, forge_describe). Rewrite for Forge v2: formats, forge_read/write/create with JSON payload, dot-notation query, metadata block, registry. Restore trigger in INDEX.md Decision Layer on completion. Files also affected: GLOSSARY.md (entries RTFM, Brand, FAL, Constrain Don't Forbid, Fail Fast Fail Clear). [effort: M]
+- [ ] [O52] working-with-forge.md — supprimer + améliorer describes | Le guide décrit Forge v1 et est obsolète. Décision : les MCP tool describes doivent se suffire à eux-mêmes — pas de guide opérationnel séparé. (1) Supprimer `working-with-forge.md`. (2) Améliorer le describe de `forge_write` : payload doit correspondre à la structure retournée par forge_read — fichiers natifs : `{ content: string }`, fichiers structurés : partial section map. (3) Ajouter guard natif dans forge-write.js : erreur explicite si payload sans clé `content` sur fichier natif. (4) Ajouter test manquant : forge_write natif + payload non-natif → rejection claire. Files also affected: GLOSSARY.md (entries RTFM, Brand, FAL, Constrain Don't Forbid, Fail Fast Fail Clear). [effort: S]
+
 ## Low priority
 
 - [ ] [O1] Premature drafting anti-pattern | Drafting final wording before the concept is stable anchors the conversation too early and forces rewrites. Sharper rule: discuss the idea first, draft only when the shape is clear. Refine "Validate before acting" in Phase 1 or add as a new anti-pattern in how-to-get-things-done.md.
@@ -106,6 +107,15 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 |------|-------------|
 
 ## Changelog
+
+### Version 5.18 - O52 reformulé + INDEX.md nettoyé
+**Date:** 2026-06-14
+**Reason:** Décision session : les MCP tool describes doivent se suffire à eux-mêmes. working-with-forge.md sera supprimé plutôt que réécrit. O52 reformulé en conséquence — inclut describe forge_write, guard natif, test manquant.
+
+**Modifications:**
+- Normal: O52 reformulé — supprimer guide + améliorer describes + guard natif + test
+
+---
 
 ### Version 5.17 - O55 Decision Layer ressources externes
 **Date:** 2026-06-14
@@ -175,116 +185,61 @@ todo, backlog, knowledge-base, tâches, idées, améliorations
 
 ### Version 5.10 - O48 réécrit v2 + O43/O50/O37/O47 archivés
 **Date:** 2026-06-12
-**Reason:** O48 réécrit pour Forge v2 (dot-notation queries, plus de FAL/blocks). O43/O50/O37/O47 retirés du backlog et archivés dans TODO-archive.md.
-
-**Modifications:**
-- Normal: O48 description mise à jour (v2)
-- High priority + Normal: O43, O50, O37, O47 retirés
-- TODO-archive.md: O43, O50, O37, O47 ajoutés (archived-from: open)
 
 ---
 
 ### Version 5.9 - Roadmap Forge + items v1 superseded
 **Date:** 2026-06-12
-**Reason:** ROADMAP.md créé dans public/tools/forge/. Items Forge v1 obsolètes marqués done : O43 (Brand), O50 (writeBlock), O37 (forge_write bloc), O47 (structured-text.md).
-
-**Modifications:**
-- High priority: O50, O43 → done (superseded v1)
-- Normal: O37, O47 → done (superseded v1)
 
 ---
 
 ### Version 5.8 - O53 forge_read multi-fichiers
 **Date:** 2026-06-12
-**Reason:** Besoin identifié en session : lire plusieurs fichiers en un appel, analogue à filesystem:read_multiple_files. Distinct de O48 (batch intra-artifact).
-
-**Modifications:**
-- Normal: O53 ajouté
 
 ---
 
 ### Version 5.7 - W5 mis à jour — forge.md v1.0
 **Date:** 2026-06-11
-**Reason:** Grammaire format finalisée en session (primitive/extends/fileNameExtension). W5 mis à jour pour refléter la spec v1.0 et les prochaines étapes d'implémentation.
-
-**Modifications:**
-- WIP: W5 description mise à jour
 
 ---
 
 ### Version 5.6 - W5 forge-formats.json v1
 **Date:** 2026-06-11
-**Reason:** Grammaire format complète conçue en session — prête pour implémentation.
-
-**Modifications:**
-- WIP: W5 ajouté
 
 ---
 
-### Version 5.5 - W1, W3, W4 archived — superseded by Forge v2 redesign
+### Version 5.5 - W1, W3, W4 archived
 **Date:** 2026-06-11
-**Reason:** Forge v2 redesign (format grammar, new architecture) makes W1/W3/W4 obsolete. Archived.
-
-**Modifications:**
-- WIP: W1, W3, W4 removed
-- TODO-archive.md: W1, W3, W4 added with [archived-from: wip]
 
 ---
 
 ### Version 5.4 - O52 working-with-forge.md adapt to Forge v2
 **Date:** 2026-06-11
-**Reason:** Guide obsolete — describes Forge v1. Trigger removed from INDEX Decision Layer pending rewrite.
-
-**Modifications:**
-- Normal: O52 ajouté
 
 ---
 
 ### Version 5.3 - W4 forge.md How passe 2
 **Date:** 2026-06-10
-**Reason:** Why/What nettoyés en session. How à traiter en session dédiée.
-
-**Modifications:**
-- WIP: W4 ajouté
 
 ---
 
 ### Version 5.2 - O51 idea-inbox simplification
 **Date:** 2026-06-10
-**Reason:** Simplifier la convention idea-inbox et mieux la référencer dans INDEX.
-
-**Modifications:**
-- Normal: O51 ajouté
 
 ---
 
 ### Version 5.1 - O50 writeBlock leaf-only rule
 **Date:** 2026-06-07
-**Reason:** Session debug forge — discussion sur la sémantique de writeBlock("") a mené à une règle de conception : seuls les blocs feuilles ont du contenu, les blocs parents sont des conteneurs comme des dossiers.
-
-**Modifications:**
-- High priority: O50 ajouté
 
 ---
 
 ### Version 5.0 - structured-text.js v3.0 done + nouveaux items
 **Date:** 2026-06-07
-**Reason:** Session grammaire blocs — structured-text.js v3.0 livré, 134 tests passent. O44 couvert par le mécanisme générique (fermé via D18). Nouveaux items O47/O48/O49.
-
-**Modifications:**
-- Normal: O44 retiré (couvert par D18) ; O47 (convention structured-text.md), O48 (forge_read batch+sous-arbre), O49 (forge_ls récursif+tailles) ajoutés
-- WIP: W1 mis à jour — résumé v3.0 + prochaines étapes
-- Done: D18 ajouté
 
 ---
 
 ### Version 4.9 - Driver générique enrichi + O45/O46
 **Date:** 2026-06-07
-**Reason:** Session enrichissement structured-text.js — shebang claim, strip/restore, discover hierarchy.
-
-**Modifications:**
-- Low priority: O45 (rename forge-browser → forge-editor) + O46 (forge_create dans l'éditeur) ajoutés
-- WIP: W1 mis à jour — résumé session + prochaines étapes
 
 ---
 
